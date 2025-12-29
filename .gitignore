@@ -1,0 +1,22 @@
+# Python Müll
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Virtuelle Umgebung (WICHTIG!)
+.venv/
+venv/
+env/
+
+# Daten (zu groß für GitHub)
+*.h5
+*.pth
+data/
+datasets/
+images/
+
+# VS Code Einstellungen
+.vscode/
+
+# Betriebssystem Müll
+.DS_Store
