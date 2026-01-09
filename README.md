@@ -79,8 +79,9 @@ We utilize a custom CNN (CustomEmotionCNN) defined in src/model.py:
    Classes: Anger, Disgust, Fear, Happiness, Sadness, Surprise.
 
 📊 Results
-Current Accuracy: ~84% (Baseline Model v0)
+Current Accuracy: ~67% (Baseline Model v1)
 Strongest Class: Happiness
-Challenges: Distinguishing Fear vs. Surprise due to visual similarities and limited data representation.
+Challenges: Face Alignment
+            Distinguishing Fear vs. Surprise due to visual similarities and limited data representation.
 
 University of Munich (LMU) - WiSe 25/26
