@@ -28,8 +28,8 @@ LEARNING_RATE = 0.001
 EPOCHS = 25
 
 # Paths to datasets
-TRAIN_DIR = 'data/RAF_processed/train'
-VAL_DIR = 'data/RAF_processed/test'
+TRAIN_DIR = 'data/RAF_original_processed/train' # Path to training data Swap aligned/original 
+VAL_DIR = 'data/RAF_original_processed/test'    # Path to validation data Swap aligned/original
 MODEL_DIR = 'models'
 
 # Defining a function to get a unique model save path

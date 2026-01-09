@@ -1,10 +1,14 @@
 import os
 import shutil
 
-# Define paths for raw RAF dataset and output directory
-raw_RAF_images_dir = "data/RAF_raw/Image/aligned"
+# Define paths for raw RAF dataset (Aligned & Original) 
+raw_RAF_aligned_dir = "data/RAF_raw/Image/aligned"
+raw_RAF_original_dir = "data/RAF_raw/Image/original"
 label_file = "data/RAF_raw/EmoLabel/list_patition_label.txt"
-output_dir = "data/RAF_processed"
+
+#  Define paths for Output directories
+output_aligned_dir = "data/RAF_aligned_processed"
+output_original_dir = "data/RAF_original_processed"
 
 # Define Emotion labels
 labels = {
@@ -17,17 +21,21 @@ labels = {
 }
 
 def setup_directories():
-    # Remove existing output directory if it exists
-    if os.path.exists(output_dir):
-        print(f"Removing existing directory: {output_dir} for a fresh start.")
-        shutil.rmtree(output_dir)
+    # List of directories to setup
+    target_dirs = [output_aligned_dir, output_original_dir]
 
-    # Create necessary directories
-    for split in ['train', 'test']:
-        for emotion in labels.values():
-            dir_path = os.path.join(output_dir, split, emotion)
-            os.makedirs(dir_path, exist_ok=True)
-            print(f"Created directory: {dir_path}")
+    for target_dir in target_dirs:
+        # Remove existing output directory if it exists
+        if os.path.exists(target_dir):
+            print(f"Removing existing directory: {target_dir} for a fresh start.")
+            shutil.rmtree(target_dir)
+
+        # Create necessary directories
+        for split in ['train', 'test']:
+            for emotion in labels.values():
+                dir_path = os.path.join(target_dir, split, emotion)
+                os.makedirs(dir_path, exist_ok=True)
+                print(f"Created directory: {dir_path}")
 
 def process_data():
     
@@ -41,7 +49,8 @@ def process_data():
         lines = f.readlines()
 
     # Initialize counters
-    count = 0
+    count_aligned = 0
+    count_original = 0
     ignored_count = 0
 
     # Process each line in the label file
@@ -60,27 +69,38 @@ def process_data():
             ignored_count += 1
             continue
         
-        #fixing filename to match aligned images
+        # Determine if image is for training or testing (based on filename)
+        target_folder = 'train' if 'train' in original_filename else 'test'
+
+        # --- PROCESS ALIGNED IMAGES ---
+        # fixing filename to match aligned images
         filename_aligned = original_filename.replace('.jpg', '_aligned.jpg')
 
-        # search for image
-        image_path = os.path.join(raw_RAF_images_dir, filename_aligned)
+        # search for image in aligned folder
+        image_path_aligned = os.path.join(raw_RAF_aligned_dir, filename_aligned)
 
-        # Check if image exists
-        if not os.path.exists(image_path):
-            print(f"Image not found: {image_path}, skipping.")
-            ignored_count += 1
-            continue
-
-        # Determine if image is for training or testing
-        target_folder = 'train' if 'train' in filename_aligned else 'test'
-        target_dir = os.path.join(output_dir, target_folder, emotion_name, filename_aligned)
+        # Check if aligned image exists and copy
+        if os.path.exists(image_path_aligned):
+            target_dir_aligned = os.path.join(output_aligned_dir, target_folder, emotion_name, filename_aligned)
+            shutil.copy(image_path_aligned, target_dir_aligned)
+            count_aligned += 1
         
-        # Copy image to target directory
-        shutil.copy(image_path, target_dir)
-        count += 1
+        # --- PROCESS ORIGINAL IMAGES ---
+        # filename remains the same for original images
+        filename_original = original_filename
 
-    print(f"Processed {count} images. Ignored {ignored_count} images.")
+        # search for image in original folder
+        image_path_original = os.path.join(raw_RAF_original_dir, filename_original)
+
+        # Check if original image exists and copy
+        if os.path.exists(image_path_original):
+            target_dir_original = os.path.join(output_original_dir, target_folder, emotion_name, filename_original)
+            shutil.copy(image_path_original, target_dir_original)
+            count_original += 1
+
+    print(f"Processed {count_aligned} aligned images.")
+    print(f"Processed {count_original} original images.")
+    print(f"Ignored {ignored_count} Images (Label: Neutral/Other).")
 
 if __name__ == "__main__":
     setup_directories()
