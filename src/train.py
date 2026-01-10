@@ -8,7 +8,10 @@ import os
 # importing the custom model
 from model import CustomEmotionCNN
 
-#  HARDWARE CHECK 
+
+# =========================
+#  HARDWARE CHECK
+# =========================
 def get_device():
     if torch.cuda.is_available():
         print(f"\n🚀 GPU Activated: {torch.cuda.get_device_name(0)}")
@@ -20,71 +23,139 @@ def get_device():
         print("\n⚠️  No GPU detected. Training will be performed on CPU, which may be slow.")
         return torch.device("cpu")
 
+
 DEVICE = get_device()
 
-# Configurations
+
+# =========================
+# CONFIG
+# =========================
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
 EPOCHS = 25
 
-# Paths to datasets
-TRAIN_DIR = 'data/RAF_original_processed/train' # Path to training data Swap aligned/original 
-VAL_DIR = 'data/RAF_original_processed/test'    # Path to validation data Swap aligned/original
+TRAIN_DIR = 'data/RAF_original_processed/train'
+VAL_DIR   = 'data/RAF_original_processed/test'
 MODEL_DIR = 'models'
 
-# Defining a function to get a unique model save path
+
+# =========================
+# MODEL SAVE PATH
+# =========================
 def get_unique_model_path(base_name="raf_cnn"):
     """
     Find the next available model save path: raf_cnn_v0.pth, raf_cnn_v1.pth, etc.
     """
     if not os.path.exists(MODEL_DIR):
         os.makedirs(MODEL_DIR)
-    
+
     counter = 0
     while True:
         filename = f"{base_name}_v{counter}.pth"
         full_path = os.path.join(MODEL_DIR, filename)
-        
+
         if not os.path.exists(full_path):
-            # Found an available filename
             return full_path, counter
-        
+
         counter += 1
 
-def main():
-    # 1. Automatically get unique model save path
-    save_path, version_id = get_unique_model_path()
-    print("="*50)
-    print(f"💾 This training will be saved as: {save_path}")
-    print("="*50)
 
-    # 2. Data Transformations (64x64 Resize)
-    data_transforms = transforms.Compose([
+# =========================
+# VALIDATION
+# =========================
+def validate(model, loader, criterion):
+    model.eval()
+    val_loss = 0.0
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in loader:
+            images = images.to(DEVICE)
+            labels = labels.to(DEVICE)
+
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+
+            val_loss += loss.item()
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    acc = 100 * correct / total
+    print(f"    >>> Validation Loss: {val_loss / len(loader):.4f} | Val Acc: {acc:.2f}%")
+    return acc
+
+
+# =========================
+# MAIN
+# =========================
+def main():
+    # 1. model save path
+    save_path, version_id = get_unique_model_path()
+    print("=" * 50)
+    print(f"💾 This training will be saved as: {save_path}")
+    print("=" * 50)
+
+    # 2. Data Transformations
+    train_transforms = transforms.Compose([
         transforms.Resize((64, 64)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.RandomRotation(degrees=10),
+        transforms.ColorJitter(
+            brightness=0.2,
+            contrast=0.2,
+            saturation=0.1,
+            hue=0.02
+        ),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]) 
+        transforms.Normalize(
+            mean=[0.5, 0.5, 0.5],
+            std=[0.5, 0.5, 0.5]
+        ),
     ])
 
-    # load datasets
-    train_dataset = datasets.ImageFolder(root=TRAIN_DIR, transform=data_transforms)
-    val_dataset = datasets.ImageFolder(root=VAL_DIR, transform=data_transforms)
+    val_transforms = transforms.Compose([
+        transforms.Resize((64, 64)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.5, 0.5, 0.5],
+            std=[0.5, 0.5, 0.5]
+        ),
+    ])
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    # 3. Datasets & Dataloaders
+    train_dataset = datasets.ImageFolder(
+        root=TRAIN_DIR,
+        transform=train_transforms
+    )
+    val_dataset = datasets.ImageFolder(
+        root=VAL_DIR,
+        transform=val_transforms
+    )
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=True
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=BATCH_SIZE,
+        shuffle=False
+    )
 
     num_classes = len(train_dataset.classes)
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
 
-    # 3. initialize model, loss function, optimizer
+    # 4. Model, Loss, Optimizer
     model = CustomEmotionCNN(num_classes=num_classes).to(DEVICE)
-    
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    # Variable to track the best validation accuracy
     best_val_acc = 0.0
 
-    # 4. Training Loop
+    # 5. Training Loop
     for epoch in range(EPOCHS):
         model.train()
         running_loss = 0.0
@@ -92,7 +163,8 @@ def main():
         total = 0
 
         for images, labels in train_loader:
-            images, labels = images.to(DEVICE), labels.to(DEVICE)
+            images = images.to(DEVICE)
+            labels = labels.to(DEVICE)
 
             outputs = model(images)
             loss = criterion(outputs, labels)
@@ -107,45 +179,28 @@ def main():
             correct += (predicted == labels).sum().item()
 
         epoch_acc = 100 * correct / total
-        avg_loss = running_loss/len(train_loader)
-        
-        print(f"Epoch [{epoch+1}/{EPOCHS}] Train Loss: {avg_loss:.4f} | Train Acc: {epoch_acc:.2f}%")
+        avg_loss = running_loss / len(train_loader)
 
-        # 5. Validation Step
+        print(
+            f"Epoch [{epoch + 1}/{EPOCHS}] "
+            f"Train Loss: {avg_loss:.4f} | Train Acc: {epoch_acc:.2f}%"
+        )
+
+        # Validation
         val_acc = validate(model, val_loader, criterion)
 
-        # 6. Save the model if validation accuracy improves
+        # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
 
-    print("="*50)
-    print(f"Training completed.")
+    print("=" * 50)
+    print("Training completed.")
     print(f"The best model achieved {best_val_acc:.2f}% Accuracy on the test data.")
-    print(f"saved as: {save_path}")
-    print("="*50)
+    print(f"Saved as: {save_path}")
+    print("=" * 50)
 
-def validate(model, loader, criterion):
-    model.eval()
-    val_loss = 0.0
-    correct = 0
-    total = 0
-    
-    with torch.no_grad():
-        for images, labels in loader:
-            images, labels = images.to(DEVICE), labels.to(DEVICE)
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            
-            val_loss += loss.item()
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
 
-    acc = 100 * correct / total
-    print(f"    >>> Validation Loss: {val_loss/len(loader):.4f} | Val Acc: {acc:.2f}%")
-    return acc
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
