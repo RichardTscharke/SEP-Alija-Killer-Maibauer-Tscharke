@@ -8,7 +8,7 @@ from torchvision import transforms
 from model import CustomEmotionCNN
 
 # Configurations
-MODEL_PATH = "models/raf_cnn_v1.pth" # Make sure this is the latest trained model path
+MODEL_PATH = "models/raf_cnn_v3.pth" # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings
@@ -27,8 +27,12 @@ def generate_csv(input_folder):
     
     output_csv_path = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
 
-    print(f"🔍 Scanning images in: {input_folder}")
-    print(f"💾 Saving predictions to: {output_csv_path}")
+    print("\n" + "="*30)
+    print(f"🚀 STARTING INFERENCE")
+    print(f"🧠 Model:  {MODEL_PATH}")
+    print(f"📂 Input:  {input_folder}")
+    print(f"💾 Output: {output_csv_path}")
+    print("="*30 + "\n")
     
     # 2. Load model
     model = CustomEmotionCNN(num_classes=len(CLASSES))
@@ -108,7 +112,6 @@ def generate_csv(input_folder):
         print("⚠️ No images found in input folder.")
 
 if __name__ == "__main__":
-    
     # Default path on server
     default_folder = "data/RAF_original_processed/test"
     
@@ -117,4 +120,5 @@ if __name__ == "__main__":
         folder_path = sys.argv[1]
     else:
         folder_path = default_folder
+
     generate_csv(folder_path) 

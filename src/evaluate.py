@@ -7,14 +7,21 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from model import CustomEmotionCNN
+import sys
+import os
 
 # Configurations
-MODEL_PATH = "models/raf_cnn_v1.pth" # Make sure this is the latest trained model path
-TEST_DIR = "data/RAF_original_processed/test"
+MODEL_PATH = "models/raf_cnn_v3.pth" # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
 
-def evaluate_model():
+def evaluate_model(test_dir):
+    print("\n" + "="*30)
+    print(f"🚀 STARTING EVALUATION")
+    print(f"🧠 Model: {MODEL_PATH}")
+    print(f"📂 Data:  {test_dir}")
+    print("="*30 + "\n")
+
     # Load test dataset
     transform = transforms.Compose([
         transforms.Resize((64, 64)),
@@ -22,7 +29,7 @@ def evaluate_model():
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
     
-    test_dataset = datasets.ImageFolder(TEST_DIR, transform=transform)
+    test_dataset = datasets.ImageFolder(test_dir, transform=transform)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
     classes = test_dataset.classes
     
@@ -34,7 +41,6 @@ def evaluate_model():
     all_preds = []
     all_labels = []
 
-    print("Starting evaluation...")
     with torch.no_grad():
         for images, labels in test_loader:
             images = images.to(DEVICE)
@@ -76,4 +82,13 @@ def evaluate_model():
     print(f"\nImage saved as {save_path}")
 
 if __name__ == "__main__":
-    evaluate_model()
+    # Default path on server
+    default_folder = "data/RAF_original_processed/test"
+
+    # Allow command line argument for folder path
+    if len(sys.argv) > 1:
+        folder_path = sys.argv[1]
+    else:
+        folder_path = default_folder
+
+    evaluate_model(folder_path)
