@@ -18,7 +18,9 @@ def get_device():
         print("🍏 Apple Silicon GPU (MPS) erkannt.")
         return torch.device("mps")
     else:
-        print("\n⚠️  No GPU detected. Training will be performed on CPU, which may be slow.")
+        print(
+            "\n⚠️  No GPU detected. Training will be performed on CPU, which may be slow."
+        )
         return torch.device("cpu")
 
 
@@ -31,16 +33,15 @@ LEARNING_RATE = 0.001
 EPOCHS = 25
 
 # Paths to data directories
-TRAIN_DIR = 'data/RAF_original_processed/train'
-VAL_DIR   = 'data/RAF_original_processed/test'
-MODEL_DIR = 'models'
-
+TRAIN_DIR = "data/RAF_original_processed/train"
+VAL_DIR = "data/RAF_original_processed/test"
+MODEL_DIR = "models"
 
 
 # generate unique model save path
 def get_unique_model_path(base_name="raf_cnn"):
-    
-    #Find the next available model save path: raf_cnn_v0.pth, raf_cnn_v1.pth, etc.
+
+    # Find the next available model save path: raf_cnn_v0.pth, raf_cnn_v1.pth, etc.
     if not os.path.exists(MODEL_DIR):
         os.makedirs(MODEL_DIR)
 
@@ -49,7 +50,9 @@ def get_unique_model_path(base_name="raf_cnn"):
         filename = f"{base_name}_v{counter}.pth"
         full_path = os.path.join(MODEL_DIR, filename)
 
-        if not os.path.exists(full_path): #File does not exist, so we can use this name
+        if not os.path.exists(
+            full_path
+        ):  # File does not exist, so we can use this name
             return full_path, counter
 
         counter += 1
@@ -76,8 +79,11 @@ def validate(model, loader, criterion):
             correct += (predicted == labels).sum().item()
 
     acc = 100 * correct / total
-    print(f"    >>> Validation Loss: {val_loss / len(loader):.4f} | Val Acc: {acc:.2f}%")
+    print(
+        f"    >>> Validation Loss: {val_loss / len(loader):.4f} | Val Acc: {acc:.2f}%"
+    )
     return acc
+
 
 # MAIN
 def main():
@@ -88,52 +94,33 @@ def main():
     print("=" * 50)
 
     # 2. Data Transformations
-    train_transforms = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=10),
-        transforms.ColorJitter(
-            brightness=0.2,
-            contrast=0.2,
-            saturation=0.1,
-            hue=0.02
-        ),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.5, 0.5, 0.5],
-            std=[0.5, 0.5, 0.5]
-        ),
-    ])
+    train_transforms = transforms.Compose(
+        [
+            transforms.Resize((64, 64)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=10),
+            transforms.ColorJitter(
+                brightness=0.2, contrast=0.2, saturation=0.1, hue=0.02
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ]
+    )
 
-    val_transforms = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.5, 0.5, 0.5],
-            std=[0.5, 0.5, 0.5]
-        ),
-    ])
+    val_transforms = transforms.Compose(
+        [
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ]
+    )
 
     # 3. Datasets & Dataloaders
-    train_dataset = datasets.ImageFolder(
-        root=TRAIN_DIR,
-        transform=train_transforms
-    )
-    val_dataset = datasets.ImageFolder(
-        root=VAL_DIR,
-        transform=val_transforms
-    )
+    train_dataset = datasets.ImageFolder(root=TRAIN_DIR, transform=train_transforms)
+    val_dataset = datasets.ImageFolder(root=VAL_DIR, transform=val_transforms)
 
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=False
-    )
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     num_classes = len(train_dataset.classes)
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
@@ -146,7 +133,7 @@ def main():
     # 5.Scheduler
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
-        mode ="max",
+        mode="max",
         patience=2,
         factor=0.5,
     )
@@ -188,7 +175,6 @@ def main():
         val_acc = validate(model, val_loader, criterion)
         scheduler.step(val_acc)
         print("LR:", optimizer.param_groups[0]["lr"])
-
 
         # 8. Save best model
         if val_acc > best_val_acc:

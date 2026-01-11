@@ -1,7 +1,7 @@
 import os
 import shutil
 
-# Define paths for raw RAF dataset (Aligned & Original) 
+# Define paths for raw RAF dataset (Aligned & Original)
 raw_RAF_aligned_dir = "data/RAF_raw/Image/aligned"
 raw_RAF_original_dir = "data/RAF_raw/Image/original"
 label_file = "data/RAF_raw/EmoLabel/list_patition_label.txt"
@@ -17,8 +17,9 @@ labels = {
     3: "Disgust",
     4: "Happiness",
     5: "Sadness",
-    6: "Anger"
+    6: "Anger",
 }
+
 
 def setup_directories():
     # List of directories to setup
@@ -31,21 +32,22 @@ def setup_directories():
             shutil.rmtree(target_dir)
 
         # Create necessary directories
-        for split in ['train', 'test']:
+        for split in ["train", "test"]:
             for emotion in labels.values():
                 dir_path = os.path.join(target_dir, split, emotion)
                 os.makedirs(dir_path, exist_ok=True)
                 print(f"Created directory: {dir_path}")
 
+
 def process_data():
-    
+
     # Check if label file exists
     if not os.path.exists(label_file):
         raise FileNotFoundError(f"Label file not found: {label_file}")
-    
+
     print(f"starting to sort images based on labels from {label_file}")
     # Read label file
-    with open(label_file, 'r') as f:
+    with open(label_file, "r") as f:
         lines = f.readlines()
 
     # Initialize counters
@@ -58,7 +60,7 @@ def process_data():
         parts = line.strip().split()
         if len(parts) < 2:
             continue
-        
+
         # Parse filename and label
         original_filename = parts[0]
         label_index = int(parts[1])
@@ -68,23 +70,25 @@ def process_data():
         if emotion_name is None:
             ignored_count += 1
             continue
-        
+
         # Determine if image is for training or testing (based on filename)
-        target_folder = 'train' if 'train' in original_filename else 'test'
+        target_folder = "train" if "train" in original_filename else "test"
 
         # --- PROCESS ALIGNED IMAGES ---
         # fixing filename to match aligned images
-        filename_aligned = original_filename.replace('.jpg', '_aligned.jpg')
+        filename_aligned = original_filename.replace(".jpg", "_aligned.jpg")
 
         # search for image in aligned folder
         image_path_aligned = os.path.join(raw_RAF_aligned_dir, filename_aligned)
 
         # Check if aligned image exists and copy
         if os.path.exists(image_path_aligned):
-            target_dir_aligned = os.path.join(output_aligned_dir, target_folder, emotion_name, filename_aligned)
+            target_dir_aligned = os.path.join(
+                output_aligned_dir, target_folder, emotion_name, filename_aligned
+            )
             shutil.copy(image_path_aligned, target_dir_aligned)
             count_aligned += 1
-        
+
         # --- PROCESS ORIGINAL IMAGES ---
         # filename remains the same for original images
         filename_original = original_filename
@@ -94,7 +98,9 @@ def process_data():
 
         # Check if original image exists and copy
         if os.path.exists(image_path_original):
-            target_dir_original = os.path.join(output_original_dir, target_folder, emotion_name, filename_original)
+            target_dir_original = os.path.join(
+                output_original_dir, target_folder, emotion_name, filename_original
+            )
             shutil.copy(image_path_original, target_dir_original)
             count_original += 1
 
@@ -103,6 +109,7 @@ def process_data():
     print(f"Ignored {ignored_count} Images (Label: Neutral/Other).")
     print(f"Aligned images saved in: {output_aligned_dir}")
     print(f"Original images saved in: {output_original_dir}")
+
 
 if __name__ == "__main__":
     setup_directories()
