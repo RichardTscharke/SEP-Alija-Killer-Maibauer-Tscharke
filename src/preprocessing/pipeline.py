@@ -10,10 +10,16 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
 
     stages = []
 
-    faces = detector.detect_faces(image)
+    try:
+        faces = detector.detect_faces(image)
+    except Exception as e:
+        if debug:
+            print(f"[preprocess_image] detect_faces failed: {e}")
+        return None
 
-    if not faces:
-        return None  # no faces found
+    if faces is None or len(faces) == 0:
+        return None
+
 
     face = max(faces, key=lambda f: float(f["confidence"]))
 
