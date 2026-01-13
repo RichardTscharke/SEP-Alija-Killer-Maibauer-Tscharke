@@ -33,8 +33,8 @@ LEARNING_RATE = 0.001
 EPOCHS = 25
 
 # Paths to data directories
-TRAIN_DIR = "data/RAF_original_processed/train"
-VAL_DIR = "data/RAF_original_processed/test"
+TRAIN_DIR = "data/RAF_aligned_processed/train"
+VAL_DIR = "data/RAF_aligned_processed/test"
 MODEL_DIR = "models"
 
 
