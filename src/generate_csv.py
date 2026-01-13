@@ -7,7 +7,7 @@ from torchvision import transforms
 from model import CustomEmotionCNN
 
 # Configurations
-MODEL_PATH = "models/raf_cnn_v5.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "models/raf_cnn_v3.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings
