@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from model import CustomEmotionCNN
 
-MODEL_PATH = "models/raf_cnn_v1.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "raf_cnn_v5"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 1
 
