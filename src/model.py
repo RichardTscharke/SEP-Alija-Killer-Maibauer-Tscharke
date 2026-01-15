@@ -36,7 +36,7 @@ class CustomEmotionCNN(nn.Module):
         self.conv4 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=3, padding=1),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(),                                   
             nn.MaxPool2d(2, 2),  # Image reduced to 4x4
         )
 
@@ -53,7 +53,7 @@ class CustomEmotionCNN(nn.Module):
             nn.Linear(512, num_classes),  # Output Layer (6 Neurons for 6 Emotions)
         )
 
-    def forward(self, x):
+    def forward(self, x, explainable = False):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
