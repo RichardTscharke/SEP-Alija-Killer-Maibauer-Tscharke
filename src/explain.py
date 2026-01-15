@@ -12,18 +12,23 @@ MODEL_PATH = "models/raf_cnn_v1.pth"  # Make sure this is the latest trained mod
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 1
 
+
 def explain_image(folder_path):
 
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-    ])
+    transform = transforms.Compose(
+        [
+            transforms.Resize((64, 64)),
+            transforms.ToTensor(),
+        ]
+    )
 
     img = Image.open(folder_path)
     x = transform(img).unsqueeze(0).to(DEVICE)
 
-    model = CustomEmotionCNN(num_classes = 6)
-    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True))
+    model = CustomEmotionCNN(num_classes=6)
+    model.load_state_dict(
+        torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True)
+    )
     model.eval()
 
     feature_maps = None
@@ -37,9 +42,12 @@ def explain_image(folder_path):
         nonlocal gradients
         gradients = grad_output[0]
 
-
-    fh = model.conv3.register_forward_hook(forward_hook)             # change 2 to 3 or vice versa vor different results
-    bh = model.conv3.register_full_backward_hook(backward_hook)      # change 2 to 3 or vice versa vor different results
+    fh = model.conv3.register_forward_hook(
+        forward_hook
+    )  # change 2 to 3 or vice versa vor different results
+    bh = model.conv3.register_full_backward_hook(
+        backward_hook
+    )  # change 2 to 3 or vice versa vor different results
 
     logits = model(x)
     pred_class = logits.argmax(dim=1).item()
@@ -62,7 +70,7 @@ def explain_image(folder_path):
 
     heatmap_scaled = cv2.resize(heatmap, (64, 64))
 
-    heatmap_color = cv2.applyColorMap(np.uint8(255 * heatmap_scaled),cv2.COLORMAP_JET)
+    heatmap_color = cv2.applyColorMap(np.uint8(255 * heatmap_scaled), cv2.COLORMAP_JET)
 
     img_np = x.squeeze().permute(1, 2, 0).cpu().numpy()
     img_np = np.uint8(255 * img_np)
@@ -70,10 +78,11 @@ def explain_image(folder_path):
     heatmap_color[heatmap_scaled < 0.2] = 0
     overlay = cv2.addWeighted(img_np, 0.6, heatmap_color, 0.4, 0)
 
-    plt.figure(figsize=(4,4))
+    plt.figure(figsize=(4, 4))
     plt.imshow(overlay)
-    #plt.axis("off")
+    # plt.axis("off")
     plt.show()
+
 
 if __name__ == "__main__":
 
