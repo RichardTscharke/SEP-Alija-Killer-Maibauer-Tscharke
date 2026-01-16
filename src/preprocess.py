@@ -12,7 +12,7 @@ INPUT_DIR = Path("data/RAF_raw/Image/original")
 OUTPUT_DIR = Path("data/RAF_raw/Image/aligned")
 LOG_FILE = OUTPUT_DIR / "preprocess.log"
 
-def main():
+def main(debug = False):
 
     detector = MTCNN()
 
@@ -27,7 +27,16 @@ def main():
 
         out_path = OUTPUT_DIR / f"{img_path.stem}_aligned{img_path.suffix}"
 
-        image_array = np.array(Image.open(img_path))
+        try:
+            with Image.open(img_path) as img:
+                image_array = np.array(img)
+
+        except Exception as e:
+            if debug:
+                raise RuntimeError(f"Failed to load image: {img_path}") from e
+            else:
+                log_lines.append(f"{img_path.name}: image loading failed ({e})")
+                continue
 
         sample = preprocess_image(image_array, detector)
 
@@ -42,6 +51,10 @@ def main():
             continue
 
         crop_mtcnn, crop64 = fallback(image_array)
+
+        if crop_mtcnn is None or crop64 is None:
+            log_lines.append(f"{img_path.name}: fallback returned invalid output")
+            continue
 
         sample2 = preprocess_image(crop_mtcnn, detector)
 
@@ -67,4 +80,4 @@ def main():
         f.write("\n".join(log_lines))
 
 if __name__ == "__main__":
-    main()
+    main(debug = False)
