@@ -25,11 +25,20 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
 
     x, y, w, h = face["box"]
 
+    if w <= 0 or h <= 0:
+        return None
+
     keypoints = {}
 
-    for key, (x1, y1) in face["keypoints"].items():
+    for k, (kx, ky) in face["keypoints"].items():
 
-        keypoints[key] = int(x1), int(y1)
+        if not np.isfinite(kx) or not np.isfinite(ky):
+            return None
+        
+        if not (x <= kx <= x + w) and (y <= ky <= y + h):
+            return None
+        
+        keypoints[k] = int(kx), int(ky)
 
     sample = {
 
@@ -41,22 +50,48 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
     if debug:
         stages.append(("original", deepcopy(sample)))
 
+
     if do_cliping:
         sample = clip_face(sample)
+
+        if not is_valid_sample(sample):
+            return None
+        
         if debug:
             stages.append(("padded", deepcopy(sample)))
 
+
     if do_cropping:
         sample = crop_face(sample)
+
+        if not is_valid_sample(sample):
+            return None
+        
         if debug:
             stages.append(("cropped", deepcopy(sample)))
 
+
     if do_aligning:
         sample = align_face(sample)
+
+        if not is_valid_sample(sample):
+            return None
+        
         if debug:
             stages.append(("aligned", deepcopy(sample)))
+
 
     if debug:
         visualize(stages)        
 
     return sample
+
+
+def is_valid_sample(sample):
+    return (
+        isinstance(sample, dict)
+        and "image" in sample
+        and "box" in sample
+        and "keypoints" in sample
+        and sample["image"] is not None
+        )
