@@ -6,7 +6,14 @@ from .align import align_face
 from .debug.visualize import visualize
 
 
-def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_aligning = True, debug = False):
+def preprocess_image(image,
+                     detector,
+                     do_cliping = True,
+                     do_cropping = True,
+                     do_aligning = True,
+                     vis = False,
+                     debug = False
+                     ):
 
     stages = []
 
@@ -35,7 +42,7 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
         if not np.isfinite(kx) or not np.isfinite(ky):
             return None
         
-        if not (x <= kx <= x + w) and (y <= ky <= y + h):
+        if (kx < x or kx > x + w) or (ky < y or ky > y + h):
             return None
         
         keypoints[k] = int(kx), int(ky)
@@ -47,7 +54,7 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
         "keypoints": keypoints
     }
 
-    if debug:
+    if vis:
         stages.append(("original", deepcopy(sample)))
 
 
@@ -57,8 +64,8 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
         if not is_valid_sample(sample):
             return None
         
-        if debug:
-            stages.append(("padded", deepcopy(sample)))
+        if vis:
+            stages.append(("clipped", deepcopy(sample)))
 
 
     if do_cropping:
@@ -67,7 +74,7 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
         if not is_valid_sample(sample):
             return None
         
-        if debug:
+        if vis:
             stages.append(("cropped", deepcopy(sample)))
 
 
@@ -77,11 +84,11 @@ def preprocess_image(image, detector, do_cliping = True, do_cropping = True, do_
         if not is_valid_sample(sample):
             return None
         
-        if debug:
+        if vis:
             stages.append(("aligned", deepcopy(sample)))
 
 
-    if debug:
+    if vis:
         visualize(stages)        
 
     return sample
