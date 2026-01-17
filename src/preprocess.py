@@ -7,14 +7,16 @@ from preprocessing.pipeline import preprocess_image
 from preprocessing.fallback import fallback
 
 
-
-INPUT_DIR = Path("data/RAF_raw/Image/original")
-OUTPUT_DIR = Path("data/RAF_raw/Image/aligned")
-LOG_FILE = OUTPUT_DIR / "preprocess.log"
-
-def main(debug = False):
+def main(
+        INPUT_DIR = Path("data/RAF_raw/Image/original"),
+        OUTPUT_DIR = Path("data/RAF_raw/Image/aligned"),
+        valid_exts = (".jpg", ".jpeg", ".png"),
+        debug = False
+        ):
 
     detector = MTCNN()
+
+    LOG_FILE = OUTPUT_DIR / "preprocess.log"
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -22,7 +24,7 @@ def main(debug = False):
 
     for img_path in sorted(INPUT_DIR.rglob("*")):
 
-        if img_path.suffix.lower() not in [".jpg", ".png"]:
+        if img_path.suffix.lower() not in valid_exts:
             continue
 
         out_path = OUTPUT_DIR / f"{img_path.stem}_aligned{img_path.suffix}"
@@ -35,7 +37,8 @@ def main(debug = False):
             if debug:
                 raise RuntimeError(f"Failed to load image: {img_path}") from e
             else:
-                log_lines.append(f"{img_path.name}: image loading failed ({e})")
+                with open(LOG_FILE, "w") as f:
+                    f.write(f"{img_path.name}: image loading failed\n")
                 continue
 
         sample = preprocess_image(image_array, detector)
@@ -53,7 +56,8 @@ def main(debug = False):
         crop_mtcnn, crop64 = fallback(image_array)
 
         if crop_mtcnn is None or crop64 is None:
-            log_lines.append(f"{img_path.name}: fallback returned invalid output")
+            with open(LOG_FILE, "w") as f:
+                f.write(f"{img_path.name}: fallback returned invalid output\n")
             continue
 
         sample2 = preprocess_image(crop_mtcnn, detector)
@@ -66,18 +70,22 @@ def main(debug = False):
                 str(out_path),
                 cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             )
-            log_lines.append(f"{img_path.name}: fallback + second pass aligned")
+            with open(LOG_FILE, "w") as f:
+                f.write(f"{img_path.name}: fallback + second pass aligned\n")
             continue 
 
         cv2.imwrite(
         str(out_path),
         cv2.cvtColor(crop64, cv2.COLOR_RGB2BGR)
         )
-        log_lines.append(f"{img_path.name}: fallback ROI only")
+        with open(LOG_FILE, "w") as f:
+            f.write(f"{img_path.name}: fallback ROI only\n")
 
-    # Log schreiben
-    with open(LOG_FILE, "w") as f:
-        f.write("\n".join(log_lines))
 
 if __name__ == "__main__":
-    main(debug = False)
+    main(
+        INPUT_DIR = Path("data/RAF_raw/Image/original"),
+        OUTPUT_DIR = Path("data/RAF_raw/Image/aligned"),
+        valid_exts = (".jpg", ".jpeg", ".png"),
+        debug = False
+        )
