@@ -48,7 +48,7 @@ def setup_directories():
     print(f"Created label file: {label_file}")
 
 
-def rename_and_move_files():
+def rename_and_move_files(fullsided = False):
     # List of possible emotion abbreviations and their corresponding emotion labels
     emos = [("AF", 2), ("AN", 6), ("DI", 3), ("HA", 4), ("NE", 7), ("SA", 5), ("SU", 1)]
 
@@ -92,7 +92,20 @@ def rename_and_move_files():
                     old_path = os.path.join(root,file)
 
                     # new name: "train_<total_counter>.jpg, assuming KDEF is only used as training data"
-                    new_name = f"train_{global_counter}.jpg"
+                    # special case: "train_<total_counter>_f.jpg" if human is facing one side fully
+                    stem = os.path.splitext(file)[0]
+                    last_two = stem[-2:].lower()
+
+                    if last_two in ("fl", "fr"):
+
+                        new_name = f"train_{global_counter}_f.jpg"
+
+                        if not fullsided:            # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
+                            global_counter +=  1
+                            continue    
+
+                    else:
+                        new_name = f"train_{global_counter}.jpg"
 
                     # move to: output_original_dir/<correct emo directory determined by label>
                     new_path = os.path.join(output_original_dir, emotion_name, new_name)
@@ -110,6 +123,6 @@ def rename_and_move_files():
 
 if __name__ == "__main__":
     setup_directories()
-    rename_and_move_files()
+    rename_and_move_files(fullsided = False)   # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
 
     

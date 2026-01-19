@@ -1,4 +1,4 @@
-def clip_face(sample, clip_ratio):
+def clip_face(sample, clip_ratio = 0.4):
 
     if not isinstance(clip_ratio, (int, float)) or clip_ratio <= 0:
         return None

@@ -59,7 +59,7 @@ def preprocess_image(image,
 
 
     if do_cliping:
-        sample = clip_face(sample)
+        sample = clip_face(sample, clip_ratio = 0.4)
 
         if not is_valid_sample(sample):
             return None
