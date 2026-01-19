@@ -50,10 +50,18 @@ def setup_directories():
 
 def rename_and_move_files(fullsided = False):
     # List of possible emotion abbreviations and their corresponding emotion labels
-    emos = [("AF", 2), ("AN", 6), ("DI", 3), ("HA", 4), ("NE", 7), ("SA", 5), ("SU", 1)]
+    emos = {
+        "AF": 2,
+        "AN": 6,
+        "DI": 3,
+        "HA": 4,
+        "NE": 7,
+        "SA": 5,
+        "SU": 1,
+    }
 
     # List of fully blacked out images in the dataset we found manually
-    missing = [551, 643, 2261, 2321, 2562, 2683, 842, 3777]
+    missing = [551, 643, 2261, 2321, 2562, 2683, 842, 3777, 2502]
 
     # Keep a global counter for the image renaming
     global_counter =  1
@@ -67,55 +75,55 @@ def rename_and_move_files(fullsided = False):
 
             files = sorted(f for f in files if f.upper().endswith(".JPG"))
 
-            # Keep a local counter for each directory in KDEF
-            local_counter = 0
+            for file in files:
 
-            for (emo, label) in emos:
-                for _ in range(5):
+                if len(file) < 7:
+                    continue
 
-                    if local_counter >= len(files):
-                        break
+                emo_code = file[4:6]  # in KDEF the emo-code is the 5th and 6th symbol
 
-                    file = files[local_counter]
-                    local_counter += 1
+                if emo_code not in emos:
+                    continue
 
-                    if label == 7:
-                        continue
+                label = emos[emo_code]
 
-                    if global_counter in missing:
+                if label == 7:       # skipping neutral faces
+                    continue
+
+                if global_counter in missing:
+                    global_counter +=  1
+                    continue
+
+                emotion_name = labels[label]
+
+                # old name: <exactly 4 symbols that don't matter><emo><symbols that don't matter><".JPG">
+                old_path = os.path.join(root,file)
+
+                # new name: "train_<total_counter>.jpg, assuming KDEF is only used as training data"
+                # special case: "train_<total_counter>_f.jpg" if human is facing one side fully
+                stem = os.path.splitext(file)[0]
+                last_two = stem[-2:].lower()
+
+                if last_two in ("fl", "fr"):
+
+                    new_name = f"train_{global_counter}_f.jpg"
+
+                    if not fullsided:            # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
                         global_counter +=  1
-                        continue
+                        continue    
 
-                    emotion_name = labels[label]
+                else:
+                    new_name = f"train_{global_counter}.jpg"
 
-                    # old name: <exactly 4 symbols that don't matter><emo><symbols that don't matter><".JPG">
-                    old_path = os.path.join(root,file)
+                # move to: output_original_dir/<correct emo directory determined by label>
+                new_path = os.path.join(output_original_dir, emotion_name, new_name)
 
-                    # new name: "train_<total_counter>.jpg, assuming KDEF is only used as training data"
-                    # special case: "train_<total_counter>_f.jpg" if human is facing one side fully
-                    stem = os.path.splitext(file)[0]
-                    last_two = stem[-2:].lower()
+                shutil.move(old_path, new_path)
 
-                    if last_two in ("fl", "fr"):
+                # new entry in label_file: <new name> <label>
+                lf.write(f"{new_name} {label}\n")
 
-                        new_name = f"train_{global_counter}_f.jpg"
-
-                        if not fullsided:            # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
-                            global_counter +=  1
-                            continue    
-
-                    else:
-                        new_name = f"train_{global_counter}.jpg"
-
-                    # move to: output_original_dir/<correct emo directory determined by label>
-                    new_path = os.path.join(output_original_dir, emotion_name, new_name)
-
-                    shutil.move(old_path, new_path)
-
-                    # new entry in label_file: <new name> <label>
-                    lf.write(f"{new_name} {label}\n")
-
-                    global_counter += 1
+                global_counter += 1
 
         print(f"Processed {global_counter - 1} images.")
 
