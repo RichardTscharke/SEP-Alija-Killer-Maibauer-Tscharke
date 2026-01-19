@@ -3,17 +3,17 @@ import shutil
 
 # Define paths for raw RAF dataset (Aligned & Original)
 #raw_KDEF_original_dir = "data/KDEF/Image/aligned"
-raw_KDEF_original_dir = "/Users/richardachtnull/Desktop/data/KDEF"
+raw_KDEF_original_dir = "/Users/richardachtnull/data_RICHARD/KDEF"
 
 #  Define paths for Output directories
 #output_original_dir = "data/KDEF/KDEF_original_processed"
 #output_aligned_dir = "data/KDEF/KDEF_aligned_processed"
 
-output_original_dir = "/Users/richardachtnull/Desktop/data/KDEF/Image/KDEF_original_processed"
-output_aligned_dir = "/Users/richardachtnull/Desktop/data/KDEF/Image/KDEF_aligned_processed"
+output_original_dir = "/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_original_processed"
+output_aligned_dir = "/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_aligned_processed"
 
 # Define path for output emotion-label file
-label_file = "/Users/richardachtnull/Desktop/data/KDEF/EmoLabel/list_patition_label.txt"
+label_file = "/Users/richardachtnull/data_RICHARD/KDEF/EmoLabel/list_patition_label.txt"
 
 # Define Emotion labels
 labels = {
@@ -61,7 +61,7 @@ def rename_and_move_files(fullsided = False):
     }
 
     # List of fully blacked out images in the dataset we found manually
-    missing = [551, 643, 2261, 2321, 2562, 2683, 842, 3777, 2502]
+    missing = [551, 642, 2261, 2321, 2562, 2683, 842, 3777, 2502]
 
     # Keep a global counter for the image renaming
     global_counter =  1
@@ -106,14 +106,14 @@ def rename_and_move_files(fullsided = False):
 
                 if last_two in ("fl", "fr"):
 
-                    new_name = f"train_{global_counter}_f.jpg"
+                    new_name = f"kdef_train_{global_counter}_f.jpg"
 
                     if not fullsided:            # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
                         global_counter +=  1
                         continue    
 
                 else:
-                    new_name = f"train_{global_counter}.jpg"
+                    new_name = f"kdef_train_{global_counter}.jpg"
 
                 # move to: output_original_dir/<correct emo directory determined by label>
                 new_path = os.path.join(output_original_dir, emotion_name, new_name)

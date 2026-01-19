@@ -125,8 +125,8 @@ def fallback_KDEF(image, size = 64, zoom = 0.8):
 
 if __name__ == "__main__":
     main(
-        INPUT_DIR = Path("/Users/richardachtnull/Desktop/data/KDEF/Image/KDEF_original_processed"),
-        OUTPUT_DIR = Path("/Users/richardachtnull/Desktop/data/KDEF/Image/KDEF_aligned_processed"),
+        INPUT_DIR = Path("/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_original_processed"),
+        OUTPUT_DIR = Path("/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_aligned_processed"),
         valid_exts = (".jpg", ".jpeg", ".png"),
         fullsided = False,
         debug = False

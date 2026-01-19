@@ -16,9 +16,9 @@ def main(
 
     detector = MTCNN()
 
-    LOG_FILE = OUTPUT_DIR / "preprocess.log"
-
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    LOG_FILE = OUTPUT_DIR / "preprocess.log"
 
     log_lines = []
 
@@ -84,8 +84,8 @@ def main(
 
 if __name__ == "__main__":
     main(
-        INPUT_DIR = Path("data/RAF_raw/Image/original"),
-        OUTPUT_DIR = Path("data/RAF_raw/Image/aligned"),
+        INPUT_DIR = Path("/Users/richardachtnull/data_RICHARD/RAF_raw/Image/original"),
+        OUTPUT_DIR = Path("/Users/richardachtnull/data_RICHARD/RAF_raw/Image/aligned"),
         valid_exts = (".jpg", ".jpeg", ".png"),
         debug = False
         )

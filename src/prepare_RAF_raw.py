@@ -2,13 +2,20 @@ import os
 import shutil
 
 # Define paths for raw RAF dataset (Aligned & Original)
-raw_RAF_aligned_dir = "data/RAF_raw/Image/aligned"
-raw_RAF_original_dir = "data/RAF_raw/Image/original"
-label_file = "data/RAF_raw/EmoLabel/list_patition_label.txt"
+#raw_RAF_aligned_dir = "data/RAF_raw/Image/aligned"
+#raw_RAF_original_dir = "data/RAF_raw/Image/original"
+#label_file = "data/RAF_raw/EmoLabel/list_patition_label.txt"
+
+raw_RAF_aligned_dir = "/Users/richardachtnull/data_RICHARD/RAF_raw/Image/aligned"
+raw_RAF_original_dir = "/Users/richardachtnull/data_RICHARD/RAF_raw/Image/original"
+label_file = "/Users/richardachtnull/data_RICHARD/RAF_raw/EmoLabel/list_patition_label.txt"
 
 #  Define paths for Output directories
-output_aligned_dir = "data/RAF_aligned_processed"
-output_original_dir = "data/RAF_original_processed"
+#output_aligned_dir = "data/RAF_aligned_processed"
+#output_original_dir = "data/RAF_original_processed"
+
+output_aligned_dir = "/Users/richardachtnull/data_RICHARD/RAF_aligned_processed"
+output_original_dir = "/Users/richardachtnull/data_RICHARD/RAF_original_processed"
 
 # Define Emotion labels
 labels = {
