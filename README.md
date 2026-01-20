@@ -106,8 +106,7 @@ data/
 
 - To use KDEF as additional training data (currently training only),
   add the aligned and processed KDEF images to the corresponding emotion
-  folders in "RAF_aligned_processed/".
-- Run the merging script:
+  folders in "RAF_aligned_processed/" by running the merging script:
   python src/merge.py
 
 
