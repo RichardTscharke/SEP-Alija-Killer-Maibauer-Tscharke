@@ -3,17 +3,17 @@ import shutil
 
 # Define paths for raw RAF dataset (Aligned & Original)
 #raw_KDEF_original_dir = "data/KDEF/Image/aligned"
-raw_KDEF_original_dir = "/Users/richardachtnull/data_RICHARD/KDEF"
+raw_KDEF_original_dir = "data/KDEF"
 
 #  Define paths for Output directories
 #output_original_dir = "data/KDEF/KDEF_original_processed"
 #output_aligned_dir = "data/KDEF/KDEF_aligned_processed"
 
-output_original_dir = "/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_original_processed"
-output_aligned_dir = "/Users/richardachtnull/data_RICHARD/KDEF/Image/KDEF_aligned_processed"
+output_original_dir = "data/KDEF/Image/KDEF_original_processed"
+output_aligned_dir = "data/KDEF/Image/KDEF_aligned_processed"
 
 # Define path for output emotion-label file
-label_file = "/Users/richardachtnull/data_RICHARD/KDEF/EmoLabel/list_patition_label.txt"
+label_file = "data/KDEF/EmoLabel/list_patition_label.txt"
 
 # Define Emotion labels
 labels = {
