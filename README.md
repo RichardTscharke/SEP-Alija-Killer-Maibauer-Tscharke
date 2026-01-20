@@ -19,10 +19,16 @@ This project implements a Convolutional Neural Network (CNN) to classify facial 
 ├── models/                  # Saved model checkpoints (*.pth)
 ├── results/                 # Output CSVs and evaluation metrics
 ├── src/
+│   ├── demo.py              # 
 │   ├── evaluate.py          # Generates confusion matrix & report
+│   ├── explain.py           # 
 │   ├── generate_csv.py      # Generates predictions.csv
+│   ├── merge.py             # 
 │   ├── model.py             # CNN Architecture definition
+│   ├── prepare_KDEF.py      # 
 │   ├── prepare_RAF_raw.py   # Data preprocessing script
+│   ├── preprocess_KDEF.py   #
+│   ├── preprocess_RAF_raw.py   # 
 │   └── train.py             # Main training loop
 ├── requirements.txt         # Python dependencies
 └── README.md
@@ -38,18 +44,72 @@ This project implements a Convolutional Neural Network (CNN) to classify facial 
 
 
 🚀 Workflow
-1. Data Preparation: Before training, the raw RAF-DB dataset must be processed. This script sorts images into class-specific folders for both the **aligned** (cropped) and **original** (full-size) datasets.
+1. Data Preparation and Preprocessing
 
-   I Place the raw RAF-DB data in "data/RAF_raw/".
-   II Run the preparation script: 
-     python src/prepare_RAF_raw.py
-This script creates two directories ("data/RAF_aligned_processed/" and "data/RAF_original_processed/"), each containing subfolders for the following emotions:*
-    * 😡 **Anger**
-    * 🤢 **Disgust**
-    * 😱 **Fear**
-    * 😄 **Happiness**
-    * 😢 **Sadness**
-    * 😲 **Surprise** 
+1.1 RAF Dataset
+
+- Create a new directory called "RAF_raw" inside the project's data directory.
+- Copy the "EmoLabel" and "Image" directories from the official RAF database into "data/RAF_raw/".
+- IMPORTANT: To use our self-developed face alignment method, delete the "aligned" directory inside "Image".
+- Run the preprocessing script:
+  python src/preprocess_RAF_raw.py
+- Run the preparation script:
+  python src/prepare_RAF_raw.py
+
+This script creates two directories:
+- data/RAF_aligned_processed/ (used for training)
+- data/RAF_original_processed/ (full-size images)
+
+Each directory contains subfolders for the following emotion classes:
+- Anger
+- Disgust
+- Fear
+- Happiness
+- Sadness
+- Surprise
+
+Data directory structure after Step 1.1:
+
+data/
+├── RAF_raw/
+├── RAF_aligned_processed/
+└── RAF_original_processed/
+
+---
+
+1.2 KDEF Dataset
+
+- Place the official "KDEF" dataset inside the "data" directory.
+- Run the preparation script:
+  python src/prepare_KDEF.py
+- Run the preprocessing script:
+  python src/preprocess.py
+
+Data directory structure after Steps 1.1 and 1.2:
+
+data/
+├── KDEF/
+│   ├── AF01/
+│   ├── BM35/
+│   ├── ...
+│   ├── EmoLabel/
+│   └── Image/
+│       ├── KDEF_aligned_processed/
+│       └── KDEF_original_processed/
+├── RAF_raw/
+├── RAF_aligned_processed/
+└── RAF_original_processed/
+
+---
+
+1.3 Merging RAF and KDEF
+
+- To use KDEF as additional training data (currently training only),
+  add the aligned and processed KDEF images to the corresponding emotion
+  folders in "RAF_aligned_processed/".
+- Run the merging script:
+  python src/merge.py
+
 
 2. Training the Model: 
 To train the CNN from scratch:
