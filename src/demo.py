@@ -12,7 +12,7 @@ from explain import GradCAM, overlay_gradcam
 # ------------------------------
 
 EMOTIONS = ["suprise", "fear", "disgust", "happiness", "sad", "anger"]
-version_raf = "raf_cnn_v5.pth"
+version_raf = "raf_cnn_v0.pth"
 
 # ------------------------------
 # utility
@@ -41,7 +41,13 @@ def main(frame_stride):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = load_model(version_raf, device)
-    gradcam = GradCAM(model, model.conv3)
+
+    gradcam_conv1 = GradCAM(model, model.conv1) #fine, local: edges, texture ...
+    gradcam_conv2 = GradCAM(model, model.conv2) #face features: mouth, nose ...
+    gradcam_conv3 = GradCAM(model, model.conv3) #whole faceparts: right faceside, mouth area ...
+    gradcam_conv4 = GradCAM(model, model.conv4) #very global, whole faces ...
+
+
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -50,7 +56,9 @@ def main(frame_stride):
     frame_id = 0
     last_emotion = "initializing"
     last_conf = 0.0
-    last_heatmap = None
+    last_overlay = None
+    active_layer = 3
+
 
     while True:
         ret, frame = cap.read()
@@ -67,36 +75,74 @@ def main(frame_stride):
             last_conf = conf.item()
             last_emotion = EMOTIONS[pred.item()]
 
-            heatmap = gradcam.generate(input_tensor, pred.item())
-            last_heatmap = heatmap
+            if active_layer == 1:
+                heatmap = gradcam_conv1.generate(input_tensor, pred.item())
+            elif active_layer == 2:
+                heatmap = gradcam_conv2.generate(input_tensor, pred.item())
+            elif active_layer == 3:
+                heatmap = gradcam_conv3.generate(input_tensor, pred.item())
+            else:
+                heatmap = gradcam_conv4.generate(input_tensor, pred.item())
 
-        if last_heatmap is not None:
-            frame = overlay_gradcam(frame, last_heatmap)
+            last_overlay = overlay_gradcam(frame, heatmap)
+
+
+
+        if last_overlay is not None:
+            frame = last_overlay
 
         label = f"{last_emotion} ({last_conf:.2f})"
+
         cv2.putText(
             frame,
             label,
-            (20, 40),
+            (20, 65),
             cv2.FONT_HERSHEY_SIMPLEX,
-            1.0,
+            0.9,
             (255, 255, 255),
             2
         )
 
+        cv2.putText(
+            frame,
+            f"Layer: conv{active_layer}",
+            (20, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (255, 255, 255),
+            2
+        )
+
+
         cv2.imshow("Emotion Demo", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == ord("q"):
             break
+        elif key == ord("1"):
+            active_layer = 1
+        elif key == ord("2"):
+            active_layer = 2
+        elif key == ord("3"):
+            active_layer = 3
+        elif key == ord("4"):
+            active_layer = 4
+
 
         frame_id += 1
 
-    gradcam.remove_hooks()
+    gradcam_conv1.remove_hooks()
+    gradcam_conv2.remove_hooks()
+    gradcam_conv3.remove_hooks()
+    gradcam_conv4.remove_hooks()
+
+
     cap.release()
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--stride", type=int, default=5)
+    parser.add_argument("--stride", type=int, default=6)
     args = parser.parse_args()
     main(args.stride)
