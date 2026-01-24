@@ -52,9 +52,7 @@ This project implements a Convolutional Neural Network (CNN) to classify facial 
 - Copy the "EmoLabel" and "Image" directories from the official RAF database into "data/RAF_raw/".
 - IMPORTANT: To use our self-developed face alignment method, delete the "aligned" directory inside "Image".
 - Run the preprocessing script:
-  python src/preprocess_RAF_raw.py
-- Run the preparation script:
-  python src/prepare_RAF_raw.py
+  python -m src.preprocess_RAF
 
 This script creates two directories:
 - data/RAF_aligned_processed/ (used for training)
