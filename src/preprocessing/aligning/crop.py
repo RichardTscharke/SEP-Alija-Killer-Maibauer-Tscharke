@@ -12,12 +12,12 @@ def crop_face(sample):
 
     sample["image"] = image[y1:y2, x1:x2]
 
-    new_keypoints = {}
+    new_eyes = {}
     
-    for key, (kx, ky) in sample["keypoints"].items():
-        new_keypoints[key] = (kx - x1, ky - y1)
+    for key, (kx, ky) in sample["eyes"].items():
+        new_eyes[key] = (kx - x1, ky - y1)
 
-    sample["keypoints"] = new_keypoints
+    sample["eyes"] = new_eyes
 
     sample["box"] = (0, 0, x2 - x1, y2 - y1)
 

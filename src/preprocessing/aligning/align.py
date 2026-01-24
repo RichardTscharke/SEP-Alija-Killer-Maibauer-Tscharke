@@ -4,10 +4,10 @@ import cv2
 def align_face(sample, output_size = 64, target_left = (18, 16), target_right = (44, 16)):
 
     image = sample["image"]
-    keypoints = sample["keypoints"]
+    eyes = sample["eyes"]
 
-    xL, yL = keypoints["left_eye"]
-    xR, yR = keypoints["right_eye"]
+    xL, yL = eyes["left_eye"]
+    xR, yR = eyes["right_eye"]
 
     dX = xR - xL
     dY = yR - yL
@@ -27,14 +27,19 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
     M[0,2] += target_center[0] - current_center[0]
     M[1,2] += target_center[1] - current_center[1]
 
-    sample["image"] = cv2.warpAffine(image, M, (output_size, output_size), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    sample["image"] = cv2.warpAffine(image, M,
+                                     (output_size, output_size),
+                                     flags=cv2.INTER_AREA,
+                                     borderMode=cv2.BORDER_CONSTANT,
+                                     borderValue=0
+                                     )
 
-    alignedKP = {}
+    aligned_eyes = {}
 
-    for key, (x, y) in keypoints.items():
-        alignedKP[key] = transform_point((x, y), M)
+    for key, (x, y) in eyes.items():
+        aligned_eyes[key] = transform_point((x, y), M)
 
-    sample["keypoints"] = alignedKP    
+    sample["eyes"] = aligned_eyes    
     sample["box"] = (0, 0, output_size, output_size)
 
     return sample

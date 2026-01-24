@@ -23,4 +23,3 @@ def clip_face(sample, clip_ratio = 0.4):
     sample["box"] = (x1, y1, x2 - x1, y2 - y1)
 
     return sample
-

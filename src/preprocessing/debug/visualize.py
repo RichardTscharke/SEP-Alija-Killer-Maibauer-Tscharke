@@ -27,7 +27,7 @@ def visualize(stages, show_box = True, show_landmarks = True, fallback = False):
             ax.add_patch(patches.Rectangle((bx, by), bw, bh, fill=False, color="red"))
 
         if show_landmarks:
-            for (lx, ly) in sample["keypoints"].values():
+            for (lx, ly) in sample["eyes"].values():
                 ax.plot(lx, ly, "ro", markersize=3)
 
     plt.tight_layout()

@@ -1,14 +1,15 @@
 import numpy as np
 from copy import deepcopy
+from .validate import is_valid_face, is_valid_sample
 from .clip import clip_face
 from .crop import crop_face
 from .align import align_face
-from .debug.visualize import visualize
+from ..debug.visualize import visualize
 
 
 def preprocess_image(image,
                      detector,
-                     do_cliping = True,
+                     do_clipping = True,
                      do_cropping = True,
                      do_aligning = True,
                      vis = False,
@@ -18,7 +19,7 @@ def preprocess_image(image,
     stages = []
 
     try:
-        faces = detector.detect_faces(image)
+        faces = detector.detect_face(image)
     except Exception as e:
         if debug:
             print(f"[preprocess_image] detect_faces failed: {e}")
@@ -27,38 +28,25 @@ def preprocess_image(image,
     if faces is None or len(faces) == 0:
         return None
 
+    faces = sorted(faces, key=lambda f: float(f["confidence"]), reverse=True)
 
-    face = max(faces, key=lambda f: float(f["confidence"]))
+    face = next((f for f in faces if is_valid_face(f)), None)
 
-    x, y, w, h = face["box"]
-
-    if w <= 0 or h <= 0:
+    if face is None:
         return None
-
-    keypoints = {}
-
-    for k, (kx, ky) in face["keypoints"].items():
-
-        if not np.isfinite(kx) or not np.isfinite(ky):
-            return None
-        
-        if (kx < x or kx > x + w) or (ky < y or ky > y + h):
-            return None
-        
-        keypoints[k] = int(kx), int(ky)
 
     sample = {
 
         "image": np.array(image),
-        "box": (x, y, w, h),
-        "keypoints": keypoints
+        "box": face["box"],
+        "eyes": face["eyes"]
     }
 
     if vis:
         stages.append(("original", deepcopy(sample)))
 
 
-    if do_cliping:
+    if do_clipping:
         sample = clip_face(sample, clip_ratio = 0.4)
 
         if not is_valid_sample(sample):
@@ -92,13 +80,3 @@ def preprocess_image(image,
         visualize(stages)        
 
     return sample
-
-
-def is_valid_sample(sample):
-    return (
-        isinstance(sample, dict)
-        and "image" in sample
-        and "box" in sample
-        and "keypoints" in sample
-        and sample["image"] is not None
-        )
