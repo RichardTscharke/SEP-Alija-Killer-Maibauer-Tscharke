@@ -137,9 +137,9 @@ def main():
                     lf.write(f"{new_name} {label_id}\n")
                     
                     global_counter += 1
-                    processed_count += 1
+                    processed_counter += 1
 
-    print(f"Prepared: {processed_count} non-Happiness images.")
+    print(f"Prepared: {processed_counter} non-Happiness images.")
 
     # handle Happiness images (limit to 50)
     print(f"Found Happiness images (Front+Half): {len(happy_buffer)}")
