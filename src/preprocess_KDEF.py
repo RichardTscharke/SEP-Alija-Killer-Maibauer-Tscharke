@@ -2,18 +2,18 @@ import numpy as np
 import cv2
 from PIL import Image
 from pathlib import Path
-from mtcnn import MTCNN        
+from mtcnn import MTCNN
 from preprocessing.pipeline import preprocess_image
 from collections import Counter
 
 
 def main(
-        INPUT_DIR = Path("data/RAF_raw/Image/original"),
-        OUTPUT_DIR = Path("data/RAF_raw/Image/aligned"),
-        valid_exts = (".jpg", ".jpeg", ".png"),
-        fullsided = False,
-        debug = False
-        ):
+    INPUT_DIR=Path("data/RAF_raw/Image/original"),
+    OUTPUT_DIR=Path("data/RAF_raw/Image/aligned"),
+    valid_exts=(".jpg", ".jpeg", ".png"),
+    fullsided=False,
+    debug=False,
+):
 
     detector = MTCNN()
 
@@ -30,7 +30,7 @@ def main(
 
         emotion = emotion_dir.name
         out_emotion_dir = OUTPUT_DIR / emotion
-        out_emotion_dir.mkdir(parents = True, exist_ok = True)
+        out_emotion_dir.mkdir(parents=True, exist_ok=True)
 
         for img_path in sorted(emotion_dir.iterdir()):
 
@@ -48,7 +48,7 @@ def main(
                 if debug:
                     raise
 
-                continue 
+                continue
 
             ####FULLSIDED HANDLING
             ###
@@ -58,13 +58,13 @@ def main(
 
             if fullsided and is_fullsided:
                 aligned_img, status = fullside_handling(image_array)
-                
+
             else:
-                result = call_preprocess_image(image_array, detector, debug = debug)
+                result = call_preprocess_image(image_array, detector, debug=debug)
 
                 if result is None:
                     continue
-                
+
                 aligned_img, status = result
             ##
             ###
@@ -84,16 +84,14 @@ def main(
 
             cv2.imwrite(str(out_path), cv2.cvtColor(aligned_img, cv2.COLOR_RGB2BGR))
 
-
     print("Alignment statistics:")
     for k, v in stats.items():
         print(f"{k}: {v}")
 
 
+def call_preprocess_image(image_array, detector, debug=False):
 
-def call_preprocess_image(image_array, detector, debug = False):
-
-    sample = preprocess_image(image_array, detector, debug = debug)
+    sample = preprocess_image(image_array, detector, debug=debug)
     if sample is not None:
         return sample["image"], "mtcnn"
 
@@ -102,19 +100,19 @@ def call_preprocess_image(image_array, detector, debug = False):
         return sample_fallback, "center+crop+resize"
 
 
-def fullside_handling(image, size = 64):
+def fullside_handling(image, size=64):
 
     crop64 = cv2.resize(image, (size, size))
-    
+
     return crop64, "fullsided"
 
 
-def fallback_KDEF(image, size = 64, zoom = 0.8):
+def fallback_KDEF(image, size=64, zoom=0.8):
 
     h, w, _ = image.shape
 
     crop_size = int(min(h, w) * zoom)
-    #crop_size = int(min(h, w))
+    # crop_size = int(min(h, w))
 
     y_center, x_center = h // 2, w // 2
     half = crop_size // 2
@@ -123,11 +121,12 @@ def fallback_KDEF(image, size = 64, zoom = 0.8):
 
     return cv2.resize(crop, (size, size))
 
+
 if __name__ == "__main__":
     main(
-        INPUT_DIR = Path("data/KDEF/Image/KDEF_original_processed"),
-        OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed"),
-        valid_exts = (".jpg", ".jpeg", ".png"),
-        fullsided = False,
-        debug = False
-        )
+        INPUT_DIR=Path("data/KDEF/Image/KDEF_original_processed"),
+        OUTPUT_DIR=Path("data/KDEF/Image/KDEF_aligned_processed"),
+        valid_exts=(".jpg", ".jpeg", ".png"),
+        fullsided=False,
+        debug=False,
+    )

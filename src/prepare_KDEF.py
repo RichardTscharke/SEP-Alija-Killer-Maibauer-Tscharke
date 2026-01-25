@@ -1,5 +1,6 @@
 import os
 import shutil
+import random
 
 # Define paths for raw RAF dataset (Aligned & Original)
 #raw_KDEF_original_dir = "data/KDEF/Image/aligned"
@@ -25,112 +26,147 @@ labels = {
     6: "Anger",
 }
 
+# AN=Anger, DI=Disgust, AF=Fear, HA=Happiness, SA=Sadness, SU=Surprise
+CODE_TO_EMOTION_NAME = {
+    "AN": "Anger",
+    "DI": "Disgust",
+    "AF": "Fear",
+    "HA": "Happiness",
+    "SA": "Sadness",
+    "SU": "Surprise"
+}
+
 def setup_directories():
-    target_dirs = [output_original_dir, output_aligned_dir]
-
-    for target_dir in target_dirs:
-        if os.path.exists(target_dir):
-            print(f"Removing existing directory: {target_dir}")
-            shutil.rmtree(target_dir)
-
-        for emotion in labels.values():
-            dir_path = os.path.join(target_dir, emotion)
-            os.makedirs(dir_path, exist_ok=True)
-            print(f"Created directory: {dir_path}")
-
-
-    label_dir = os.path.dirname(label_file)
-    os.makedirs(label_dir, exist_ok=True)
-
-    with open(label_file, "w") as f:
-        pass  # creates empty file
-
+    # Delete existing output directory if exists
+    if os.path.exists(output_original_dir):
+        print(f"Deleting existing directory: {output_original_dir}")
+        shutil.rmtree(output_original_dir)
+    
+    # Create output directories for each emotion
+    for emotion_name in labels.values():
+        path = os.path.join(output_original_dir, emotion_name)
+        os.makedirs(path, exist_ok=True)
+    
+    # Create/clear the label file
+    os.makedirs(os.path.dirname(label_file), exist_ok=True)
     print(f"Created label file: {label_file}")
 
+# Decide whether to keep an image based on its filename and emotion according to the rules
+def check_rules(filename, emotion_name):
+    
+    # Rules:
+    # - Surprise: frontal only
+    # - All others (Anger, Disgust, Fear, Sadness, Happiness): frontal + half
+    # - Profile images are ignored completely
+    # only 50 random images of Happiness are kept (done in main function)
 
-def rename_and_move_files(fullsided = False):
-    # List of possible emotion abbreviations and their corresponding emotion labels
-    emos = {
-        "AF": 2,
-        "AN": 6,
-        "DI": 3,
-        "HA": 4,
-        "NE": 7,
-        "SA": 5,
-        "SU": 1,
-    }
+    stem = os.path.splitext(filename)[0]
+    # KDEF naming convention:
+    # S = Straight (Frontal)
+    # FL/FR = Half
+    # PL/PR = Profile
+    
+    last_char = stem[-1]       
+    last_two = stem[-2:]       
 
-    # List of fully blacked out images in the dataset we found manually
-    missing = [551, 642, 2261, 2321, 2562, 2683, 842, 3777, 2502]
+    # Determine angle
+    if last_char == 'S':
+        angle = "Frontal"
+    elif last_two in ['FL', 'FR']:
+        angle = "Half"
+    else:
+        return False # Profile (PL, PR) ignorieren wir komplett
 
-    # Keep a global counter for the image renaming
-    global_counter =  1
+    # Apply rules
+    # 1. Surprise: frontal only
+    if emotion_name == "Surprise":
+        return angle == "Frontal"
 
-    with open(label_file, "a") as lf:
-        for root, _, files in os.walk(raw_KDEF_original_dir):
+    # 2. All others (Anger, Disgust, Fear, Sadness, Happiness): frontal + half
+    return True # Keep both frontal and half for other emotions
 
-            # Ensures that no changes are done on the root level
-            if root == raw_KDEF_original_dir:
+def main():
+    setup_directories()
+
+    global_counter =1
+    processed_counter = 0
+
+    # Buffer for Happiness images (to limit to 50)
+    happy_buffer = []
+
+    lf = open(label_file, "w")
+    print("🔄 Starting KDEF Preparation...")
+
+    for root, dirs, files in os.walk(raw_KDEF_original_dir):
+        for file in files:
+            if not file.lower().endswith(('.jpg', '.jpeg', '.png')):
                 continue
 
-            files = sorted(f for f in files if f.upper().endswith(".JPG"))
-
-            for file in files:
-
-                if len(file) < 7:
-                    continue
-
-                emo_code = file[4:6]  # in KDEF the emo-code is the 5th and 6th symbol
-
-                if emo_code not in emos:
-                    continue
-
-                label = emos[emo_code]
-
-                if label == 7:       # skipping neutral faces
-                    continue
-
-                if global_counter in missing:
-                    global_counter +=  1
-                    continue
-
-                emotion_name = labels[label]
-
-                # old name: <exactly 4 symbols that don't matter><emo><symbols that don't matter><".JPG">
-                old_path = os.path.join(root,file)
-
-                # new name: "train_<total_counter>.jpg, assuming KDEF is only used as training data"
-                # special case: "train_<total_counter>_f.jpg" if human is facing one side fully
-                stem = os.path.splitext(file)[0]
-                last_two = stem[-2:].lower()
-
-                if last_two in ("fl", "fr"):
-
-                    new_name = f"kdef_train_{global_counter}_f.jpg"
-
-                    if not fullsided:            # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
-                        global_counter +=  1
-                        continue    
-
+            # check filename length
+            if len(file) < 7: continue 
+            
+            # get emotion code (Index 4:6)
+            emo_code = file[4:6] 
+            
+            # Mapping Code -> Name (z.B. "AN" -> "Anger")
+            if emo_code not in CODE_TO_EMOTION_NAME:
+                continue # Neutral or unknown code
+            
+            emotion_name = CODE_TO_EMOTION_NAME[emo_code]
+            
+            # check rules
+            if check_rules(file, emotion_name):
+                
+                full_src_path = os.path.join(root, file)
+                
+                # special handling for Happiness
+                # save to buffer first
+                if emotion_name == "Happiness":
+                    happy_buffer.append(full_src_path)
+                
+                # Normal handling for other emotions:
                 else:
                     new_name = f"kdef_train_{global_counter}.jpg"
+                    target_path = os.path.join(output_original_dir, emotion_name, new_name)
+                    
+                    # copy file to target
+                    shutil.copy(full_src_path, target_path)
+                    
+                    # write label file
+                    label_id = [k for k, v in labels.items() if v == emotion_name][0]
+                    lf.write(f"{new_name} {label_id}\n")
+                    
+                    global_counter += 1
+                    processed_count += 1
 
-                # move to: output_original_dir/<correct emo directory determined by label>
-                new_path = os.path.join(output_original_dir, emotion_name, new_name)
+    print(f"Prepared: {processed_count} non-Happiness images.")
 
-                shutil.move(old_path, new_path)
+    # handle Happiness images (limit to 50)
+    print(f"Found Happiness images (Front+Half): {len(happy_buffer)}")
+    
+    # Shuffle the buffer to get random selection
+    random.shuffle(happy_buffer)
+    
+    # Select 50 random images
+    selected_happy = happy_buffer[:50]
+    print(f"Selected 50 random Happiness images.")
+    
+    for happy_path in selected_happy:
+        new_name = f"kdef_train_{global_counter}.jpg"
+        target_path = os.path.join(output_original_dir, "Happiness", new_name)
+        
+        shutil.copy(happy_path, target_path)
+        
+        # Label ID for Happiness is 4
+        lf.write(f"{new_name} 4\n")
+        
+        global_counter += 1
 
-                # new entry in label_file: <new name> <label>
-                lf.write(f"{new_name} {label}\n")
-
-                global_counter += 1
-
-        print(f"Processed {global_counter - 1} images.")
-
+    lf.close()
+    print("="*30)
+    print("✅ prepare_KDEF finished!")
+    print(f"Total images in output folder: {global_counter - 1}")
 
 
 if __name__ == "__main__":
-    setup_directories()
-    rename_and_move_files(fullsided = False)   # FLAG FULLSIDED = TRUE IF FULL SIDED FACES ARE WANTED IN THE DATA
-
-    
+    main()
