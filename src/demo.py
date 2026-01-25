@@ -12,7 +12,7 @@ from explain import GradCAM, overlay_gradcam
 # ------------------------------
 
 EMOTIONS = ["suprise", "fear", "disgust", "happiness", "sad", "anger"]
-version_raf = "raf_cnn_v0.pth"
+version_raf = "models/raf_cnn_v6.pth"
 
 # ------------------------------
 # utility
