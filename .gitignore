@@ -15,6 +15,7 @@ data/
 *.png
 *.jpg
 *.jpeg
+*.csv
 
 # VS Code Einstellungen
 .vscode/
