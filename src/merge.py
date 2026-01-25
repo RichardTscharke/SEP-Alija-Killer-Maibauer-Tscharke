@@ -42,11 +42,12 @@ def main():
         test_images = all_images[:split_index]
         train_images = all_images[split_index:]
 
+        # 1. Move test images
         for img in test_images:
             shutil.move(str(img), str(target_dir_test / img.name))
             total_moved_test += 1
 
-        # 2. Train Bilder verschieben
+        # 2. Move train images
         for img in train_images:
             shutil.move(str(img), str(target_dir_train / img.name))
             total_moved_train += 1
