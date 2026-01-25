@@ -1,13 +1,18 @@
 import cv2
 from tqdm import tqdm
 from pathlib import Path
-from ..detectors import RetinaFaceDetector
-from ..aligning.pipeline import preprocess_image 
+from .detectors import RetinaFaceDetector
+from .aligning.pipeline import preprocess_image 
 
-INPUT_DIR = Path("data/RAF_original_processed")
-OUTPUT_DIR = Path("data/RAF_aligned_processed")
+def align_data(data):
 
-def sort_aligned():
+    if data == "RAF":
+        INPUT_DIR = Path("data/RAF_original_processed")
+        OUTPUT_DIR = Path("data/RAF_aligned_processed")
+
+    elif data == "KDEF":
+        INPUT_DIR = Path("data/KDEF/Image/KDEF_original_processed")
+        OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
 
     detector = RetinaFaceDetector(device="cuda")
 
@@ -53,7 +58,7 @@ def sort_aligned():
                     failed += 1
                     LOG_FILE.open("a").write(f"{img_path.name}: preprocess_failed\n")
                     continue
-
+                
                 out_path = out_emotion_dir / f"{img_path.stem}_aligned{img_path.suffix}"
                 cv2.imwrite(str(out_path), preprocessed["image"])
                 success += 1

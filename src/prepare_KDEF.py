@@ -3,13 +3,9 @@ import shutil
 import random
 
 # Define paths for raw RAF dataset (Aligned & Original)
-#raw_KDEF_original_dir = "data/KDEF/Image/aligned"
 raw_KDEF_original_dir = "data/KDEF"
 
 #  Define paths for Output directories
-#output_original_dir = "data/KDEF/KDEF_original_processed"
-#output_aligned_dir = "data/KDEF/KDEF_aligned_processed"
-
 output_original_dir = "data/KDEF/Image/KDEF_original_processed"
 output_aligned_dir = "data/KDEF/Image/KDEF_aligned_processed"
 
@@ -88,7 +84,7 @@ def check_rules(filename, emotion_name):
 def main():
     setup_directories()
 
-    global_counter =1
+    global_counter = 1
     processed_counter = 0
 
     # Buffer for Happiness images (to limit to 50)

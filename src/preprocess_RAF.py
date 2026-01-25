@@ -1,14 +1,14 @@
-from .preprocessing.preparing_RAF.filter import filter
-from .preprocessing.preparing_RAF.sort_original import sort_original
-from .preprocessing.preparing_RAF.sort_aligned import sort_aligned
+from preprocessing.preparing_RAF.filter_RAF import filter
+from preprocessing.preparing_RAF.sort_RAF import sort_RAF
+from preprocessing.align_data import align_data
 
 def main():
 
     filter(happiness_ratio = 0.5)
 
-    sort_original()
+    sort_RAF()
 
-    sort_aligned()
+    align_data(data = "RAF")
 
 
 if __name__ == "__main__":

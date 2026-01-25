@@ -19,7 +19,7 @@ labels = {
     6: "Anger",
 }
 
-def sort_original():
+def sort_RAF():
     
     setup_directories()
 
