@@ -16,7 +16,7 @@ def align_data(data):
         OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
         #OUTPUT_DIR = Path("/Users/richardachtnull/KDEF/Image/KDEF_original_processed")
 
-    detector = RetinaFaceDetector(device="CPU")
+    detector = RetinaFaceDetector(device="cuda")
 
     success = 0
     failed = 0
