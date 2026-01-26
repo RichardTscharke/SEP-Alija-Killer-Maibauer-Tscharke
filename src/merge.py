@@ -2,7 +2,7 @@ from pathlib import Path
 import shutil
 import random
 
-KDEF_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
+KDEF_DIR = Path("data/KDEF/Image/KDEF_aligned_processed/train")
 RAF_train_DIR = Path("data/RAF_aligned_processed/train")
 RAF_test_DIR = Path("data/RAF_aligned_processed/test")
 Test_Ratio_KDEF = 0.1  # Define the ratio of test set to the whole dataset

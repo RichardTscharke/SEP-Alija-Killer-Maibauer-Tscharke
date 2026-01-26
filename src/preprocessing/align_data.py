@@ -10,11 +10,16 @@ def align_data(data):
         INPUT_DIR = Path("data/RAF_original_processed")
         OUTPUT_DIR = Path("data/RAF_aligned_processed")
 
+        splits = [(p, p.name) for p in INPUT_DIR.iterdir() if p.is_dir()]
+
     elif data == "KDEF":
         INPUT_DIR = Path("data/KDEF/Image/KDEF_original_processed")
         #INPUT_DIR = Path("/Users/richardachtnull/KDEF/Image/KDEF_original_processed")
         OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
         #OUTPUT_DIR = Path("/Users/richardachtnull/KDEF/Image/KDEF_original_processed")
+
+        splits = [(INPUT_DIR, "train")]
+
 
     detector = RetinaFaceDetector(device="cuda")
 
@@ -24,11 +29,8 @@ def align_data(data):
     LOG_FILE = OUTPUT_DIR / "preprocess.log"
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    for split_dir in sorted(INPUT_DIR.iterdir()):
-        if not split_dir.is_dir():
-            continue
-
-        split = split_dir.name
+    for split_dir, split in splits:
+        
         out_split_dir = OUTPUT_DIR / split
         out_split_dir.mkdir(parents=True, exist_ok=True)
 
