@@ -128,7 +128,9 @@ def main(frame_stride):
         )
 
 
+        cv2.namedWindow("Emotion Demo", cv2.WINDOW_NORMAL)
         cv2.imshow("Emotion Demo", frame)
+
 
         key = cv2.waitKey(1) & 0xFF
 
@@ -162,4 +164,5 @@ if __name__ == "__main__":
     parser.add_argument("--stride", type=int, default=6)
     args = parser.parse_args()
     main(args.stride)
+
 
