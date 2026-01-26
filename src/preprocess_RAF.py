@@ -4,7 +4,7 @@ from preprocessing.align_data import align_data
 
 def main():
 
-    filter(happiness_ratio = 0.5)
+    filter(happiness_ratio = 0.35)
 
     sort_RAF()
 
