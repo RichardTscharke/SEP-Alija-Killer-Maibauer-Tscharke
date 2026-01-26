@@ -113,14 +113,14 @@ def main(frame_stride):
             f"Layer: conv{active_layer}",
             (20, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.8,
+            0.7,
             (255, 255, 255),
             2
         )
         cv2.putText(
             frame,
             f"Heatmap: {'ON' if show_heatmap else 'OFF'}",
-            (20, 95),
+            (180, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.7,
             (255, 255, 255),
@@ -162,3 +162,4 @@ if __name__ == "__main__":
     parser.add_argument("--stride", type=int, default=6)
     args = parser.parse_args()
     main(args.stride)
+
