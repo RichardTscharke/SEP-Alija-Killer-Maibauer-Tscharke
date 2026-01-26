@@ -57,6 +57,7 @@ def main(frame_stride):
     last_emotion = "initializing"
     last_conf = 0.0
     last_overlay = None
+    show_heatmap = True
     active_layer = 3
 
 
@@ -75,16 +76,20 @@ def main(frame_stride):
             last_conf = conf.item()
             last_emotion = EMOTIONS[pred.item()]
 
-            if active_layer == 1:
-                heatmap = gradcam_conv1.generate(input_tensor, pred.item())
-            elif active_layer == 2:
-                heatmap = gradcam_conv2.generate(input_tensor, pred.item())
-            elif active_layer == 3:
-                heatmap = gradcam_conv3.generate(input_tensor, pred.item())
-            else:
-                heatmap = gradcam_conv4.generate(input_tensor, pred.item())
+            if show_heatmap:
+                 if active_layer == 1:
+                    heatmap = gradcam_conv1.generate(input_tensor, pred.item())
+                 elif active_layer == 2:
+                    heatmap = gradcam_conv2.generate(input_tensor, pred.item())
+                 elif active_layer == 3:
+                    heatmap = gradcam_conv3.generate(input_tensor, pred.item())
+                 else:
+                    heatmap = gradcam_conv4.generate(input_tensor, pred.item())
 
-            last_overlay = overlay_gradcam(frame, heatmap)
+                 last_overlay = overlay_gradcam(frame, heatmap)
+            else:
+                 last_overlay = frame.copy()
+
 
 
 
@@ -112,6 +117,15 @@ def main(frame_stride):
             (255, 255, 255),
             2
         )
+        cv2.putText(
+            frame,
+            f"Heatmap: {'ON' if show_heatmap else 'OFF'}",
+            (20, 95),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (255, 255, 255),
+            2
+        )
 
 
         cv2.imshow("Emotion Demo", frame)
@@ -128,6 +142,8 @@ def main(frame_stride):
             active_layer = 3
         elif key == ord("4"):
             active_layer = 4
+        elif key == ord("h"):
+            show_heatmap = not show_heatmap
 
 
         frame_id += 1
