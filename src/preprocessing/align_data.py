@@ -12,9 +12,11 @@ def align_data(data):
 
     elif data == "KDEF":
         INPUT_DIR = Path("data/KDEF/Image/KDEF_original_processed")
+        #INPUT_DIR = Path("/Users/richardachtnull/KDEF/Image/KDEF_original_processed")
         OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
+        #OUTPUT_DIR = Path("/Users/richardachtnull/KDEF/Image/KDEF_original_processed")
 
-    detector = RetinaFaceDetector(device="cuda")
+    detector = RetinaFaceDetector(device="CPU")
 
     success = 0
     failed = 0

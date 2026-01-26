@@ -4,13 +4,17 @@ import random
 
 # Define paths for raw RAF dataset (Aligned & Original)
 raw_KDEF_original_dir = "data/KDEF"
+#raw_KDEF_original_dir = "/Users/richardachtnull/KDEF"
 
 #  Define paths for Output directories
 output_original_dir = "data/KDEF/Image/KDEF_original_processed"
+#output_original_dir = "/Users/richardachtnull/KDEF/Image/KDEF_original_processed"
 output_aligned_dir = "data/KDEF/Image/KDEF_aligned_processed"
+#output_aligned_dir = "/Users/richardachtnull/KDEF/Image/KDEF_aligned_processed"
 
 # Define path for output emotion-label file
 label_file = "data/KDEF/EmoLabel/list_patition_label.txt"
+#label_file = "/Users/richardachtnull/KDEF/EmoLabel/list_patition_label.txt"
 
 # Define Emotion labels
 labels = {
