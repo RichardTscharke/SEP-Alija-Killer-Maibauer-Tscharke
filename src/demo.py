@@ -60,7 +60,9 @@ def main(frame_stride):
     show_heatmap = True
     active_layer = 3
 
-
+    cv2.namedWindow("Emotion Demo", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Emotion Demo", 900, 700)
+    
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -127,8 +129,6 @@ def main(frame_stride):
             2
         )
 
-
-        cv2.namedWindow("Emotion Demo", cv2.WINDOW_NORMAL)
         cv2.imshow("Emotion Demo", frame)
 
 
@@ -164,5 +164,6 @@ if __name__ == "__main__":
     parser.add_argument("--stride", type=int, default=6)
     args = parser.parse_args()
     main(args.stride)
+
 
 
