@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
-from model import CustomEmotionCNN
+from ResNetLight import ResNetLightCNN
 from explain import GradCAM, overlay_gradcam
 
 # ------------------------------
@@ -12,18 +12,20 @@ from explain import GradCAM, overlay_gradcam
 # ------------------------------
 
 EMOTIONS = ["suprise", "fear", "disgust", "happiness", "sad", "anger"]
-version_raf = "models/raf_cnn_v6.pth"
+version = "models/ResNetLight_v0.pth"
 
 # ------------------------------
 # utility
 # ------------------------------
 
+
 def load_model(weight_path, device):
-    model = CustomEmotionCNN(num_classes=6)
+    model = ResNetLightCNN(num_classes=6)
     model.load_state_dict(torch.load(weight_path, map_location=device))
     model.to(device)
     model.eval()
     return model
+
 
 def preprocess_frame(frame, device):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -33,21 +35,21 @@ def preprocess_frame(frame, device):
     tensor = torch.tensor(frame, dtype=torch.float32).unsqueeze(0)
     return tensor.to(device)
 
+
 # ------------------------------
 # main
 # ------------------------------
 
+
 def main(frame_stride):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = load_model(version_raf, device)
+    model = load_model(version, device)
 
-    gradcam_conv1 = GradCAM(model, model.conv1) #fine, local: edges, texture ...
-    gradcam_conv2 = GradCAM(model, model.conv2) #face features: mouth, nose ...
-    gradcam_conv3 = GradCAM(model, model.conv3) #whole faceparts: right faceside, mouth area ...
-    gradcam_conv4 = GradCAM(model, model.conv4) #very global, whole faces ...
-
-
+    gradcam_conv1 = GradCAM(model, model.conv1)  # fine, local: edges, texture ...
+    gradcam_conv2 = GradCAM(model, model.stage1)  # face features: mouth, nose ...
+    gradcam_conv3 = GradCAM(model, model.stage2)  # whole faceparts: right faceside, mouth area ...
+    gradcam_conv4 = GradCAM(model, model.stage3)  # very global, whole faces ...
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -62,7 +64,7 @@ def main(frame_stride):
 
     cv2.namedWindow("Emotion Demo", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Emotion Demo", 900, 700)
-    
+
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -79,21 +81,18 @@ def main(frame_stride):
             last_emotion = EMOTIONS[pred.item()]
 
             if show_heatmap:
-                 if active_layer == 1:
+                if active_layer == 1:
                     heatmap = gradcam_conv1.generate(input_tensor, pred.item())
-                 elif active_layer == 2:
+                elif active_layer == 2:
                     heatmap = gradcam_conv2.generate(input_tensor, pred.item())
-                 elif active_layer == 3:
+                elif active_layer == 3:
                     heatmap = gradcam_conv3.generate(input_tensor, pred.item())
-                 else:
+                else:
                     heatmap = gradcam_conv4.generate(input_tensor, pred.item())
 
-                 last_overlay = overlay_gradcam(frame, heatmap)
+                last_overlay = overlay_gradcam(frame, heatmap)
             else:
-                 last_overlay = frame.copy()
-
-
-
+                last_overlay = frame.copy()
 
         if last_overlay is not None:
             frame = last_overlay
@@ -101,13 +100,7 @@ def main(frame_stride):
         label = f"{last_emotion} ({last_conf:.2f})"
 
         cv2.putText(
-            frame,
-            label,
-            (20, 65),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.9,
-            (255, 255, 255),
-            2
+            frame, label, (20, 65), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2
         )
 
         cv2.putText(
@@ -117,7 +110,7 @@ def main(frame_stride):
             cv2.FONT_HERSHEY_SIMPLEX,
             0.7,
             (255, 255, 255),
-            2
+            2,
         )
         cv2.putText(
             frame,
@@ -126,11 +119,10 @@ def main(frame_stride):
             cv2.FONT_HERSHEY_SIMPLEX,
             0.7,
             (255, 255, 255),
-            2
+            2,
         )
 
         cv2.imshow("Emotion Demo", frame)
-
 
         key = cv2.waitKey(1) & 0xFF
 
@@ -147,7 +139,6 @@ def main(frame_stride):
         elif key == ord("h"):
             show_heatmap = not show_heatmap
 
-
         frame_id += 1
 
     gradcam_conv1.remove_hooks()
@@ -155,15 +146,12 @@ def main(frame_stride):
     gradcam_conv3.remove_hooks()
     gradcam_conv4.remove_hooks()
 
-
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--stride", type=int, default=6)
     args = parser.parse_args()
     main(args.stride)
-
-
-

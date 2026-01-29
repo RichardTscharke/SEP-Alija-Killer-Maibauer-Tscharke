@@ -5,11 +5,11 @@ from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-from model import CustomEmotionCNN
+from ResNetLight import ResNetLightCNN
 import sys
 
 # Configurations
-MODEL_PATH = "models/raf_cnn_v0.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "models/ResNetLight_v0.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
 
@@ -35,7 +35,7 @@ def evaluate_model(test_dir):
     classes = test_dataset.classes
 
     # Load the trained model
-    model = CustomEmotionCNN(num_classes=len(classes)).to(DEVICE)
+    model = ResNetLightCNN(num_classes=len(classes)).to(DEVICE)
     model.load_state_dict(
         torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True)
     )

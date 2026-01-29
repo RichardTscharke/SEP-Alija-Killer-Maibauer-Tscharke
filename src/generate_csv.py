@@ -4,10 +4,10 @@ import sys
 import pandas as pd
 from PIL import Image
 from torchvision import transforms
-from model import CustomEmotionCNN
+from ResNetLight import ResNetLightCNN
 
 # Configurations
-MODEL_PATH = "models/raf_cnn_v0.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "models/ResNetLight_v0.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings
@@ -35,7 +35,7 @@ def generate_csv(input_folder):
     print("=" * 30 + "\n")
 
     # 2. Load model
-    model = CustomEmotionCNN(num_classes=len(CLASSES))
+    model = ResNetLightCNN(num_classes=len(CLASSES))
     try:
         checkpoint = torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True)
         model.load_state_dict(checkpoint)

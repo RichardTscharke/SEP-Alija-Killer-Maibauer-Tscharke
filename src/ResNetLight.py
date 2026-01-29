@@ -10,7 +10,7 @@ class ResNetLightCNN(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
+            nn.LeakyReLU(negative_slope=0.1, inplace=True)
         )
 
         # 2. Residual Stages (The "Eyes")
@@ -29,9 +29,11 @@ class ResNetLightCNN(nn.Module):
         # Exclusion of dense layers | Global Average Pooling (Batch, 128, 16, 16) -> (Batch, 128, 1, 1)
         self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()
+        self.dropout = nn.Dropout(p=0.5)
 
         # 128 Input Features -> 6 Emotionen
         self.fc = nn.Linear(128, num_classes)
+        self._initialize_weights()
 
     def forward(self, x):
         x = self.conv1(x)
@@ -44,9 +46,26 @@ class ResNetLightCNN(nn.Module):
         # Classification
         x = self.global_avg_pool(x)
         x = self.flatten(x)
+        x = self.dropout(x)
         x = self.fc(x)
 
         return x
+    
+    def _initialize_weights(self):
+        # Iterate over all modules and initialize weights
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                # Kaiming  normal (He Init) for Conv Layer
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm2d):
+                # BatchNorm "neutral"
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)
 
 
 class ResidualBlock(nn.Module):
@@ -63,7 +82,7 @@ class ResidualBlock(nn.Module):
             bias=False,
         )
         self.bn1 = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
         self.conv2 = nn.Conv2d(
             out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False
         )

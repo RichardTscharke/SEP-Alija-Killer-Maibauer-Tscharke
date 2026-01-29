@@ -6,7 +6,7 @@ from torchvision import datasets, transforms
 import os
 
 # importing the custom model
-from model import CustomEmotionCNN
+from ResNetLight import ResNetLightCNN
 
 
 #  HARDWARE CHECK
@@ -126,7 +126,7 @@ def main():
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
 
     # 4. Model, Loss, Optimizer
-    model = CustomEmotionCNN(num_classes=num_classes).to(DEVICE)
+    model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -184,7 +184,9 @@ def main():
 
     print("=" * 50)
     print("Training completed.")
-    print(f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data.")
+    print(
+        f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+    )
     print(f"Saved as: {save_path}")
     print("=" * 50)
 
