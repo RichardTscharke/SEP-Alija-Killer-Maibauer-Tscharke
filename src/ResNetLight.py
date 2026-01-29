@@ -29,7 +29,7 @@ class ResNetLightCNN(nn.Module):
         # Exclusion of dense layers | Global Average Pooling (Batch, 256, 16, 16) -> (Batch, 256, 1, 1)
         self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=0.3)
 
         # 256 Input Features -> 6 Emotionen
         self.fc = nn.Linear(256, num_classes)
