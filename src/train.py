@@ -39,9 +39,9 @@ MODEL_DIR = "models"
 
 
 # generate unique model save path
-def get_unique_model_path(base_name="raf_cnn"):
+def get_unique_model_path(base_name="ResNetLight"):
 
-    # Find the next available model save path: raf_cnn_v0.pth, raf_cnn_v1.pth, etc.
+    # Find the next available model save path: ResNetLight_v0.pth, ResNetLight_v1.pth, etc.
     if not os.path.exists(MODEL_DIR):
         os.makedirs(MODEL_DIR)
 
@@ -184,7 +184,7 @@ def main():
 
     print("=" * 50)
     print("Training completed.")
-    print(f"The best model achieved {best_val_acc:.2f}% Accuracy on the test data.")
+    print(f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data.")
     print(f"Saved as: {save_path}")
     print("=" * 50)
 
