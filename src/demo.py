@@ -11,7 +11,7 @@ from explain import GradCAM, overlay_gradcam
 # constants
 # ------------------------------
 
-EMOTIONS = ["suprise", "fear", "disgust", "happiness", "sad", "anger"]
+EMOTIONS = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
 version = "models/ResNetLight_v0.pth"
 
 # ------------------------------
@@ -33,6 +33,7 @@ def preprocess_frame(frame, device):
     frame = frame.transpose(2, 0, 1)
     frame = frame / 255.0
     tensor = torch.tensor(frame, dtype=torch.float32).unsqueeze(0)
+    tensor = (tensor - 0.5) / 0.5
     return tensor.to(device)
 
 
@@ -47,9 +48,9 @@ def main(frame_stride):
     model = load_model(version, device)
 
     gradcam_conv1 = GradCAM(model, model.conv1)  # fine, local: edges, texture ...
-    gradcam_conv2 = GradCAM(model, model.stage1)  # face features: mouth, nose ...
-    gradcam_conv3 = GradCAM(model, model.stage2)  # whole faceparts: right faceside, mouth area ...
-    gradcam_conv4 = GradCAM(model, model.stage3)  # very global, whole faces ...
+    gradcam_conv2 = GradCAM(model, model.stage1.conv2)  # face features: mouth, nose ...
+    gradcam_conv3 = GradCAM(model, model.stage2.conv2)  # whole faceparts: right faceside, mouth area ...
+    gradcam_conv4 = GradCAM(model, model.stage3.conv2)  # very global, whole faces ...
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
