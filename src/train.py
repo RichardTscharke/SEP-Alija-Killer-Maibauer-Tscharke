@@ -30,7 +30,7 @@ DEVICE = get_device()
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 25
+EPOCHS = 200
 
 # Paths to data directories
 TRAIN_DIR = "data/RAF_aligned_processed/train"
