@@ -10,7 +10,7 @@ class ResNetLightCNN(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(32),
-            nn.LeakyReLU(negative_slope=0.1, inplace=True)
+            nn.LeakyReLU(negative_slope=0.1, inplace=True),
         )
 
         # 2. Residual Stages (The "Eyes")
@@ -50,13 +50,13 @@ class ResNetLightCNN(nn.Module):
         x = self.fc(x)
 
         return x
-    
+
     def _initialize_weights(self):
         # Iterate over all modules and initialize weights
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 # Kaiming  normal (He Init) for Conv Layer
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):
@@ -65,7 +65,8 @@ class ResNetLightCNN(nn.Module):
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.constant_(m.bias, 0)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
 
 
 class ResidualBlock(nn.Module):
@@ -87,10 +88,10 @@ class ResidualBlock(nn.Module):
             out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False
         )
         self.bn2 = nn.BatchNorm2d(out_channels)
-        
+
         # Attention Mechanism
         self.se = SEBlock(out_channels)
-        
+
         # Shortcut Path
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
@@ -108,7 +109,8 @@ class ResidualBlock(nn.Module):
         out = self.relu(out)
         return out
 
-# Attention Mechanism (Squeeze-and-Excitation Block)    
+
+# Attention Mechanism (Squeeze-and-Excitation Block)
 class SEBlock(nn.Module):
     def __init__(self, channel, reduction=16):
         super(SEBlock, self).__init__()
@@ -117,7 +119,7 @@ class SEBlock(nn.Module):
             nn.Linear(channel, channel // reduction, bias=False),
             nn.ReLU(inplace=True),
             nn.Linear(channel // reduction, channel, bias=False),
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
