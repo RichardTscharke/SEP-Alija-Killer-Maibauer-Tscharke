@@ -93,12 +93,13 @@ def main():
     print(f"💾 This training will be saved as: {save_path}")
     print("=" * 50)
 
-    # 2. Data Transformations
+    # 2. Data Transformations & Augmentations
     train_transforms = transforms.Compose(
         [
             transforms.Resize((64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomRotation(degrees=10),
+            transforms.RandomRotation(degrees=15),
+            transforms.RandomAffine(translate=(0.1, 0.1), scale=(0.9, 1.1)),
             transforms.ColorJitter(
                 brightness=0.2, contrast=0.2, saturation=0.1, hue=0.02
             ),

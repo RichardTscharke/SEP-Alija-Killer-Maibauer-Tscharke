@@ -14,25 +14,25 @@ class ResNetLightCNN(nn.Module):
         )
 
         # 2. Residual Stages (The "Eyes")
-        # Three residual stages... 32 -> 64 -> 128 filters
+        # Three residual stages... 32 -> 64 -> 128 -> 256 filters
 
-        # Stage 1: 32 Channels (Input  32, Output  32)
-        self.stage1 = ResidualBlock(32, 32, stride=1)
+        # Stage 1: 32 Channels Input, Output  64
+        self.stage1 = ResidualBlock(32, 64, stride=1)
 
-        # Stage 2: 64 Channels (Downsampling 64x64 -> 32x32)
-        self.stage2 = ResidualBlock(32, 64, stride=2)
+        # Stage 2: 64 Channels Input, Output 128 (Downsampling 64x64 -> 32x32)
+        self.stage2 = ResidualBlock(64, 128, stride=2)
 
-        # Stage 3: 128 Channels (Downsampling 32x32 -> 16x16)
-        self.stage3 = ResidualBlock(64, 128, stride=2)
+        # Stage 3: 128 Channels Input, Output 256 (Downsampling 32x32 -> 16x16)
+        self.stage3 = ResidualBlock(128, 256, stride=2)
 
         # 3. Classifier (The "Brain")
-        # Exclusion of dense layers | Global Average Pooling (Batch, 128, 16, 16) -> (Batch, 128, 1, 1)
+        # Exclusion of dense layers | Global Average Pooling (Batch, 256, 16, 16) -> (Batch, 256, 1, 1)
         self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(p=0.5)
 
-        # 128 Input Features -> 6 Emotionen
-        self.fc = nn.Linear(128, num_classes)
+        # 256 Input Features -> 6 Emotionen
+        self.fc = nn.Linear(256, num_classes)
         self._initialize_weights()
 
     def forward(self, x):
@@ -87,7 +87,10 @@ class ResidualBlock(nn.Module):
             out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False
         )
         self.bn2 = nn.BatchNorm2d(out_channels)
-
+        
+        # Attention Mechanism
+        self.se = SEBlock(out_channels)
+        
         # Shortcut Path
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
@@ -104,3 +107,21 @@ class ResidualBlock(nn.Module):
         out += self.shortcut(x)
         out = self.relu(out)
         return out
+
+# Attention Mechanism (Squeeze-and-Excitation Block)    
+class SEBlock(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SEBlock, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
