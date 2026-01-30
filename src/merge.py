@@ -7,19 +7,25 @@ random.seed(42)
 parameters = {
     "RAF": {
         "train":    0.7,
-        "test":     0.2,
-        "validate": 0.1,
+        "test":     0.15,
+        "validate": 0.15,
     },
     "KDEF": {
         "train":    0.9,
         "test":     0.1,
         "validate": 0.0,
-    }
+    },
+    "ExpW": {
+        "train": 0.8,
+        "test": 0.1,
+        "validate": 0.1
+    },
 }
 
 INPUT_DIRS = {
     "RAF":  Path("data/RAF_raw/RAF_aligned_processed"),
     "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
+    "ExpW": Path("data/ExpW/Image/ExpW_aligned_processed"),
 }
 
 

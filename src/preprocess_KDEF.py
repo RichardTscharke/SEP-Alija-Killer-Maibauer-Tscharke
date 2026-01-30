@@ -5,12 +5,12 @@ from preprocessing.align_data import align_data
 
 # paramater entry: Emotion: ([positions], ratio of used images)
 
-parameters = {"Anger":      (["S", "HL", "HR"], 0.5),
-              "Disgust":    (["S", "HL", "HR"], 1.0),
-              "Fear":       (["S", "HL", "HR"], 1.0),
-              "Happiness":  (["S", "HL", "HR"], 0),
-              "Sadness":    (["S", "HL", "HR"], 0),
-              "Surprise":   (["S"], 0),
+parameters = {"Anger":      (["S", "HL", "HR"], 0.7),
+              "Disgust":    (["S", "HL", "HR"], 1),
+              "Fear":       (["S", "HL", "HR"], 1),
+              "Happiness":  (["S", "HL", "HR"], 0.6),
+              "Sadness":    (["S", "HL", "HR"], 0.4),
+              "Surprise":   (["S"], 1),
               }
 
 def main():
@@ -19,7 +19,7 @@ def main():
 
     sort_KDEF(kdef_filter)
 
-    align_data(data = "KDEF")
+    #align_data(data = "KDEF")
 
 
 if __name__ == "__main__":
