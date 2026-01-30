@@ -126,7 +126,7 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
             print(f"Created directory: {dir_path}")
 
 
-def crop_face(img, x1, y1, x2, y2, scale = 1.5):
+def crop_face(img, x1, y1, x2, y2, scale = 3.0):
     h_img, w_img = img.shape[:2]
 
     if x2 <= x1 or y2 <= y1:

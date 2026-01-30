@@ -25,7 +25,7 @@ parameters = {
 INPUT_DIRS = {
     "RAF":  Path("data/RAF_raw/RAF_aligned_processed"),
     "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
-    "ExpW": Path("data/ExpW/Image/ExpW_aligned_processed"),
+    "ExpW": Path("data/ExpW/ExpW_aligned_processed"),
 }
 
 
