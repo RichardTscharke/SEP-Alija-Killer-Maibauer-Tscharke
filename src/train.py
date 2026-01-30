@@ -9,7 +9,7 @@ from torchvision import datasets, transforms
 import os
 
 # importing the custom model
-from ResNetLight import ResNetLightCNN
+from models.ResNetLight import ResNetLightCNN
 
 # OUTPU_DIR for evaluation
 OUTPUT_DIR = Path("src/evaluation/outputs")
@@ -191,16 +191,16 @@ def main():
         )
 
         # 7.Validation
-        val_acc, vall_loss = validate(model, val_loader, criterion)
+        val_acc, val_loss = validate(model, val_loader, criterion)
 
         current_lr = optimizer.param_groups[0]["lr"]
         
 
         epoch_log.append({
             "epoch": epoch + 1,
-            "train_loss": train_loss,
+            "train_loss": avg_loss,
             "val_loss": val_loss,
-            "train_acc": train_acc,
+            "train_acc": avg_loss,
             "val_acc": val_acc,
             "learning_rate": current_lr
         })
