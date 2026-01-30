@@ -53,7 +53,7 @@ def check_directories():
                 f"[INFO] Found:    {found_emotions}\n"
             )
 
-        print(f"[OK] {dataset_name} emotion folders verified.")
+        print(f"[INFO] {dataset_name} emotion folders verified.")
 
 def main():
 
@@ -105,8 +105,8 @@ def main():
                     shutil.copy2(img_path, target_path)
 
             print(
-                f"[INFO] {dataset_name} | {emotion} "
-                f"[INFO] train = {n_train}, test = {n_test}, validate = {n_val}"
+                f"[INFO] {dataset_name} | {emotion}: "
+                f"train = {n_train}, test = {n_test}, validate = {n_val}"
             )
 
 if __name__ == "__main__":
