@@ -105,7 +105,7 @@ class ResidualBlock(nn.Module):
     def forward(self, x):
         out = self.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        out = self.se(out) # Missing???
+        out = self.se(out) 
         out += self.shortcut(x)
         out = self.relu(out)
         return out

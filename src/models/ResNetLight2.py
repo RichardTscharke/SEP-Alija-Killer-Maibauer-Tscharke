@@ -9,7 +9,7 @@ class ResNetLightCNN2(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1, bias=False),
             nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True)
+            nn.LeakyReLU(negative_slope=0.1, inplace=True),
         )
 
         # Residual Stages
@@ -20,13 +20,13 @@ class ResNetLightCNN2(nn.Module):
         # Adaptive Pooling auf 4x4 statt 1x1
         self.global_avg_pool = nn.AdaptiveAvgPool2d((4, 4))
         self.flatten = nn.Flatten()
-        self.dropout = nn.Dropout(0.5)
+        self.dropout = nn.Dropout(0.3)
 
         # Fully Connected wie RafCustomCNN
         self.fc = nn.Sequential(
             nn.Linear(256*4*4, 512),
-            nn.ReLU(),
-            nn.Dropout(0.5),
+            nn.LeakyReLU(negative_slope=0.1, inplace=True),
+            nn.Dropout(0.3),
             nn.Linear(512, num_classes)
         )
 
@@ -68,7 +68,7 @@ class ResidualBlock(nn.Module):
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3,
                                stride=stride, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.LeakyReLU(negative_slope=0.1, inplace=True),
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3,
                                stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
@@ -100,7 +100,7 @@ class SEBlock(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
             nn.Linear(channel, channel // reduction, bias=False),
-            nn.ReLU(inplace=True),
+            nn.LeakyReLU(negative_slope=0.1, inplace=True),
             nn.Linear(channel // reduction, channel, bias=False),
             nn.Sigmoid(),
         )
