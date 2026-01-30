@@ -5,14 +5,21 @@ import torch.nn.functional as F
 import numpy as np
 
 from models.ResNetLight import ResNetLightCNN
+from models.ResNetLight2 import ResNetLightCNN2
+
 from explain import GradCAM, overlay_gradcam
+
+from preprocessing.detectors.retinaface import RetinaFaceDetector
+from preprocessing.aligning.pipeline import preprocess_image
+
+detector = RetinaFaceDetector(device="cpu")
 
 # ------------------------------
 # constants
 # ------------------------------
 
 EMOTIONS = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
-version = "models/ResNetLight_v0.pth"
+version = "models/ResNetLight_v2.pth"
 
 # ------------------------------
 # utility
@@ -20,13 +27,13 @@ version = "models/ResNetLight_v0.pth"
 
 
 def load_model(weight_path, device):
-    model = ResNetLightCNN(num_classes=6)
+    model = ResNetLightCNN2(num_classes=6)
     model.load_state_dict(torch.load(weight_path, map_location=device))
     model.to(device)
     model.eval()
     return model
 
-
+'''''
 def preprocess_frame(frame, device):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = cv2.resize(frame, (64, 64))
@@ -35,7 +42,23 @@ def preprocess_frame(frame, device):
     tensor = torch.tensor(frame, dtype=torch.float32).unsqueeze(0)
     tensor = (tensor - 0.5) / 0.5
     return tensor.to(device)
+'''
 
+def preprocess_frame(frame, device):
+    preprocessed = preprocess_image(frame, detector)
+    np_image = preprocessed["image"]          # HWC, BGR
+
+    np_image = cv2.resize(np_image, (64, 64))
+    np_image = np_image[:, :, ::-1]            # BGR → RGB
+    np_image = np_image.astype(np.float32) / 255.0
+
+    tensor = torch.from_numpy(np_image)
+    tensor = tensor.permute(2, 0, 1)            # CHW
+    tensor = (tensor - 0.5) / 0.5               # match training
+    tensor = tensor.unsqueeze(0)                # BCHW
+
+    return tensor.to(device)
+    
 
 # ------------------------------
 # main
@@ -52,7 +75,7 @@ def main(frame_stride):
     gradcam_conv3 = GradCAM(model, model.stage2.conv2)  # whole faceparts: right faceside, mouth area ...
     gradcam_conv4 = GradCAM(model, model.stage3.conv2)  # very global, whole faces ...
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     if not cap.isOpened():
         raise RuntimeError("Webcam could not be opened")
 
