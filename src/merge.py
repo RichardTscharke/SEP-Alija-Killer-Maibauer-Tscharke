@@ -31,12 +31,35 @@ OUTPUT_DIRS = {
 
 VALID_EXTS = {".jpg", ".jpeg", ".png"}
 
+EMOTIONS = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
+
+
+def setup_directories():
+        for split_dir in OUTPUT_DIRS.values():
+            if split_dir.exists():
+                shutil.rmtree(split_dir)
+            split_dir.mkdir(parents = True, exist_ok = True)
+
+def check_directories():
+    for dataset_name, dataset_dir in INPUT_DIRS.items():
+        found_emotions = sorted(
+            [p.name for p in dataset_dir.iterdir() if p.is_dir()]
+        )
+
+        if set(found_emotions) != set(EMOTIONS):
+            raise ValueError(
+                f"\n[INFO] Dataset {dataset_name} has mismatching emotions!\n"
+                f"[INFO] Expected: {EMOTIONS}\n"
+                f"[INFO] Found:    {found_emotions}\n"
+            )
+
+        print(f"[OK] {dataset_name} emotion folders verified.")
+
 def main():
 
-    for split_dir in OUTPUT_DIRS.values():
-        if split_dir.exists():
-            shutil.rmtree(split_dir)
-        split_dir.mkdir(parents = True, exist_ok = True)
+    setup_directories()
+
+    check_directories()
 
     for dataset_name, dataset_dir in INPUT_DIRS.items():
         ratios = parameters[dataset_name]

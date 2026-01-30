@@ -11,7 +11,7 @@ from models.ResNetLight2 import ResNetLightCNN2
 BASE_DIR = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = BASE_DIR / "outputs"
 
-TEST_DIR = "data/RAF_aligned_processed/test"
+TEST_DIR = "data/test"
 BATCH_SIZE = 64
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
