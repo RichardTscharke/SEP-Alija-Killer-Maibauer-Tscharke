@@ -15,6 +15,8 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
     angle = np.degrees(np.arctan2(dY, dX))
 
     current_distance = np.sqrt((dX ** 2) + (dY ** 2))
+    if not np.isfinite(current_distance) or current_distance <  5:  # hardcoded for now for tests
+        return None
     desired_distance = np.linalg.norm(np.array(target_right) - np.array(target_left))
 
     scale = desired_distance / current_distance
