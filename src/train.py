@@ -10,6 +10,7 @@ import os
 
 # importing the custom model
 from models.ResNetLight import ResNetLightCNN
+from models.ResNetLight2 import ResNetLightCNN2
 
 # OUTPU_DIR for evaluation
 OUTPUT_DIR = Path("src/evaluation/outputs")
@@ -141,7 +142,7 @@ def main():
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
 
     # 4. Model, Loss, Optimizer
-    model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
+    model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
