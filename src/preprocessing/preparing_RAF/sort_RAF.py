@@ -6,8 +6,8 @@ raw_RAF_original_dir = "data/RAF_raw/Image/original"
 label_file = "data/RAF_raw/EmoLabel/list_patition_label_filtered.txt"
 
 #  Define paths for Output directories
-output_aligned_dir = "data/RAF_aligned_processed"
-output_original_dir = "data/RAF_original_processed"
+output_aligned_dir = "data/RAF_raw/RAF_aligned_processed"
+output_original_dir = "data/RAF_raw/RAF_original_processed"
 
 # Define Emotion labels
 labels = {
@@ -20,6 +20,8 @@ labels = {
 }
 
 def sort_RAF():
+
+    global_counter = 0
     
     setup_directories()
 
@@ -32,9 +34,6 @@ def sort_RAF():
     # Read label file
     with open(label_file, "r") as f:
         lines = f.readlines()
-
-    # Initialize counters
-    count_original = 0
 
     # Process each line in the label file
     for line in lines:
@@ -51,9 +50,6 @@ def sort_RAF():
         if emotion_name is None:
             continue
 
-        # Determine if image is for training or testing (based on filename)
-        target_folder = "train" if "train" in original_filename else "test"
-
         # --- PROCESS ORIGINAL IMAGES ---
         # filename remains the same for original images
         filename_original = original_filename
@@ -64,12 +60,17 @@ def sort_RAF():
         # Check if original image exists and move
         if os.path.exists(image_path_original):
             target_dir_original = os.path.join(
-                output_original_dir, target_folder, emotion_name, filename_original
+                output_original_dir, emotion_name
             )
-            shutil.copy(image_path_original, target_dir_original)
-            count_original += 1
+            os.makedirs(target_dir_original, exist_ok=True)
 
-    print(f"Sorted {count_original} original images.")
+            global_counter += 1
+            new_name = f"raf_{global_counter:06d}.jpg"
+
+            target_path = os.path.join(target_dir_original, new_name)
+            shutil.move(image_path_original, target_path)
+
+    print(f"Sorted {global_counter} original images.")
     print(f"Original images saved in: {output_original_dir}")
     
 
@@ -84,8 +85,7 @@ def setup_directories():
             shutil.rmtree(target_dir)
 
         # Create necessary directories
-        for split in ["train", "test"]:
-            for emotion in labels.values():
-                dir_path = os.path.join(target_dir, split, emotion)
-                os.makedirs(dir_path, exist_ok=True)
-                print(f"Created directory: {dir_path}")
+        for emotion in labels.values():
+            dir_path = os.path.join(target_dir, emotion)
+            os.makedirs(dir_path, exist_ok=True)
+            print(f"Created directory: {dir_path}")

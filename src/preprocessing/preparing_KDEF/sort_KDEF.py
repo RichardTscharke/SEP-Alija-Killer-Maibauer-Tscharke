@@ -4,17 +4,13 @@ import random
 
 # Define paths for raw RAF dataset (Aligned & Original)
 raw_KDEF_original_dir = "data/KDEF"
-#raw_KDEF_original_dir = "/Users/richardachtnull/KDEF"
 
 #  Define paths for Output directories
 output_original_dir = "data/KDEF/Image/KDEF_original_processed"
-#output_original_dir = "/Users/richardachtnull/KDEF/Image/KDEF_original_processed"
 output_aligned_dir = "data/KDEF/Image/KDEF_aligned_processed"
-#output_aligned_dir = "/Users/richardachtnull/KDEF/Image/KDEF_aligned_processed"
 
 # Define path for output emotion-label file
 label_file = "data/KDEF/EmoLabel/list_patition_label.txt"
-#label_file = "/Users/richardachtnull/KDEF/EmoLabel/list_patition_label.txt"
 
 # Define Emotion labels
 labels = {
@@ -82,10 +78,10 @@ def sort_KDEF(filter_kdef):
         label_id = [k for k, v in labels.items() if v == emotion][0]
 
         for src in selected:
-            new_name = f"kdef_train_{global_counter}.jpg"
+            new_name = f"kdef_{global_counter}.jpg"
             dst = os.path.join(output_original_dir, emotion, new_name)
 
-            shutil.copy(src, dst)
+            shutil.move(src, dst)
             lf.write(f"{new_name} {label_id}\n")
 
             global_counter += 1
