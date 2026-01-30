@@ -1,5 +1,8 @@
+import csv
 import torch
+import shutil
 import torch.nn as nn
+from pathlib import Path
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
@@ -7,6 +10,14 @@ import os
 
 # importing the custom model
 from ResNetLight import ResNetLightCNN
+
+# OUTPU_DIR for evaluation
+OUTPUT_DIR = Path("src/evaluation/outputs")
+
+def prepare_output_dir_evaluation():
+    if OUTPUT_DIR.exists():
+        shutil.rmtree(OUTPUT_DIR)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 #  HARDWARE CHECK
@@ -82,11 +93,15 @@ def validate(model, loader, criterion):
     print(
         f"    >>> Validation Loss: {val_loss / len(loader):.4f} | Val Acc: {acc:.2f}%"
     )
-    return acc
+    return acc, val_loss / len(loader)
 
 
 # MAIN
 def main():
+
+    # 0. prepare evaluation outputs directory
+    prepare_output_dir_evaluation()
+
     # 1. model save path
     save_path, version_id = get_unique_model_path()
     print("=" * 50)
@@ -140,6 +155,10 @@ def main():
 
     best_val_acc = 0.0
 
+    epoch_log = []
+
+    log_path = "src/evaluation/outputs/epoch_metrics.csv"
+
     # 6. Training Loop
     for epoch in range(EPOCHS):
         model.train()
@@ -172,9 +191,22 @@ def main():
         )
 
         # 7.Validation
-        val_acc = validate(model, val_loader, criterion)
+        val_acc, vall_loss = validate(model, val_loader, criterion)
+
+        current_lr = optimizer.param_groups[0]["lr"]
+        
+
+        epoch_log.append({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "val_loss": val_loss,
+            "train_acc": train_acc,
+            "val_acc": val_acc,
+            "learning_rate": current_lr
+        })
+
         scheduler.step(val_acc)
-        print("LR:", optimizer.param_groups[0]["lr"])
+        print("LR:", current_lr)
 
         # 8. Save best model
         if val_acc > best_val_acc:
@@ -189,6 +221,11 @@ def main():
     )
     print(f"Saved as: {save_path}")
     print("=" * 50)
+
+    with open(log_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames = epoch_log[0].keys())
+        writer.writeheader()
+        writer.writerows(epoch_log)
 
 
 if __name__ == "__main__":
