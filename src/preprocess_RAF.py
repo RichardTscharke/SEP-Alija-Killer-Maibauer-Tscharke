@@ -13,7 +13,7 @@ def main():
 
     sort_data(data = "RAF")
 
-    #align_data(data = "RAF")
+    align_data(data = "RAF")
 
 
 if __name__ == "__main__":

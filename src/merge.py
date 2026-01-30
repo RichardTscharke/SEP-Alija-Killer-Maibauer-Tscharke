@@ -18,7 +18,7 @@ parameters = {
     "ExpW": {
         "train": 0.8,
         "test": 0.1,
-        "validate": 0.1
+        "validate": 0.1,
     },
 }
 

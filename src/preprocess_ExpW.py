@@ -13,7 +13,7 @@ def main():
 
     sort_data(data = "ExpW") # The data flag creates a crop of the determined face since ExpW contains multifaced images.
 
-    #align_data(data = "ExpW")
+    align_data(data = "ExpW")
 
 if __name__ == "__main__":
     main()

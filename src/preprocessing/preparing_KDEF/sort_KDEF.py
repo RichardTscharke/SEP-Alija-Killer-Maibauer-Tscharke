@@ -81,7 +81,7 @@ def sort_KDEF(filter_kdef):
             new_name = f"kdef_{global_counter}.jpg"
             dst = os.path.join(output_original_dir, emotion, new_name)
 
-            shutil.move(src, dst)
+            shutil.copy2(src, dst)
             lf.write(f"{new_name} {label_id}\n")
 
             global_counter += 1

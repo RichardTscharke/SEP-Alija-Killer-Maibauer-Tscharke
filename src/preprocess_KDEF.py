@@ -19,7 +19,7 @@ def main():
 
     sort_KDEF(kdef_filter)
 
-    #align_data(data = "KDEF")
+    align_data(data = "KDEF")
 
 
 if __name__ == "__main__":

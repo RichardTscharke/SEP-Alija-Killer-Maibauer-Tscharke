@@ -42,7 +42,7 @@ DEVICE = get_device()
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 50
+EPOCHS = 30
 
 # Paths to data directories
 TRAIN_DIR = "data/train"

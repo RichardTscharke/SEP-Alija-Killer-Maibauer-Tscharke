@@ -89,7 +89,7 @@ def sort_data(data):
             target_path = os.path.join(target_dir_original, new_name)
             
             if data == "RAF":
-                shutil.move(image_path_original, target_path)
+                shutil.copy2(image_path_original, target_path)
 
             elif data == "ExpW":
                 img = cv2.imread(image_path_original)
