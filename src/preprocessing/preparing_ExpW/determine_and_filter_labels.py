@@ -4,10 +4,8 @@ import random
 
 random.seed(42)
 
-#LABEL_IN = Path("data/ExpW/label/label.lst")
-LABEL_IN = Path("/Users/richardachtnull/Desktop/ExpW/label/label.lst")
-#LABEL_OUT = Path("data/ExpW/label/label.txt")
-LABEL_OUT = Path("/Users/richardachtnull/Desktop/ExpW/label/label.txt")
+LABEL_IN = Path("data/ExpW/label/label.lst")
+LABEL_OUT = Path("data/ExpW/label/label.txt")
 
 ExpW_TO_INTERNAL = {
     0: 6,   # Anger

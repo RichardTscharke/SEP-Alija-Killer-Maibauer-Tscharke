@@ -1,12 +1,17 @@
 from preprocessing.preparing_RAF.filter_RAF import filter
-from preprocessing.preparing_RAF.sort_RAF import sort_RAF
+from preprocessing.sort_data import sort_data
 from preprocessing.align_data import align_data
 
 def main():
 
-    filter(happiness_ratio = 0.35)
+    filter(suprise_ratio   = 1,
+           fear_ratio      = 1,
+           disgust_ratio   = 1,
+           happiness_ratio = 0.35,
+           sadness_ratio   = 1,
+           anger_ratio     = 1)
 
-    sort_RAF()
+    sort_data(data = "RAF")
 
     align_data(data = "RAF")
 

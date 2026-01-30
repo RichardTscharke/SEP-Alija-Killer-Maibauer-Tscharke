@@ -11,12 +11,16 @@ ort.set_default_logger_severity(3)  # Errors only
 def align_data(data):
 
     if data == "RAF":
-        INPUT_DIR = Path("data/RAF_raw/RAF_original_processed")
+        INPUT_DIR  = Path("data/RAF_raw/RAF_original_processed")
         OUTPUT_DIR = Path("data/RAF_raw/RAF_aligned_processed")
 
     elif data == "KDEF":
-        INPUT_DIR = Path("data/KDEF/Image/KDEF_original_processed")
+        INPUT_DIR  = Path("data/KDEF/Image/KDEF_original_processed")
         OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
+
+    elif data == "ExpW":
+        INPUT_DIR  = Path("data/ExpW/Image/ExpW_original_processed")
+        OUTPUT_DIR = Path("data/ExpW/Image/ExpW_aligned_processed")
 
     detector = RetinaFaceDetector(device="cuda")
 
