@@ -30,3 +30,4 @@ def main():
             train() 
         except Exception as e:
             print(f"Fehler beim Training: {e}")
+            
