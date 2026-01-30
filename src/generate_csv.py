@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 from PIL import Image
 from torchvision import transforms
-from ResNetLight import ResNetLightCNN
+from models.ResNetLight import ResNetLightCNN
 
 # Configurations
 MODEL_PATH = "models/ResNetLight_v0.pth"  # Make sure this is the latest trained model path

@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
-from ResNetLight import ResNetLightCNN
+from models.ResNetLight import ResNetLightCNN
 from explain import GradCAM, overlay_gradcam
 
 # ------------------------------
