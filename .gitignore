@@ -16,6 +16,8 @@ data/
 *.jpg
 *.jpeg
 *.csv
+src/evaluation/outputs/
+figures/
 
 # VS Code Einstellungen
 .vscode/
