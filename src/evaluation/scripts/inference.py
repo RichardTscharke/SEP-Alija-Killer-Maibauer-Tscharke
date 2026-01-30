@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 from models.ResNetLight import ResNetLightCNN
+from models.ResNetLight2 import ResNetLightCNN2
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ def calculate_inference(MODEL_PATH = "models/ResNetLight_v0.pth"):
     class_names = test_dataset.classes
     num_classes = len(class_names)
 
-    model = ResNetLightCNN(num_classes = num_classes).to(DEVICE)
+    model = ResNetLightCNN2(num_classes = num_classes).to(DEVICE)
     model.load_state_dict(torch.load(MODEL_PATH, map_location = DEVICE))
     model.eval()
 
