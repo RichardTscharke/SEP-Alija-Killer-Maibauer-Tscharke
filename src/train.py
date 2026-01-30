@@ -200,7 +200,7 @@ def main():
             "epoch": epoch + 1,
             "train_loss": avg_loss,
             "val_loss": val_loss,
-            "train_acc": avg_loss,
+            "train_acc": epoch_acc,
             "val_acc": val_acc,
             "learning_rate": current_lr
         })
