@@ -19,8 +19,8 @@ def align_data(data):
         OUTPUT_DIR = Path("data/KDEF/Image/KDEF_aligned_processed")
 
     elif data == "ExpW":
-        INPUT_DIR  = Path("data/ExpW/Image/ExpW_original_processed")
-        OUTPUT_DIR = Path("data/ExpW/Image/ExpW_aligned_processed")
+        INPUT_DIR  = Path("data/ExpW/ExpW_original_processed")
+        OUTPUT_DIR = Path("data/ExpW/ExpW_aligned_processed")
 
     detector = RetinaFaceDetector(device="cuda")
 
