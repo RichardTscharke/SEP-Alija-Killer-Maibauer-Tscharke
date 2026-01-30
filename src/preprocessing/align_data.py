@@ -2,7 +2,11 @@ import cv2
 from tqdm import tqdm
 from pathlib import Path
 from .detectors import RetinaFaceDetector
-from .aligning.pipeline import preprocess_image 
+from .aligning.pipeline import preprocess_image
+
+import onnxruntime as ort
+ort.set_default_logger_severity(3)  # Errors only
+
 
 def align_data(data):
 
