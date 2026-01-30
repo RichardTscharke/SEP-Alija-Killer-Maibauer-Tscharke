@@ -33,27 +33,20 @@ def filter(suprise_ratio = 1,
 
     for label, (emotion, ratio) in labels.items():
         
-        train_entries = [
+        entries = [
             line for line in lines
-            if line.startswith("train") and line.split()[1] == str(label)
-        ]
-        
-        test_entries = [
-            line for line in lines
-            if line.startswith("test") and line.split()[1] == str(label)
+            if line.split()[1] == str(label)
         ]
 
-        new_amount = min(len(train_entries), int(len(train_entries) * ratio))
+        if ratio >= 1:
+            selected = entries
+        else:
+            new_amount = int(len(entries) * ratio)
+            selected = random.sample(entries, k = new_amount)
 
-        sampled_train = random.sample(train_entries, k = new_amount)
+        output_lines.extend(selected)
 
-        output_lines.extend(sampled_train)
-        output_lines.extend(test_entries)
-
-        print(
-            f"[INFO] ({emotion}) train: {len(train_entries)} -> {len(sampled_train)}, "
-            f"test: {len(test_entries)}"
-        )
+        print(f"[INFO] ({emotion}): {len(entries)} -> {len(selected)}")
 
     with LABEL_OUT.open("w") as f:
         for line in output_lines:
