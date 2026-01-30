@@ -96,6 +96,8 @@ def sort_data(data):
                 if img is None:
                     continue
                 face = crop_face(img, x1, y1, x2, y2)
+                if face is None or face.size == 0:
+                    continue
                 if face.size == 0:
                     continue
                 cv2.imwrite(target_path, face)
@@ -124,11 +126,17 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
             print(f"Created directory: {dir_path}")
 
 
-def crop_face(img, x1, y1, x2, y2, scale = 2.0):
+def crop_face(img, x1, y1, x2, y2, scale = 1.5):
     h_img, w_img = img.shape[:2]
+
+    if x2 <= x1 or y2 <= y1:
+        return None
 
     w = x2 - x1
     h = y2 - y1
+
+    if w < 10 or h < 10:
+        return None
 
     cx = (x1 + x2) // 2
     cy = (y1 + y2) // 2
@@ -141,6 +149,11 @@ def crop_face(img, x1, y1, x2, y2, scale = 2.0):
     nx2 = min(w_img, cx + new_w // 2)
     ny2 = min(h_img, cy + new_h // 2)
 
+    if nx2 <= nx1 or ny2 <= ny1:
+        return None
+
     return img[ny1:ny2, nx1:nx2]
+
+
 
 
