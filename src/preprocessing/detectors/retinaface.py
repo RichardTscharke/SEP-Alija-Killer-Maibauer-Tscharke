@@ -1,4 +1,7 @@
+import os
+import sys
 from insightface.app import FaceAnalysis
+from contextlib import contextmanager
 import warnings
 
 
@@ -13,14 +16,11 @@ class RetinaFaceDetector:
         else: 
             providers = ["CPUExecutionProvider"]
 
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", message = "Specified provider.*")
-    
+        with suppress_stdout():               # surpresses prints everytime a detector is initialized
             self.app = FaceAnalysis(
-                allowed_modules = ["detection"],
-                providers = providers
+                allowed_modules=["detection"],
+                providers=providers
             )
-
             self.app.prepare(ctx_id = ctx_id, det_size = (640, 640))
 
         if info:
@@ -46,3 +46,13 @@ class RetinaFaceDetector:
             })
 
         return detected_faces
+    
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
