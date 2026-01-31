@@ -5,12 +5,12 @@ from preprocessing.align_data import align_data
 
 # paramater entry: Emotion: ([positions], ratio of used images)
 
-parameters = {"Anger":      (["S", "HL", "HR"], 0.7),
+parameters = {"Anger":      (["S", "HL", "HR"], 0.5),
               "Disgust":    (["S", "HL", "HR"], 1),
               "Fear":       (["S", "HL", "HR"], 1),
-              "Happiness":  (["S", "HL", "HR"], 0.6),
-              "Sadness":    (["S", "HL", "HR"], 0.4),
-              "Surprise":   (["S"], 1),
+              "Happiness":  (["S", "HL", "HR"], 0),
+              "Sadness":    (["S", "HL", "HR"], 0),
+              "Surprise":   (["S"], 0),
               }
 
 def main():

@@ -42,7 +42,7 @@ DEVICE = get_device()
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 30
+EPOCHS = 40
 
 # Paths to data directories
 TRAIN_DIR = "data/train"
@@ -135,7 +135,7 @@ def main():
     train_dataset = datasets.ImageFolder(root=TRAIN_DIR, transform=train_transforms)
     val_dataset = datasets.ImageFolder(root=VAL_DIR, transform=val_transforms)
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     num_classes = len(train_dataset.classes)
@@ -147,14 +147,25 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     # 5.Scheduler
+    '''''
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         mode="max",
         patience=2,
         factor=0.5,
     )
+    '''
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode="max",
+        patience=5,
+        factor=0.5,
+        min_lr=1e-5
+    )
 
     best_val_acc = 0.0
+
+    best_val_loss = float("inf")
 
     epoch_log = []
 
@@ -194,9 +205,10 @@ def main():
         # 7.Validation
         val_acc, val_loss = validate(model, val_loader, criterion)
 
+        scheduler.step(val_acc)
+
         current_lr = optimizer.param_groups[0]["lr"]
         
-
         epoch_log.append({
             "epoch": epoch + 1,
             "train_loss": avg_loss,
@@ -206,14 +218,20 @@ def main():
             "learning_rate": current_lr
         })
 
-        scheduler.step(val_acc)
         print("LR:", current_lr)
 
         # 8. Save best model
+        '''''
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
+        '''
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), save_path)
+            print(f"    🌟 New Record! Model saved to {save_path}")
+
 
     print("=" * 50)
     print("Training completed.")

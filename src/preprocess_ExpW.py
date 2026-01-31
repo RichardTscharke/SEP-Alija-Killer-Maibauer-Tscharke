@@ -4,12 +4,12 @@ from preprocessing.align_data import align_data
 
 def main():
 
-    determine_and_filter(surprise_ratio = 0.65,
+    determine_and_filter(surprise_ratio = 0.1,
                         fear_ratio      = 1.0,
-                        disgust_ratio   = 0.9,
-                        happiness_ratio = 0.25,
-                        sadness_ratio   = 0.55,
-                        anger_ratio     = 0.9)
+                        disgust_ratio   = 1.0,
+                        happiness_ratio = 0.0,
+                        sadness_ratio   = 0.0,
+                        anger_ratio     = 0.33)
 
     sort_data(data = "ExpW") # The data flag creates a crop of the determined face since ExpW contains multifaced images.
 

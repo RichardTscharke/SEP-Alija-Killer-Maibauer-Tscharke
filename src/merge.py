@@ -12,13 +12,13 @@ parameters = {
     },
     "KDEF": {
         "train":    0.9,
-        "test":     0.1,
-        "validate": 0.0,
+        "test":     0.0,
+        "validate": 0.1,
     },
     "ExpW": {
         "train": 0.8,
-        "test": 0.1,
-        "validate": 0.1,
+        "test": 0.2,
+        "validate": 0.0,
     },
 }
 
