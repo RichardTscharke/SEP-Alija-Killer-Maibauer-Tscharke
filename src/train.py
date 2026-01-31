@@ -42,7 +42,7 @@ DEVICE = get_device()
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 40
+EPOCHS = 25
 
 # Paths to data directories
 TRAIN_DIR = "data/train"
@@ -114,9 +114,9 @@ def main():
         [
             transforms.Resize((64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+            transforms.RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1)),
             transforms.ColorJitter(
-                brightness=0.2, contrast=0.2, saturation=0.1, hue=0.02
+                brightness=0.2, contrast=0.2, saturation=0.1, hue=0.01
             ),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
@@ -143,7 +143,12 @@ def main():
 
     # 4. Model, Loss, Optimizer
     model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
-    criterion = nn.CrossEntropyLoss()
+    #criterion = nn.CrossEntropyLoss()
+
+    #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
+    class_weights = torch.tensor([1.5, 1.5, 2.0, 1.0, 1.2, 1.0], device=DEVICE)
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
+
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
     # 5.Scheduler
@@ -157,8 +162,8 @@ def main():
     '''
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
-        mode="max",
-        patience=5,
+        mode="min",
+        patience=3,
         factor=0.5,
         min_lr=1e-5
     )
