@@ -36,7 +36,6 @@ def preprocess_image(image,
         return None
 
     sample = {
-
         "image": np.array(image),
         "box": face["box"],
         "eyes": face["eyes"]
