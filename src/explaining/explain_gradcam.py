@@ -5,7 +5,7 @@ import cv2
 from explaining.GradCam import GradCAM
 from explaining.explain_utils import np_to_tensor
 from preprocessing.detectors import RetinaFaceDetector
-from preprocessing.aligning.pipeline import preprocess_image
+from preprocessing.aligning.detect import detect_and_preprocess
 
 
 def explain_gradcam(
@@ -23,7 +23,7 @@ def explain_gradcam(
 
     # Preprocess
     detector = RetinaFaceDetector(device=str(device))
-    sample = preprocess_image(original_img, detector)
+    sample = detect_and_preprocess(original_img, detector)
 
     aligned_img = sample["image"]
     input_tensor = np_to_tensor(aligned_img, device)

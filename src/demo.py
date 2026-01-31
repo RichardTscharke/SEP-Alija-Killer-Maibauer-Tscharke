@@ -10,7 +10,7 @@ from models.ResNetLight2 import ResNetLightCNN2
 from explain import GradCAM, overlay_gradcam
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
-from preprocessing.aligning.pipeline import preprocess_image
+from preprocessing.aligning.detect import detect_and_preprocess
 
 detector = RetinaFaceDetector(device="cpu")
 
@@ -45,7 +45,7 @@ def preprocess_frame(frame, device):
 '''
 
 def preprocess_frame(frame, device):
-    preprocessed = preprocess_image(frame, detector)
+    preprocessed = detect_and_preprocess(frame, detector)
     np_image = preprocessed["image"]          # HWC, BGR
 
     np_image = cv2.resize(np_image, (64, 64))

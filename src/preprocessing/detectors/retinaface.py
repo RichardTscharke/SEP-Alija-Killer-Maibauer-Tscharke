@@ -34,15 +34,26 @@ class RetinaFaceDetector:
 
         for f in faces:
 
+            landmarks = {"left_eye":    tuple(map(int, f.kps[0])),
+                         "right_eye":   tuple(map(int, f.kps[1])),
+                         "nose":        tuple(map(int, f.kps[2])),
+                         "left_mouth":  tuple(map(int, f.kps[3])),
+                         "right_mouth": tuple(map(int, f.kps[4])),
+            }
+
             x1, y1, x2, y2 = map(int, f.bbox)
             
             detected_faces.append({
                 "box": (x1, y1, x2-x1, y2-y1),
                 "confidence": float(f.det_score),
                 "eyes": {
-                    "left_eye": tuple(map(int, f.kps[0])),
-                    "right_eye": tuple(map(int, f.kps[1]))
-                }
+                    "left_eye":  landmarks["left_eye"],
+                    "right_eye": landmarks["right_eye"],
+                },
+                "original": {
+                    "box": (x1, y1, x2 - x1, y2 - y1),
+                    "landmarks": landmarks,
+                },
             })
 
         return detected_faces

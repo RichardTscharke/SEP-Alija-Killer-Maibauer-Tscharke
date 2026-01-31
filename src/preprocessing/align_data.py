@@ -2,7 +2,7 @@ import cv2
 from tqdm import tqdm
 from pathlib import Path
 from .detectors import RetinaFaceDetector
-from .aligning.pipeline import preprocess_image
+from .aligning.detect import detect_and_preprocess
 
 
 def align_data(data):
@@ -50,7 +50,7 @@ def align_data(data):
                 LOG_FILE.open("a").write(f"{img_path.name}: read_failed\n")
                 continue
 
-            preprocessed = preprocess_image(img, detector)
+            preprocessed = detect_and_preprocess(img, detector)
 
             if preprocessed is None:
                 failed += 1
