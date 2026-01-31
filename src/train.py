@@ -144,7 +144,7 @@ def main():
     # 4. Model, Loss, Optimizer
     model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
     # 5.Scheduler
     '''''
@@ -205,7 +205,7 @@ def main():
         # 7.Validation
         val_acc, val_loss = validate(model, val_loader, criterion)
 
-        scheduler.step(val_acc)
+        scheduler.step(val_loss)
 
         current_lr = optimizer.param_groups[0]["lr"]
         
@@ -236,7 +236,8 @@ def main():
     print("=" * 50)
     print("Training completed.")
     print(
-        f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+        #f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+        f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
     )
     print(f"Saved as: {save_path}")
     print("=" * 50)

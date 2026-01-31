@@ -7,7 +7,7 @@ def main():
     filter(suprise_ratio   = 1,
            fear_ratio      = 1,
            disgust_ratio   = 1,
-           happiness_ratio = 0.35,
+           happiness_ratio = 1,
            sadness_ratio   = 1,
            anger_ratio     = 1)
 
