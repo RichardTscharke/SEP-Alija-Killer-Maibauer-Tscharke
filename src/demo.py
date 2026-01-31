@@ -75,7 +75,7 @@ def main(frame_stride):
     gradcam_conv3 = GradCAM(model, model.stage2.conv2)  # whole faceparts: right faceside, mouth area ...
     gradcam_conv4 = GradCAM(model, model.stage3.conv2)  # very global, whole faces ...
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise RuntimeError("Webcam could not be opened")
 
