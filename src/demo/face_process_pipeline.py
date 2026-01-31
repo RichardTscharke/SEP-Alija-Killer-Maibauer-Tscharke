@@ -1,16 +1,24 @@
 from preprocessing.aligning.pipeline import preprocess_image
-from preprocessing.detectors.retinaface import RetinaFaceDetector
 from demo.draw_box_landmarks import draw_box_landmarks
+from demo.fer_per_frame import draw_emotion_probs
+from demo.fer_per_frame import run_fer
 
 
 class FaceStreamProcessor:
 
-    def __init__(self, tracker, detect_every_n = 5):
+    def __init__(self, model, detector, tracker, detect_every_n = 5):
+        self.model = model
+        self.device = next(model.parameters()).device
+
+        self.detector = detector
         self.tracker = tracker
-        self.detector = RetinaFaceDetector(device="cpu")
+
         self.detect_every_n = detect_every_n
         self.frame_idx = 0
         self.last_face = None
+
+        self.last_probs = None
+        self.last_emotion = None
 
     def process_frame(self, frame):
         self.frame_idx += 1
@@ -41,7 +49,10 @@ class FaceStreamProcessor:
                 self.tracker.reset()
                 self.last_face = None
 
+        outputs = {"webcam": frame}
+
         sample = None
+
         if self.last_face is not None:
             sample = {
                 "image": frame,
@@ -57,10 +68,14 @@ class FaceStreamProcessor:
                 do_aligning=True
             )
 
-        outputs = {"webcam": frame}
-
         if sample is not None:
-            #outputs["aligned_face"] = sample["image"] Uncomment if you want aligned picture in the demo.
             draw_box_landmarks(frame, sample["original"])
+            if do_detect:
+                self.last_emotion, self.last_probs = run_fer(self.model, sample["image"], self.device)
+
+            if self.last_probs is not None:
+                draw_emotion_probs(frame, self.last_probs)
 
         return outputs
+
+
