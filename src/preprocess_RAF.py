@@ -11,7 +11,7 @@ def main():
            sadness_ratio   = 0.8,
            anger_ratio     = 1)
 
-    sort_data(data = "RAF")
+    sort_data(data  = "RAF")
 
     align_data(data = "RAF")
 
