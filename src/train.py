@@ -42,7 +42,7 @@ DEVICE = get_device()
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 25
+EPOCHS = 28
 
 # Paths to data directories
 TRAIN_DIR = "data/train"
@@ -146,7 +146,7 @@ def main():
     #criterion = nn.CrossEntropyLoss()
 
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
-    class_weights = torch.tensor([1.5, 1.5, 2.0, 1.0, 1.2, 1.0], device=DEVICE)
+    class_weights = torch.tensor([1.5, 1.7, 1.8, 1.0, 1.2, 1.0], device=DEVICE)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
@@ -163,7 +163,7 @@ def main():
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         mode="min",
-        patience=3,
+        patience=4,
         factor=0.5,
         min_lr=1e-5
     )

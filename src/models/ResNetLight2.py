@@ -13,7 +13,7 @@ class ResNetLightCNN2(nn.Module):
         )
 
         # Residual Stages
-        self.stage1 = ResidualBlock(32, 64, stride=1, use_se=False)  # keine SE in Stage1
+        self.stage1 = ResidualBlock(32, 64, stride=1, use_se=True)  # SE in Stage1 als test
         self.stage2 = ResidualBlock(64, 128, stride=2)
         self.stage3 = ResidualBlock(128, 256, stride=2)
 
