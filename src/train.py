@@ -146,7 +146,7 @@ def main():
     #criterion = nn.CrossEntropyLoss()
 
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
-    class_weights = torch.tensor([1.5, 1.5, 2.0, 1.0, 1.2, 1.0], device=DEVICE)
+    class_weights = torch.tensor([1.2, 1.5, 2.0, 1.0, 1.0, 1.0], device=DEVICE)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
@@ -161,11 +161,11 @@ def main():
     )
     '''
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer,
-        mode="min",
-        patience=6,
-        factor=0.5,
-        min_lr=1e-5
+    optimizer,
+    mode="max",
+    patience=6,
+    factor=0.5,
+    min_lr=1e-5
     )
 
     best_val_acc = 0.0
@@ -210,7 +210,7 @@ def main():
         # 7.Validation
         val_acc, val_loss = validate(model, val_loader, criterion)
 
-        scheduler.step(val_loss)
+        scheduler.step(val_acc)
 
         current_lr = optimizer.param_groups[0]["lr"]
         
@@ -232,8 +232,8 @@ def main():
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
         '''
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
 

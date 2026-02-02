@@ -6,9 +6,9 @@ from explaining.visualize_gradcam import visualize
 from models.ResNetLight2 import ResNetLightCNN2
 
 # These can be configurated freely:
-IMAGE_PATH   = "/Users/richardachtnull/Desktop/disgusted.jpg"
+IMAGE_PATH   = "/Users/richardachtnull/Desktop/lebron/lebron.jpg"
 MODEL        = "models/ResNetLight_v2.pth"
-TARGET_LAYER = "stage2.conv2"
+TARGET_LAYER = "stage3.conv1"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

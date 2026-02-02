@@ -6,18 +6,18 @@ random.seed(42)
 
 parameters = {
     "RAF": {
-        "train":    0.65,
-        "test":     0.175,
+        "train"   : 0.65,
+        "test"    : 0.175,
         "validate": 0.175,
     },
     "KDEF": {
-        "train":    0.5,
-        "test":     0.25,
+        "train"   : 0.5,
+        "test"    : 0.25,
         "validate": 0.25,
     },
     "ExpW": {
-        "train": 0.75,
-        "test": 0.175,
+        "train"   : 0.65,
+        "test"    : 0.175,
         "validate": 0.175,
     },
 }

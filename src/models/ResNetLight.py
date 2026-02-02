@@ -56,7 +56,7 @@ class ResNetLightCNN(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 # Kaiming  normal (He Init) for Conv Layer
-                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="leaky_relu")
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):
