@@ -4,11 +4,11 @@ from preprocessing.align_data import align_data
 
 def main():
 
-    filter(suprise_ratio   = 1,
+    filter(suprise_ratio   = 0.5,
            fear_ratio      = 1,
            disgust_ratio   = 1,
-           happiness_ratio = 0.35,
-           sadness_ratio   = 1,
+           happiness_ratio = 0.15,
+           sadness_ratio   = 0.4,
            anger_ratio     = 1)
 
     sort_data(data  = "RAF")
