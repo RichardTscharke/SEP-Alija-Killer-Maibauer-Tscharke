@@ -146,7 +146,7 @@ def main():
     #criterion = nn.CrossEntropyLoss()
 
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
-    class_weights = torch.tensor([1.5, 2.0, 2.0, 1.0, 1.0, 1.0], device=DEVICE)
+    class_weights = torch.tensor([1.2, 1.2, 2.0, 1.0, 1.0, 1.0], device=DEVICE)
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
