@@ -8,7 +8,7 @@ def main():
                         fear_ratio      = 1.0,
                         disgust_ratio   = 1.0,
                         happiness_ratio = 0.25,
-                        sadness_ratio   = 1.0,
+                        sadness_ratio   = 0.4,
                         anger_ratio     = 1.0)
 
     sort_data(data  = "ExpW") # Note: ExpW contains multifaced imgs.
