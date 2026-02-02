@@ -142,7 +142,7 @@ def main():
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
 
     # 4. Model, Loss, Optimizer
-    model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
+    model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
     criterion = nn.CrossEntropyLoss()
 
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
