@@ -7,7 +7,7 @@ random.seed(42)
 parameters = {
     "RAF": {
         "train"   : 0,
-        "test"    : 0.1,
+        "test"    : 1,
         "validate": 0,
     },
     "KDEF": {
@@ -17,7 +17,7 @@ parameters = {
     },
     "ExpW": {
         "train"   : 0.75,
-        "test"    : 0.175,
+        "test"    : 0,
         "validate": 0.25,
     },
 }
