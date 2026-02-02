@@ -241,8 +241,8 @@ def main():
     print("=" * 50)
     print("Training completed.")
     print(
-        #f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
-        f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
+        f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+        #f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
     )
     print(f"Saved as: {save_path}")
     print("=" * 50)

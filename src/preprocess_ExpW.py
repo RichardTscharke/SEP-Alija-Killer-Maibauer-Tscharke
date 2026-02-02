@@ -4,11 +4,11 @@ from preprocessing.align_data import align_data
 
 def main():
 
-    determine_and_filter(surprise_ratio = 0.2,
+    determine_and_filter(surprise_ratio = 0.66,
                         fear_ratio      = 1.0,
                         disgust_ratio   = 1.0,
-                        happiness_ratio = 0.05,
-                        sadness_ratio   = 0.5,
+                        happiness_ratio = 0.25,
+                        sadness_ratio   = 1.0,
                         anger_ratio     = 1.0)
 
     sort_data(data  = "ExpW") # Note: ExpW contains multifaced imgs.
