@@ -51,7 +51,7 @@ MODEL_DIR = "models"
 
 
 # generate unique model save path
-def get_unique_model_path(base_name="ResNetLight"):
+def get_unique_model_path(base_name="ResNetLight_2"):
 
     # Find the next available model save path: ResNetLight_v0.pth, ResNetLight_v1.pth, etc.
     if not os.path.exists(MODEL_DIR):
@@ -142,7 +142,7 @@ def main():
     print(f"Klassen ({num_classes}): {train_dataset.classes}")
 
     # 4. Model, Loss, Optimizer
-    model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
+    model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
     criterion = nn.CrossEntropyLoss()
 
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
