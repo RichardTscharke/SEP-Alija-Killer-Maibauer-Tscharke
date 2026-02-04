@@ -22,7 +22,7 @@ def sort_data(data):
         ORIGINAL_OUT = "data/RAF_raw/RAF_original_processed"
 
     elif data == "ExpW":
-        IMAGE_IN = "data/ExpW/Image"
+        IMAGE_IN = "data/ExpW/image"
         LABEL_IN = "data/ExpW/label/label.txt"
 
         ALIGNED_OUT  = "data/ExpW/ExpW_aligned_processed"
