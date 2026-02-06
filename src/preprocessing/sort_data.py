@@ -113,10 +113,10 @@ def sort_data(data):
                 cv2.imwrite(target_path, face)
 
     if data == "RAF":
-        print(f"Sorted {counter} original images.")
+        print(f"[INFO] Sorted {counter} original images.")
     elif data == "ExpW":
-        print(f"Sorted and cropped {counter} original images.")
-    print(f"Original images saved in: {ORIGINAL_OUT}")
+        print(f"[INFO] Sorted and cropped {counter} original images.")
+    print(f"[INFO] Original images saved in: {ORIGINAL_OUT}")
     
 
 def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
