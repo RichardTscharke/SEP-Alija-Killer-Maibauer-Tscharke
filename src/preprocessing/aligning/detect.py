@@ -2,7 +2,7 @@ import numpy as np
 from .validate import is_valid_face
 from .pipeline import preprocess_image
 
-def detect_and_preprocess(image, detector, **kwargs):
+def detect_and_preprocess(image, detector, detect_only = False, **kwargs):
 
     faces = detector.detect_face(image)
     if faces is None or len(faces) == 0:
@@ -15,6 +15,10 @@ def detect_and_preprocess(image, detector, **kwargs):
         return None
 
     sample = build_sample_from_face(image, face)
+
+    if detect_only:
+        return sample
+    
     return preprocess_image(sample, **kwargs)
 
 def build_sample_from_face(image, face):

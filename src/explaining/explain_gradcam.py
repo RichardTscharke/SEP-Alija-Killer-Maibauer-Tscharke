@@ -42,5 +42,6 @@ def explain_gradcam(
         "aligned_img": aligned_img,
         "cam": cam,
         "probs": probs,
-        "pred_class": pred_class
+        "pred_class": pred_class,
+        "box": sample["original"]["box"]
     }
