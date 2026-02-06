@@ -2,32 +2,8 @@ import shutil
 import random
 from pathlib import Path
 
+# Fixed seed for representative tests
 random.seed(42)
-
-parameters = {
-    "RAF": {
-        "train"   : 0.75,
-        "test"    : 0.1,
-        "validate": 0.15,
-    },
-    "KDEF": {
-        "train"   : 0.75,
-        "test"    : 0.1,
-        "validate": 0.15,
-    },
-    "ExpW": {
-        "train"   : 0.75,
-        "test"    : 0.1,
-        "validate": 0.15,
-    },
-}
-
-INPUT_DIRS = {
-    "RAF":  Path("data/RAF_raw/RAF_aligned_processed"),
-    "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
-    "ExpW": Path("data/ExpW/ExpW_aligned_processed"),
-}
-
 
 OUTPUT_DIRS = {
     "train":    Path("data/train"),
@@ -41,13 +17,20 @@ EMOTIONS = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
 
 
 def setup_directories():
-        for split_dir in OUTPUT_DIRS.values():
-            if split_dir.exists():
-                shutil.rmtree(split_dir)
-            split_dir.mkdir(parents = True, exist_ok = True)
+    """
+    (Re)creates the global train/test/validate directories.
+    Existing directories are removed for a fresh start.
+    """
+    for split_dir in OUTPUT_DIRS.values():
+        if split_dir.exists():
+            shutil.rmtree(split_dir)
+        split_dir.mkdir(parents = True, exist_ok = True)
 
-def check_directories():
-    for dataset_name, dataset_dir in INPUT_DIRS.items():
+def check_directories(input_dirs):
+    """
+    Verifies that each dataset directory contains exactly the expected emotion classes.
+    """
+    for dataset_name, dataset_dir in input_dirs.items():
         found_emotions = sorted(
             [p.name for p in dataset_dir.iterdir() if p.is_dir()]
         )
@@ -61,14 +44,33 @@ def check_directories():
 
         print(f"[INFO] {dataset_name} emotion folders verified.")
 
-def main():
+def merge(MERGE_SPLIT, use_aligned = True):
+    """
+    Merges multiple FER datasets into unified train/test/validate splits.
+    Each dataset is split emotion-wise to avoid class leakage.
+    Depending on use_aligned, either aligned or original images are merged.
+    """
+
+    # Select aligned or original dataset outputs as merge source
+    if use_aligned:
+        INPUT_DIRS = {
+        "RAF":  Path("data/RAF_raw/RAF_aligned_processed"),
+        "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
+        "ExpW": Path("data/ExpW/ExpW_aligned_processed"),
+        }
+    else:
+        INPUT_DIRS = {
+        "RAF":  Path("data/RAF_raw/RAF_original_processed"),
+        "KDEF": Path("data/KDEF/Image/KDEF_original_processed"),
+        "ExpW": Path("data/ExpW/ExpW_original_processed"),
+        }
 
     setup_directories()
 
-    check_directories()
+    check_directories(INPUT_DIRS)
 
     for dataset_name, dataset_dir in INPUT_DIRS.items():
-        ratios = parameters[dataset_name]
+        ratios = MERGE_SPLIT[dataset_name]
 
         print(f"\n [INFO] Merging dataset: {dataset_name}")
 
@@ -93,6 +95,7 @@ def main():
             n_test  = int(ratios["test"] * n)
             n_val   = int(ratios["validate"] * n)
 
+            # Due to integer rounding, the remaining samples are implicitly assigned to validation
             split_map = {
                 "train":    images[:n_train],
                 "test":     images[n_train:n_train + n_test],
@@ -106,14 +109,13 @@ def main():
                 out_emotion_dir = OUTPUT_DIRS[split] /emotion
                 out_emotion_dir.mkdir(parents = True, exist_ok = True)
 
+                # Copy images into the global split directory while preserving class logic
                 for img_path in imgs:
                     target_path = out_emotion_dir / img_path.name
                     shutil.copy2(img_path, target_path)
 
+             # Per-emotion statistics help verify class balance after merging
             print(
                 f"[INFO] {dataset_name} | {emotion}: "
                 f"train = {n_train}, test = {n_test}, validate = {n_val}"
             )
-
-if __name__ == "__main__":
-    main()

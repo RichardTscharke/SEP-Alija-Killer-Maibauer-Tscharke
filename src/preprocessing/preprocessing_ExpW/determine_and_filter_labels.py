@@ -2,10 +2,11 @@ from pathlib import Path
 from collections import defaultdict
 import random
 
+# Fixed seed for representative tests
 random.seed(42)
 
 LABEL_IN  = Path("data/ExpW/label/label.lst")
-LABEL_OUT = Path("data/ExpW/label/label_filtered.txt")
+LABEL_OUT = Path("data/ExpW/label/ExpW_labels_filtered.txt")
 
 # ExpW label logic -> RAF label logic
 ExpW_TO_INTERNAL = {
@@ -29,7 +30,7 @@ INTERNAL_TO_EMOTION = {
 def determine_and_filter(ratios: dict):
     """
     Changes ExpW to single face images and downamples classes by modifying the label list file.
-    Operates only on list_patition_label.txt (no image deletion).
+    Operates only on label.lst and ExpW_labels_filtered.txt (no image deletion).
     The label list contains the boundingbox of the final face to later crop it.
     """
 
@@ -101,7 +102,7 @@ def determine_and_filter(ratios: dict):
         for image_name, x1, y1, x2, y2 in selected:
             final_entries.append((image_name, x1, y1, x2, y2, label))
 
-    # Write updated label entries to label.txt
+    # Write updated label entries to ExpW_labels_filtered.txt
     LABEL_OUT.parent.mkdir(parents = True, exist_ok = True)
 
     with LABEL_OUT.open("w") as f:
