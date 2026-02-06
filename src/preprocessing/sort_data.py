@@ -21,14 +21,14 @@ def sort_data(data):
 
     if data == "RAF":
         IMAGE_IN = "data/RAF_raw/Image/original"
-        LABEL_IN = "data/RAF_raw/EmoLabel/list_patition_label_filtered.txt"
+        LABEL_IN = "data/RAF_raw/EmoLabel/RAF_labels_filtered.txt"
 
         ALIGNED_OUT  = "data/RAF_raw/RAF_aligned_processed"
         ORIGINAL_OUT = "data/RAF_raw/RAF_original_processed"
 
     elif data == "ExpW":
         IMAGE_IN = "data/ExpW/image"
-        LABEL_IN = "data/ExpW/label/label.txt"
+        LABEL_IN = "data/ExpW/label/ExpW_labels_filtered.txt"
 
         ALIGNED_OUT  = "data/ExpW/ExpW_aligned_processed"
         ORIGINAL_OUT = "data/ExpW/ExpW_original_processed"
@@ -62,8 +62,7 @@ def sort_data(data):
         if data == "RAF":
             label_index = int(parts[1])
         elif data == "ExpW":
-            # ExpW label format:
-            # image_name face_id top left right bottom confidence label
+            # ExpW label format: image_name face_id top left right bottom confidence label
             label_index = int(parts[5])
             x1, y1, x2, y2 = map(int, parts[1:5])
 

@@ -4,7 +4,7 @@ from preprocessing.align_data import align_data
 
 # head positions: "S" = Straight, "HL"/"HR" = Half Left/Right, "FL/FR" = Full Left/Right
 # parameters:
-# emotion : (allowed head positions, sampling ratio)
+# emotion   : (allowed head positions, sampling ratio)
 KDEF_PARAMS = {
     "Anger"    : (["S", "HL", "HR"], 0.5),
     "Disgust"  : (["S", "HL", "HR"], 1.0),

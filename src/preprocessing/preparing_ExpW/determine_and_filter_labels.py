@@ -4,9 +4,10 @@ import random
 
 random.seed(42)
 
-LABEL_IN = Path("data/ExpW/label/label.lst")
-LABEL_OUT = Path("data/ExpW/label/label.txt")
+LABEL_IN  = Path("data/ExpW/label/label.lst")
+LABEL_OUT = Path("data/ExpW/label/label_filtered.txt")
 
+# ExpW label logic -> RAF label logic
 ExpW_TO_INTERNAL = {
     0: 6,   # Anger
     1: 3,   # Disgust
@@ -25,23 +26,19 @@ INTERNAL_TO_EMOTION = {
     6: "Anger",
 }
 
-def determine_and_filter(surprise_ratio  = 1,
-                         fear_ratio      = 1,
-                         disgust_ratio   = 1,
-                         happiness_ratio = 1,
-                         sadness_ratio   = 1,
-                         anger_ratio     = 1):
-    
-    ratios = {
-        1: surprise_ratio,
-        2: fear_ratio,
-        3: disgust_ratio,
-        4: happiness_ratio,
-        5: sadness_ratio,
-        6: anger_ratio,
-    }
+def determine_and_filter(ratios: dict):
+    """
+    Changes ExpW to single face images and downamples classes by modifying the label list file.
+    Operates only on list_patition_label.txt (no image deletion).
+    The label list contains the boundingbox of the final face to later crop it.
+    """
 
-    # 1. Group ExpW by image names
+    label_ratios = {
+        label: ratios.get(INTERNAL_TO_EMOTION[label], 1.0)
+        for label in INTERNAL_TO_EMOTION
+    }
+    
+    # Group ExpW by image names
     grouped = defaultdict(list)
 
     with LABEL_IN.open("r") as f:
@@ -50,6 +47,7 @@ def determine_and_filter(surprise_ratio  = 1,
             if len(parts) < 8:
                 continue
 
+            # ExpW label format: image_name face_id top left right bottom confidence label
             image_name = parts[0]
             x1 = int(parts[3])
             y1 = int(parts[2])
@@ -60,18 +58,18 @@ def determine_and_filter(surprise_ratio  = 1,
 
             grouped[image_name].append((confidence, x1, y1, x2, y2, label))
 
-    print(f"[INFO] Unique images in label.lst: {len(grouped)}.")
+    print(f"[INFO] ExpW has multiple labels for one image. Unique images in label.lst: {len(grouped)}.")
 
-    # 2 Select the face with highest confidence per image
     per_class = defaultdict(list)
     
+    # Select the face with highest confidence per image
     for image_name in sorted(grouped):
 
         best = max(grouped[image_name], key=lambda x: x[0])
 
         confidence, x1, y1, x2, y2, original_label = best
 
-        # skip neutral
+        # Skip neutral emotions
         if original_label == 6:
             continue
 
@@ -82,27 +80,28 @@ def determine_and_filter(surprise_ratio  = 1,
 
         per_class[internal_label].append((image_name, x1, y1, x2, y2))
 
-    # 3. Apply ratios per class
     final_entries = []
-    class_counter = {}
 
+    # Apply ratios per class
     for label, entries in per_class.items():
-        ratio = ratios[label]
+        ratio = label_ratios[label]
         n_total = len(entries)
         n_keep = int(n_total * ratio)
 
         random.shuffle(entries)
-        selected = entries[:n_keep] if ratio < 1 else entries
+        if ratio >= 1:
+            selected = entries  
+        else:
+            selected = entries[:n_keep]
 
         emotion = INTERNAL_TO_EMOTION[label]
         print(f"[INFO] ({emotion}): {len(entries)} -> {len(selected)}")
 
-        class_counter[label] = len(selected)
-
+        # New ExpW label format: image_name x1 y1 x2 y2 label
         for image_name, x1, y1, x2, y2 in selected:
             final_entries.append((image_name, x1, y1, x2, y2, label))
 
-    # 4. Write updated label entries to label.txt
+    # Write updated label entries to label.txt
     LABEL_OUT.parent.mkdir(parents = True, exist_ok = True)
 
     with LABEL_OUT.open("w") as f:
@@ -111,4 +110,4 @@ def determine_and_filter(surprise_ratio  = 1,
 
     print("[INFO] Clean up for ExpW labels finished.")
     print(f"[INFO] Final entries: {len(final_entries)}")
-    print("[INFO] Images per emotion class:")
+

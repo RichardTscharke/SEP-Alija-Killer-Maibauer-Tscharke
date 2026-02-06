@@ -9,7 +9,7 @@ IMAGE_IN = "data/KDEF"
 ALIGNED_OUT  = "data/KDEF/Image/KDEF_aligned_processed"
 ORIGINAL_OUT = "data/KDEF/Image/KDEF_original_processed"
 
-LABEL_OUT = "data/KDEF/EmoLabel/list_patition_label.txt"
+LABEL_OUT = "data/KDEF/EmoLabel/KDEF_labels_filtered.txt"
 
 # Define Emotion labels
 labels = {
