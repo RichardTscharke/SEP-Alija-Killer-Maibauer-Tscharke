@@ -13,6 +13,11 @@ labels = {
 }
 
 def sort_data(data):
+    """
+    Creates emotion-wise folders from dataset-specific label files
+    ALIGNED_OUT is prepared here but populated later by align_data()
+    For ExpW: performs face cropping based on bounding boxes since multifaced images exist
+    """
 
     if data == "RAF":
         IMAGE_IN = "data/RAF_raw/Image/original"
@@ -31,8 +36,8 @@ def sort_data(data):
     else:
         raise ValueError(f"Unknown dataset: {data}")
 
-    raf_counter  = 0
-    expW_counter = 0
+    # Serves for the target file names
+    counter = 0
     
     setup_directories(ALIGNED_OUT, ORIGINAL_OUT)
 
@@ -57,19 +62,21 @@ def sort_data(data):
         if data == "RAF":
             label_index = int(parts[1])
         elif data == "ExpW":
+            # ExpW label format:
+            # image_name face_id top left right bottom confidence label
             label_index = int(parts[5])
             x1, y1, x2, y2 = map(int, parts[1:5])
 
-        # Remove neutral labeled images
+        # Identify label <-> emotion logic
         emotion_name = labels.get(label_index)
+        # Remove neutral labeled images
         if emotion_name is None:
             continue
 
-        # --- PROCESS ORIGINAL IMAGES ---
-        # filename remains the same for original images
+        # Filename remains the same for original images
         filename_original = original_filename
 
-        # search for image in original folder
+        # Search for image in original folder
         image_path_original = os.path.join(IMAGE_IN, filename_original)
 
         # Check if original image exists and move
@@ -79,15 +86,17 @@ def sort_data(data):
             )
             os.makedirs(target_dir_original, exist_ok=True)
 
+            counter += 1
+
+            # Create dataset specific filenames
             if data == "RAF":
-                raf_counter += 1
-                new_name = f"raf_{raf_counter:06d}.jpg"
+                new_name = f"raf_{counter:06d}.jpg"
             elif data == "ExpW":
-                expW_counter += 1
-                new_name = f"expW_{expW_counter:06d}.jpg"
+                new_name = f"expW_{counter:06d}.jpg"
 
             target_path = os.path.join(target_dir_original, new_name)
             
+            # Copy data for quick changes in data distribution for new setups
             if data == "RAF":
                 shutil.copy2(image_path_original, target_path)
 
@@ -95,22 +104,27 @@ def sort_data(data):
                 img = cv2.imread(image_path_original)
                 if img is None:
                     continue
+
+                # Eliminate other faces so that the face detector finds the same selected face only
                 face = crop_face(img, x1, y1, x2, y2)
+
                 if face is None or face.size == 0:
-                    continue
-                if face.size == 0:
                     continue
                 cv2.imwrite(target_path, face)
 
     if data == "RAF":
-        print(f"Sorted {raf_counter} original images.")
+        print(f"Sorted {counter} original images.")
     elif data == "ExpW":
-        print(f"Sorted and cropped {expW_counter} original images.")
+        print(f"Sorted and cropped {counter} original images.")
     print(f"Original images saved in: {ORIGINAL_OUT}")
     
 
 def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
-    # List of directories to setup
+    """
+    (Re)creates emotion-wise output directories for a dataset.
+    Existing directories are removed to ensure a clean preprocessing run.
+    """
+
     target_dirs = [ALIGNED_OUT, ORIGINAL_OUT]
 
     for target_dir in target_dirs:
@@ -123,10 +137,17 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
         for emotion in labels.values():
             dir_path = os.path.join(target_dir, emotion)
             os.makedirs(dir_path, exist_ok=True)
-            print(f"Created directory: {dir_path}")
+
+        print(f"Created directory: {target_dir} containing the 6 emotion classes.")
 
 
 def crop_face(img, x1, y1, x2, y2, scale = 3.0):
+    """
+    Crops and enlarges a face bounding box from an image given by the dataset.
+    The box is scaled around its center by the given factor and clipped
+    to image boundaries.
+    """
+
     h_img, w_img = img.shape[:2]
 
     if x2 <= x1 or y2 <= y1:
@@ -135,9 +156,11 @@ def crop_face(img, x1, y1, x2, y2, scale = 3.0):
     w = x2 - x1
     h = y2 - y1
 
+    # RetinaFace struggles to detect really big and close faces
     if w < 10 or h < 10:
         return None
-
+    
+    # Crop around the center
     cx = (x1 + x2) // 2
     cy = (y1 + y2) // 2
 

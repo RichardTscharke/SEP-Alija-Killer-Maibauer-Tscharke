@@ -90,8 +90,8 @@ def main():
             n = len(images)
 
             n_train = int(ratios["train"] * n)
-            n_test = int(ratios["test"] * n)
-            n_val = int(ratios["validate"] * n)
+            n_test  = int(ratios["test"] * n)
+            n_val   = int(ratios["validate"] * n)
 
             split_map = {
                 "train":    images[:n_train],
