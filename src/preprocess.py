@@ -27,12 +27,12 @@ Final entries: 630
 For custom data configurations adjust these:
 '''
 RAF_FILTER = {
-    "Surprise":  1.0,
-    "Fear":      1.0,
-    "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
-    "Anger":     1.0,
+    "Surprise":  0,
+    "Fear":      0,
+    "Disgust":   0,
+    "Happiness": 0,
+    "Sadness":   0,
+    "Anger":     0,
 }
 EXPW_FILTER = {
     "Surprise":  1.0,
@@ -43,12 +43,12 @@ EXPW_FILTER = {
     "Anger":     1.0,
 }
 KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 1.0),
-    "Disgust"  : (["S", "HL", "HR"], 1.0),
-    "Fear"     : (["S", "HL", "HR"], 1.0),
-    "Happiness": (["S", "HL", "HR"], 1.0),
-    "Sadness"  : (["S", "HL", "HR"], 1.0),
-    "Surprise" : (["S", "HL", "HR"], 1.0),
+    "Anger"    : (["S", "HL", "HR"], 0),
+    "Disgust"  : (["S", "HL", "HR"], 0),
+    "Fear"     : (["S", "HL", "HR"], 0),
+    "Happiness": (["S", "HL", "HR"], 0),
+    "Sadness"  : (["S", "HL", "HR"], 0),
+    "Surprise" : (["S", "HL", "HR"], 0),
 }
 MERGE_SPLIT = {
     "RAF": {

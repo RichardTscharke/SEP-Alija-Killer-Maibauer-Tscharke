@@ -59,6 +59,7 @@ def align_data(data):
             for img_path in tqdm(images, desc = f"{data}/{emotion}", leave = False):
 
                 if img_path.suffix.lower() not in VALID_EXTS:
+                    failed += 1
                     continue
 
                 img = cv2.imread(str(img_path))
