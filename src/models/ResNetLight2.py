@@ -95,7 +95,7 @@ class ResidualBlock(nn.Module):
                 
                 
 class SEBlock(nn.Module):
-    def __init__(self, channel, reduction=32):  # weniger aggressiv
+    def __init__(self, channel, reduction=16):  # weniger aggressiv
         super(SEBlock, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(

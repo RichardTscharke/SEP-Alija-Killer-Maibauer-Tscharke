@@ -7,6 +7,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import os
+from torch.cuda.amp import autocast, GradScaler
 
 # importing the custom model
 from models.ResNetLight import ResNetLightCNN
@@ -37,6 +38,7 @@ def get_device():
 
 
 DEVICE = get_device()
+use_amp = DEVICE.type == "cuda"
 
 
 # CONFIGURATIONS
@@ -82,8 +84,12 @@ def validate(model, loader, criterion):
             images = images.to(DEVICE)
             labels = labels.to(DEVICE)
 
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            #outputs = model(images)
+            #loss = criterion(outputs, labels)
+
+            with autocast(enabled=use_amp):
+                outputs = model(images)
+                loss = criterion(outputs, labels)
 
             val_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
@@ -143,13 +149,34 @@ def main():
 
     # 4. Model, Loss, Optimizer
     model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
-    criterion = nn.CrossEntropyLoss()
+    #criterion = nn.CrossEntropyLoss()
 
-    #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
-    #class_weights = torch.tensor([1.2, 1.2, 2.0, 1.0, 1.0, 1.0], device=DEVICE)
-    #criterion = nn.CrossEntropyLoss(weight=class_weights)
+    # Inverse frequency weights approach for tests
+    ###########################################
+    from collections import Counter
+
+    # Count class distribution
+    targets = [label for _, label in train_dataset.samples]
+    class_counts = Counter(targets)
+
+    num_classes = len(train_dataset.classes)
+    total = sum(class_counts.values())
+
+    # inverse frequency
+    class_weights = [
+        total / (num_classes * class_counts[i])
+        for i in range(num_classes)
+    ]
+
+    class_weights = torch.tensor(class_weights, dtype=torch.float, device=DEVICE)
+    print("Class weights:", class_weights)
+
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
+    #############################################
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
+
+    scaler = GradScaler()
 
     # 5.Scheduler
     '''''
@@ -162,7 +189,7 @@ def main():
     '''
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     optimizer,
-    mode="max",
+    mode="min",
     patience=6,
     factor=0.5,
     min_lr=1e-5
@@ -187,12 +214,23 @@ def main():
             images = images.to(DEVICE)
             labels = labels.to(DEVICE)
 
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            #outputs = model(images)
+            #loss = criterion(outputs, labels)
+            optimizer.zero_grad(set_to_none = True)
 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            #loss.backward()
+            #optimizer.step()
+
+            # Mixed precision implementation test
+            ###########################################
+            with autocast(enabled=use_amp):
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+            ###########################################
 
             running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
@@ -210,7 +248,7 @@ def main():
         # 7.Validation
         val_acc, val_loss = validate(model, val_loader, criterion)
 
-        scheduler.step(val_acc)
+        scheduler.step(val_loss)
 
         current_lr = optimizer.param_groups[0]["lr"]
         
@@ -226,9 +264,9 @@ def main():
         print("LR:", current_lr)
 
         # 8. Save best model
-        '''''
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
+        
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
         '''
@@ -236,13 +274,13 @@ def main():
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
-
+        '''
 
     print("=" * 50)
     print("Training completed.")
     print(
-        f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
-        #f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
+        #f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+        f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
     )
     print(f"Saved as: {save_path}")
     print("=" * 50)
