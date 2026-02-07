@@ -16,7 +16,7 @@ def main():
         shutil.rmtree(dir_path)
     dir_path.mkdir(parents=True)
 
-    calculate_inference(MODEL_PATH = "models/ResNetLight_2_v0.pth") # Make sure this is the latest model
+    calculate_inference(MODEL_PATH = "models/ResNetLight_2_v2.pth") # Make sure this is the latest model
     print(f"[INFO] Inference calculated.")
 
     plot_epoch_curves(csv_path = "src/evaluation/outputs/epoch_metrics.csv")
