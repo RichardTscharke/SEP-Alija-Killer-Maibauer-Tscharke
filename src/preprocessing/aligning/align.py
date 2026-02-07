@@ -2,7 +2,11 @@ import numpy as np
 import cv2
 
 def align_face(sample, output_size = 64, target_left = (18, 16), target_right = (44, 16)):
-
+    '''
+    Affine face alignment using eye landmarks.
+    The fixed target points are based on test results.
+    Returns aligned face of size (output_size, output_size) or None on failure.
+    '''
     image = sample["image"]
     eyes = sample["eyes"]
 
@@ -14,28 +18,36 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
 
     angle = np.degrees(np.arctan2(dY, dX))
 
-    current_distance = np.sqrt((dX ** 2) + (dY ** 2))
-    if not np.isfinite(current_distance) or current_distance <  5:  # hardcoded for now for tests
-        return None
-    desired_distance = np.linalg.norm(np.array(target_right) - np.array(target_left))
+    # Calculates the euclidean length of a vector
+    current_distance = np.hypot(dX, dY)
 
+    # Degenerate eye geometry (overlapping or invalid landmarks)
+    if not np.isfinite(current_distance) or current_distance <  5:
+        return None
+    
+    desired_distance = np.hypot(target_right[0] - target_left[0],
+                                target_right[1] - target_left[1])
+    
     scale = desired_distance / current_distance
 
-    current_center = ((xL + xR) // 2, (yL + yR) // 2)
-    target_center =  (target_left[0] + target_right[0]) // 2, (target_left[1] + target_right[1]) // 2
+    current_center = ((xL + xR) / 2.0, (yL + yR) / 2.0)
+    target_center  = ((target_left[0] + target_right[0]) / 2.0,
+                      (target_left[1] + target_right[1]) / 2.0)
 
     M = cv2.getRotationMatrix2D(current_center, angle, scale)
 
     M[0,2] += target_center[0] - current_center[0]
     M[1,2] += target_center[1] - current_center[1]
 
+    # Parts outside of the border are filled black (BGR: 0 = Black)
     sample["image"] = cv2.warpAffine(image, M,
                                      (output_size, output_size),
-                                     flags=cv2.INTER_AREA,
+                                     flags=cv2.INTER_LINEAR,
                                      borderMode=cv2.BORDER_CONSTANT,
                                      borderValue=0
                                      )
 
+    # Transform the eyes to the new target points
     aligned_eyes = {}
 
     for key, (x, y) in eyes.items():
@@ -47,7 +59,9 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
     return sample
 
 def transform_point(p, M):
-
+    '''
+    Applies a 2D affine transformation matrix to a point.
+    '''
     x, y = p
 
     x_new = M[0, 0] * x + M[0, 1] * y + M[0, 2]

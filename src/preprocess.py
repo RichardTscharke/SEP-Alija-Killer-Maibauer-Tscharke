@@ -8,7 +8,7 @@ This is the preprocessing interface of our project.
 
 Within the filters numbers represent ratios per emotion class per dataset.
 For the KDEF dataset there are also head positions to choose from:
--> S = Straight, HL/HR = Half Left/Right, FL/FR = Full Left/Right
+-> S = Straight, HL/HR = Half Left/Right, FL/FR = Full Left/Right (we recommend to exclude fullsided in general)
 The train/test/validate split is applied onto the filtered datasets and afterwards the splits are merged.
 Total number or original images per dataset after filtering (Note that this number is lower after alignment):
 
@@ -26,15 +26,6 @@ Final entries: 630
 
 For custom data configurations adjust these:
 '''
-
-KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 0.5),
-    "Disgust"  : (["S", "HL", "HR"], 1.0),
-    "Fear"     : (["S", "HL", "HR"], 1.0),
-    "Happiness": (["S", "HL", "HR"], 0),
-    "Sadness"  : (["S", "HL", "HR"], 0),
-    "Surprise" : (["S", "HL", "HR"], 0),
-}
 RAF_FILTER = {
     "Surprise":  1.0,
     "Fear":      1.0,
@@ -51,18 +42,26 @@ EXPW_FILTER = {
     "Sadness":   1.0,
     "Anger":     1.0,
 }
+KDEF_FILTER = {
+    "Anger"    : (["S", "HL", "HR"], 0.5),
+    "Disgust"  : (["S", "HL", "HR"], 1.0),
+    "Fear"     : (["S", "HL", "HR"], 1.0),
+    "Happiness": (["S", "HL", "HR"], 0),
+    "Sadness"  : (["S", "HL", "HR"], 0),
+    "Surprise" : (["S", "HL", "HR"], 0),
+}
 MERGE_SPLIT = {
     "RAF": {
         "train"   : 0.75,
         "test"    : 0.1,
         "validate": 0.15,
     },
-    "KDEF": {
+    "ExpW": {
         "train"   : 0.75,
         "test"    : 0.1,
         "validate": 0.15,
     },
-    "ExpW": {
+    "KDEF": {
         "train"   : 0.75,
         "test"    : 0.1,
         "validate": 0.15,

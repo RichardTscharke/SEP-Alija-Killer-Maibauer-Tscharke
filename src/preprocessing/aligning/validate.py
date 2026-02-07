@@ -1,30 +1,44 @@
 import numpy as np
 
-def is_valid_face(face, debug = False):
-
+def is_valid_face(face, debug=False):
+    """
+    Validates a detected face based on bounding box sanity and eye landmark consistency.
+    Requires both eyes for affine alignment.
+    Expects box format (x, y, w, h).
+    """
     x, y, w, h = face["box"]
 
     if w <= 0 or h <= 0:
         return False
-    
-    for k, (kx, ky) in face["eyes"].items():
 
+    eyes = face["eyes"]
+
+    # Precondition: Both eyes exist
+    if "left_eye" not in eyes or "right_eye" not in eyes:
+        if debug:
+            print("missing one or both eyes")
+        return False
+
+    # Precondition: Both eyes have valid coordinates and are within the box
+    for name, (kx, ky) in eyes.items():
         if not np.isfinite(kx) or not np.isfinite(ky):
             if debug:
-                print(f"eye missing: {k}")
-
+                print(f"eye invalid: {name}")
             return False
-        
-        if (kx < x or kx > x + w) or (ky < y or ky > y + h):
+
+        if not (x <= kx <= x + w and y <= ky <= y + h):
             if debug:
-                print(f"eye out of box: {k}")
-
+                print(f"eye out of box: {name}")
             return False
-    
+
     return True
-        
+
 
 def is_valid_sample(sample):
+    """
+    Structural check for a preprocessing sample dictionary.
+    Does not validate geometry or image content.
+    """
     return (
         isinstance(sample, dict)
         and "image" in sample

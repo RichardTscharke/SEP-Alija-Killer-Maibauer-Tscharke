@@ -1,5 +1,8 @@
 def clip_face(sample, clip_ratio = 0.4):
-
+    '''
+    Expands the current bounding box by clip_ratio within image boundaries.
+    The image and landmarks are NOT modified.
+    '''
     if not isinstance(clip_ratio, (int, float)) or clip_ratio <= 0:
         return None
 
@@ -20,6 +23,7 @@ def clip_face(sample, clip_ratio = 0.4):
     if x2 <= x1 or y2 <= y1:
         return None
     
+    # Enlarges the box around the original bounding box to reduce border artifacts 
     sample["box"] = (x1, y1, x2 - x1, y2 - y1)
 
     return sample

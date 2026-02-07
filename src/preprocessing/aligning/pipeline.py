@@ -1,48 +1,49 @@
-import numpy as np
 from copy import deepcopy
-from .validate import is_valid_face, is_valid_sample
 from .clip import clip_face
 from .crop import crop_face
 from .align import align_face
 from ..debug.visualize import visualize
 
 
-def preprocess_image(sample,
-                     do_clipping = True,
-                     do_cropping = True,
-                     do_aligning = True,
-                     vis = False,
-                     debug = False):
+def preprocess_image(sample, vis = False):
+    """
+    Alignment pipeline which assumes that face detection and validation of face and sample already happened.
+    -> two eye requirement, box format: (x, y, w, h), image forma: BGR. All assured by detect.py
+    The vis flags is meant as a debugging tool or visualization of our pipeline.
+    """
+    
+    # Stores the stages as images for a visualization of our alignment pipeline
+    stages = [] if vis else None
 
-    stages = []
-
-    if not is_valid_sample(sample):
+    if sample is None:
         return None
 
     if vis:
         stages.append(("original", deepcopy(sample)))
 
-    if do_clipping:
-        sample = clip_face(sample, clip_ratio=0.4)
-        if not is_valid_sample(sample):
-            return None
-        if vis:
-            stages.append(("clipped", deepcopy(sample)))
+    # Enlarges the bounding box by the desired clip ratio to reduce border artifacts
+    sample = clip_face(sample, clip_ratio=0.4)
+    if sample is None:
+        return None
+    if vis:
+        stages.append(("clipped", deepcopy(sample)))
 
-    if do_cropping:
-        sample = crop_face(sample)
-        if not is_valid_sample(sample):
-            return None
-        if vis:
-            stages.append(("cropped", deepcopy(sample)))
+    # Crops the image around the clipped bounding box
+    sample = crop_face(sample)
+    if sample is None:
+        return None
+    if vis:
+        stages.append(("cropped", deepcopy(sample)))
 
-    if do_aligning:
-        sample = align_face(sample)
-        if not is_valid_sample(sample):
-            return None
-        if vis:
-            stages.append(("aligned", deepcopy(sample)))
+    # Aligns the image via an affine transformation which rotates and scales
+    # the eyes of each image to fixed reference points
+    sample = align_face(sample)
+    if sample is None:
+        return None
+    if vis:
+        stages.append(("aligned", deepcopy(sample)))
 
+    # Plots a graphic of all stages via matplotlib
     if vis:
         visualize(stages)
 
