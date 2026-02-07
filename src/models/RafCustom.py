@@ -20,7 +20,7 @@ class RafCustomCNN(nn.Module):
                 nn.BatchNorm2d(out_c),
                 # Nonlinearity
                 nn.ReLU(),
-                # Halfens height and width due to kernel size = 2 = stride size
+                # Halfen height and width due to kernel size = 2 = stride size
                 nn.MaxPool2d(2),
             )
         
@@ -33,7 +33,7 @@ class RafCustomCNN(nn.Module):
         )
 
         # Classification head: feature maps -> logits
-        #                      (B, 256*4*4)    -> (B, 6)
+        #                      (B, 256*4*4) -> (B, 6)
         self.classifier = nn.Sequential(
             # Fully connected: feature maps -> neurons
             nn.Linear(256*4*4, 512),
@@ -50,5 +50,5 @@ class RafCustomCNN(nn.Module):
         x = self.features(x)
         # (B, 256, 4, 4) -> (Batch, 256*4*4)
         x = torch.flatten(x, 1)
-        # Returns logits
+        # Return logits
         return self.classifier(x)
