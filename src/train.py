@@ -198,6 +198,9 @@ def main():
     min_lr=1e-7
     )
 
+    early_stop_patience = 6
+    epochs_no_improve = 0
+
     best_val_acc = 0.0
 
     best_val_loss = float("inf")
@@ -276,15 +279,26 @@ def main():
         
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            #torch.save(model.state_dict(), save_path)
-            model.load_state_dict(torch.load(save_path, map_location=DEVICE))
+            torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
+            epochs_no_improve = 0
+
+        else:
+            epochs_no_improve += 1
         '''
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
         '''
+
+        # Early stopping
+        if epochs_no_improve >= early_stop_patience:
+            print(f"⏹ Early stopping triggered after epoch {epoch + 1}")
+            break
+
+    # Save the best val_loss model for evaluation
+    model.load_state_dict(torch.load(save_path, map_location=DEVICE))   
 
     print("=" * 50)
     print("Training completed.")
