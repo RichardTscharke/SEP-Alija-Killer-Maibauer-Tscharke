@@ -276,7 +276,8 @@ def main():
         
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), save_path)
+            #torch.save(model.state_dict(), save_path)
+            model.load_state_dict(torch.load(save_path, map_location=DEVICE))
             print(f"    🌟 New Record! Model saved to {save_path}")
         '''
         if val_acc > best_val_acc:

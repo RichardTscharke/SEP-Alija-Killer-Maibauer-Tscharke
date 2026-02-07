@@ -30,25 +30,25 @@ RAF_FILTER = {
     "Surprise":  1.0,
     "Fear":      1.0,
     "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
+    "Happiness": 0.3,
+    "Sadness":   0.7,
     "Anger":     1.0,
 }
 EXPW_FILTER = {
-    "Surprise":  1.0,
+    "Surprise":  0.7,
     "Fear":      1.0,
-    "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
+    "Disgust":   0.5,
+    "Happiness": 0.2,
+    "Sadness":   0.5,
     "Anger":     1.0,
 }
 KDEF_FILTER = {
     "Anger"    : (["S", "HL", "HR"], 1.0),
     "Disgust"  : (["S", "HL", "HR"], 1.0),
     "Fear"     : (["S", "HL", "HR"], 1.0),
-    "Happiness": (["S", "HL", "HR"], 1.0),
-    "Sadness"  : (["S", "HL", "HR"], 1.0),
-    "Surprise" : (["S", "HL", "HR"], 1.0),
+    "Happiness": (["S", "HL", "HR"], 0),
+    "Sadness"  : (["S", "HL", "HR"], 0),
+    "Surprise" : (["S", "HL", "HR"], 0),
 }
 MERGE_SPLIT = {
     "RAF": {
