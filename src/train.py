@@ -43,7 +43,7 @@ use_amp = DEVICE.type == "cuda"
 # CONFIGURATIONS
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
-EPOCHS = 50
+EPOCHS = 75
 
 # Paths to data directories
 TRAIN_DIR = "data/train"
@@ -193,7 +193,7 @@ def main():
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
     optimizer,
     mode="min",
-    patience=3,
+    patience=5,
     factor=0.7,
     min_lr=1e-7
     )
