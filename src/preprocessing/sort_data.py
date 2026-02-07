@@ -77,8 +77,6 @@ def sort_data(data):
 
         # Search for image in original folder
         image_path_original = os.path.join(IMAGE_IN, filename_original)
-        if not os.path.exists(image_path_original):
-            print("[MISS]", image_path_original)
 
         # Check if original image exists and move
         if os.path.exists(image_path_original):
