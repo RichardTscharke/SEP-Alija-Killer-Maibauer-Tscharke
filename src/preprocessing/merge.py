@@ -55,14 +55,14 @@ def merge(MERGE_SPLIT, use_aligned = True):
     if use_aligned:
         INPUT_DIRS = {
         "RAF":  Path("data/RAF_raw/RAF_aligned_processed"),
-        "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
         "ExpW": Path("data/ExpW/ExpW_aligned_processed"),
+        "KDEF": Path("data/KDEF/Image/KDEF_aligned_processed"),
         }
     else:
         INPUT_DIRS = {
         "RAF":  Path("data/RAF_raw/RAF_original_processed"),
-        "KDEF": Path("data/KDEF/Image/KDEF_original_processed"),
         "ExpW": Path("data/ExpW/ExpW_original_processed"),
+        "KDEF": Path("data/KDEF/Image/KDEF_original_processed"),
         }
 
     setup_directories()

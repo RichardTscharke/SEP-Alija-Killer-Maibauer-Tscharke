@@ -7,7 +7,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import os
-from torch.cuda.amp import autocast, GradScaler
+from torch.amp import autocast, GradScaler
 
 # importing the custom model
 from models.ResNetLight import ResNetLightCNN
@@ -39,7 +39,6 @@ def get_device():
 
 DEVICE = get_device()
 use_amp = DEVICE.type == "cuda"
-
 
 # CONFIGURATIONS
 BATCH_SIZE = 64
@@ -87,7 +86,11 @@ def validate(model, loader, criterion):
             #outputs = model(images)
             #loss = criterion(outputs, labels)
 
-            with autocast(enabled=use_amp):
+            if use_amp:
+                with autocast("cuda"):
+                    outputs = model(images)
+                    loss = criterion(outputs, labels)
+            else:
                 outputs = model(images)
                 loss = criterion(outputs, labels)
 
@@ -176,7 +179,7 @@ def main():
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
-    scaler = GradScaler()
+    scaler = GradScaler("cuda") if use_amp else None
 
     # 5.Scheduler
     '''''
@@ -216,20 +219,26 @@ def main():
 
             #outputs = model(images)
             #loss = criterion(outputs, labels)
-            optimizer.zero_grad(set_to_none = True)
+            optimizer.zero_grad()
 
             #loss.backward()
             #optimizer.step()
 
             # Mixed precision implementation test
             ###########################################
-            with autocast(enabled=use_amp):
+            if use_amp:
+                with autocast("cuda"):
+                    outputs = model(images)
+                    loss = criterion(outputs, labels)
+
+                scaler.scale(loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+            else:
                 outputs = model(images)
                 loss = criterion(outputs, labels)
-
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+                loss.backward()
+                optimizer.step()
             ###########################################
 
             running_loss += loss.item()

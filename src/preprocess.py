@@ -69,7 +69,7 @@ MERGE_SPLIT = {
 }
 
 # If you want to train on the original images flag this:
-USE_ALIGNED = False
+USE_ALIGNED = True
 
 def main():
 
