@@ -34,17 +34,18 @@ def determine_and_filter(ratios: dict):
     The label list contains the boundingbox of the final face to later crop it.
     """
 
+    # Map desired emotion ratios to internal numeric labels
     label_ratios = {
         label: ratios.get(INTERNAL_TO_EMOTION[label], 1.0)
         for label in INTERNAL_TO_EMOTION
     }
     
-    # Group ExpW by image names
-    grouped = defaultdict(list)
+    # image name -> (confidence, x1, y1, x2, y2, interal_label)
+    best_face = {}
 
     with LABEL_IN.open("r") as f:
         for line in f:
-            parts = line.strip().split()
+            parts = line.split()
             if len(parts) < 8:
                 continue
 
@@ -55,31 +56,30 @@ def determine_and_filter(ratios: dict):
             x2 = int(parts[4])
             y2 = int(parts[5])
             confidence = float(parts[6])
-            label = int(parts[7])
+            original_label = int(parts[7])
 
-            grouped[image_name].append((confidence, x1, y1, x2, y2, label))
+            # Skip images with neutral label
+            if original_label == 6:
+                continue
+            
+            # Skip labels we don't map internally
+            internal_label = ExpW_TO_INTERNAL.get(original_label)
+            if internal_label is None:
+                continue
+            
+            # Keep only the face with highest confidence per image
+            prev = best_face.get(image_name)
+            if prev is None or confidence > prev[0]:
+                best_face[image_name] = (confidence, x1, y1, x2, y2, internal_label)
 
-    print(f"[INFO] ExpW has multiple labels for one image. Unique images in label.lst: {len(grouped)}.")
+    print(f"[INFO] ExpW has multiple labels for one image. "
+          f"Unique images after best-face selection: {len(best_face)}.")
 
     per_class = defaultdict(list)
     
-    # Select the face with highest confidence per image
-    for image_name in sorted(grouped):
-
-        best = max(grouped[image_name], key=lambda x: x[0])
-
-        confidence, x1, y1, x2, y2, original_label = best
-
-        # Skip neutral emotions
-        if original_label == 6:
-            continue
-
-        if original_label not in ExpW_TO_INTERNAL:
-            continue
-
-        internal_label = ExpW_TO_INTERNAL[original_label]
-
-        per_class[internal_label].append((image_name, x1, y1, x2, y2))
+    # Group images by internal emotion label
+    for image_name, (_, x1, y1, x2, y2, label) in best_face.items():
+        per_class[label].append((image_name, x1, y1, x2, y2))
 
     final_entries = []
 
@@ -105,6 +105,7 @@ def determine_and_filter(ratios: dict):
     # Write updated label entries to ExpW_labels_filtered.txt
     LABEL_OUT.parent.mkdir(parents = True, exist_ok = True)
 
+    # Write filtered labels (one line per image)
     with LABEL_OUT.open("w") as f:
         for name, x1, y1, x2, y2, label in final_entries:
             f.write(f"{name} {x1} {y1} {x2} {y2} {label}\n")
