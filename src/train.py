@@ -1,4 +1,5 @@
 import csv
+from xml.parsers.expat import model
 import torch
 import shutil
 import torch.nn as nn
@@ -8,6 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 import os
 from torch.amp import autocast, GradScaler
+from torch.utils.data import DataLoader, WeightedRandomSampler
 
 # importing the custom model
 from models.ResNetLight import ResNetLightCNN
@@ -15,6 +17,7 @@ from models.ResNetLight2 import ResNetLightCNN2
 
 # OUTPU_DIR for evaluation
 OUTPUT_DIR = Path("src/evaluation/outputs")
+
 
 def prepare_output_dir_evaluation():
     if OUTPUT_DIR.exists():
@@ -47,7 +50,7 @@ EPOCHS = 75
 
 # Paths to data directories
 TRAIN_DIR = "data/train"
-VAL_DIR   = "data/validate"
+VAL_DIR = "data/validate"
 MODEL_DIR = "models"
 
 
@@ -83,8 +86,8 @@ def validate(model, loader, criterion):
             images = images.to(DEVICE)
             labels = labels.to(DEVICE)
 
-            #outputs = model(images)
-            #loss = criterion(outputs, labels)
+            # outputs = model(images)
+            # loss = criterion(outputs, labels)
 
             if use_amp:
                 with autocast("cuda"):
@@ -144,16 +147,48 @@ def main():
     train_dataset = datasets.ImageFolder(root=TRAIN_DIR, transform=train_transforms)
     val_dataset = datasets.ImageFolder(root=VAL_DIR, transform=val_transforms)
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4, pin_memory=True)
+    # --- WEIGHTED RANDOM SAMPLER IMPLEMENTATION ---
+    print("Calculating weights for WeightedRandomSampler...")
+
+    # Get all target labels from the dataset
+    targets = train_dataset.targets
+
+    # Calculate the count of each class (0 to num_classes-1)
+    class_counts = torch.bincount(torch.tensor(targets))
+
+    # Calculate weight for each class: w = 1 / count
+    # (Rare classes get high weights, frequent classes get low weights)
+    class_weights = 1.0 / class_counts.float()
+
+    # Assign the corresponding class weight to each individual sample image
+    sample_weights = class_weights[targets]
+
+    # Create the sampler
+    # replacement=True allows resampling the same image multiple times (oversampling)
+    sampler = WeightedRandomSampler(
+        weights=sample_weights, num_samples=len(sample_weights), replacement=True
+    )
+    # -----------------------------------------------
+
+    # NOTE: shuffle must be False when using a sampler!
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=BATCH_SIZE,
+        sampler=sampler,
+        shuffle=False,
+        num_workers=4,
+        pin_memory=True,
+    )
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     num_classes = len(train_dataset.classes)
-    print(f"Klassen ({num_classes}): {train_dataset.classes}")
+    print(f"Classes ({num_classes}): {train_dataset.classes}")
 
     # 4. Model, Loss, Optimizer
     model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
-    #criterion = nn.CrossEntropyLoss()
+    # criterion = nn.CrossEntropyLoss()
 
+    """
     # Inverse frequency weights approach for tests
     ###########################################
     from collections import Counter
@@ -167,8 +202,7 @@ def main():
 
     # inverse frequency
     class_weights = [
-        total / (num_classes * class_counts[i])
-        for i in range(num_classes)
+        total / (num_classes * class_counts[i]) for i in range(num_classes)
     ]
 
     class_weights = torch.tensor(class_weights, dtype=torch.float, device=DEVICE)
@@ -176,26 +210,23 @@ def main():
 
     criterion = nn.CrossEntropyLoss(weight=class_weights)
     #############################################
+    """
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
 
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
-
+    optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
     scaler = GradScaler("cuda") if use_amp else None
 
     # 5.Scheduler
-    '''''
+    """''
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         mode="max",
         patience=2,
         factor=0.5,
     )
-    '''
+    """
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer,
-    mode="min",
-    patience=5,
-    factor=0.7,
-    min_lr=1e-7
+        optimizer, mode="min", patience=5, factor=0.7, min_lr=1e-7
     )
 
     early_stop_patience = 15
@@ -220,12 +251,12 @@ def main():
             images = images.to(DEVICE)
             labels = labels.to(DEVICE)
 
-            #outputs = model(images)
-            #loss = criterion(outputs, labels)
+            # outputs = model(images)
+            # loss = criterion(outputs, labels)
             optimizer.zero_grad()
 
-            #loss.backward()
-            #optimizer.step()
+            # loss.backward()
+            # optimizer.step()
 
             # Mixed precision implementation test
             ###########################################
@@ -263,20 +294,22 @@ def main():
         scheduler.step(val_loss)
 
         current_lr = optimizer.param_groups[0]["lr"]
-        
-        epoch_log.append({
-            "epoch": epoch + 1,
-            "train_loss": avg_loss,
-            "val_loss": val_loss,
-            "train_acc": epoch_acc,
-            "val_acc": val_acc,
-            "learning_rate": current_lr
-        })
+
+        epoch_log.append(
+            {
+                "epoch": epoch + 1,
+                "train_loss": avg_loss,
+                "val_loss": val_loss,
+                "train_acc": epoch_acc,
+                "val_acc": val_acc,
+                "learning_rate": current_lr,
+            }
+        )
 
         print("LR:", current_lr)
 
         # 8. Save best model
-        
+
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), save_path)
@@ -285,12 +318,12 @@ def main():
 
         else:
             epochs_no_improve += 1
-        '''
+        """
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
             print(f"    🌟 New Record! Model saved to {save_path}")
-        '''
+        """
 
         # Early stopping
         if epochs_no_improve >= early_stop_patience:
@@ -298,19 +331,19 @@ def main():
             break
 
     # Save the best val_loss model for evaluation
-    model.load_state_dict(torch.load(save_path, map_location=DEVICE))   
+    model.load_state_dict(torch.load(save_path, map_location=DEVICE))
 
     print("=" * 50)
     print("Training completed.")
     print(
-        #f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
+        # f"The best model achieved {best_val_acc:.2f}% Accuracy on the validation data."
         f"The best model achieved a validation loss of {best_val_loss:.4f} on the validation data."
     )
     print(f"Saved as: {save_path}")
     print("=" * 50)
 
     with open(log_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames = epoch_log[0].keys())
+        writer = csv.DictWriter(f, fieldnames=epoch_log[0].keys())
         writer.writeheader()
         writer.writerows(epoch_log)
 

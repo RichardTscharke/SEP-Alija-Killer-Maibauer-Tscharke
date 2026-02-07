@@ -21,13 +21,13 @@ class ResNetLightCNN2(nn.Module):
         # Adaptive Pooling auf 4x4 statt 1x1
         self.global_avg_pool = nn.AdaptiveAvgPool2d((4, 4))
         self.flatten = nn.Flatten()
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(0.3)
 
         # Fully Connected wie RafCustomCNN
         self.fc = nn.Sequential(
             nn.Linear(256*4*4, 512),
             nn.LeakyReLU(negative_slope=0.1, inplace=True),
-            nn.Dropout(0.2),
+            nn.Dropout(0.3),
             nn.Linear(512, num_classes)
         )
 
