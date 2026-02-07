@@ -140,7 +140,7 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
         print(f"Created directory: {target_dir} containing the 6 emotion classes.")
 
 
-def crop_face(img, x1, y1, x2, y2, scale = 1.5):
+def crop_face(img, x1, y1, x2, y2, scale = 0.8):
     """
     Crops and enlarges a face bounding box from an image given by the dataset.
     The box is scaled around its center by the given factor and clipped
