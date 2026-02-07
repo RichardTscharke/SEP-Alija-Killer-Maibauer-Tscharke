@@ -27,12 +27,12 @@ Final entries: 630
 For custom data configurations adjust these:
 '''
 RAF_FILTER = {
-    "Surprise":  0,
-    "Fear":      0,
-    "Disgust":   0,
-    "Happiness": 0,
-    "Sadness":   0,
-    "Anger":     0,
+    "Surprise":  1.0,
+    "Fear":      1.0,
+    "Disgust":   1.0,
+    "Happiness": 1.0,
+    "Sadness":   1.0,
+    "Anger":     1.0,
 }
 EXPW_FILTER = {
     "Surprise":  1.0,
@@ -43,33 +43,33 @@ EXPW_FILTER = {
     "Anger":     1.0,
 }
 KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 0),
-    "Disgust"  : (["S", "HL", "HR"], 0),
-    "Fear"     : (["S", "HL", "HR"], 0),
-    "Happiness": (["S", "HL", "HR"], 0),
-    "Sadness"  : (["S", "HL", "HR"], 0),
-    "Surprise" : (["S", "HL", "HR"], 0),
+    "Anger"    : (["S", "HL", "HR"], 1.0),
+    "Disgust"  : (["S", "HL", "HR"], 1.0),
+    "Fear"     : (["S", "HL", "HR"], 1.0),
+    "Happiness": (["S", "HL", "HR"], 1.0),
+    "Sadness"  : (["S", "HL", "HR"], 1.0),
+    "Surprise" : (["S", "HL", "HR"], 1.0),
 }
 MERGE_SPLIT = {
     "RAF": {
-        "train"   : 1.0,
-        "test"    : 0.0,
-        "validate": 0.0,
+        "train"   : 0.7,
+        "test"    : 0.15,
+        "validate": 0.15,
     },
     "ExpW": {
-        "train"   : 1.0,
-        "test"    : 0.0,
-        "validate": 1.0,
+        "train"   : 0.7,
+        "test"    : 0.15,
+        "validate": 1.15,
     },
     "KDEF": {
-        "train"   : 1.0,
-        "test"    : 1.0,
-        "validate": 1.0,
+        "train"   : 0.7,
+        "test"    : 0.15,
+        "validate": 0.15,
     },
 }
 
 # If you want to train on the original images flag this:
-USE_ALIGNED = True
+USE_ALIGNED = False
 
 def main():
 
