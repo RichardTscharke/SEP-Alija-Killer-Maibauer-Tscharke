@@ -198,7 +198,7 @@ def main():
     min_lr=1e-7
     )
 
-    early_stop_patience = 6
+    early_stop_patience = 15
     epochs_no_improve = 0
 
     best_val_acc = 0.0
