@@ -15,7 +15,7 @@ TEST_DIR = "data/test"
 BATCH_SIZE = 64
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def calculate_inference(MODEL_PATH = "models/ResNetLight_v0.pth"):
+def calculate_inference(MODEL_PATH):
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
