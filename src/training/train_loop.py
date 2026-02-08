@@ -4,10 +4,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.amp import autocast, GradScaler
 from torchvision import datasets, transforms
-#from xml.parsers.expat import model ???
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
-from utils import (
+from .utils import (
     TRAIN_DIR,
     VAL_DIR,
     prepare_output_dir_evaluation,
