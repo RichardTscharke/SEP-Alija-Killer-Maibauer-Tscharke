@@ -226,10 +226,10 @@ def main():
     )
     """
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", patience=5, factor=0.7, min_lr=1e-7
+        optimizer, mode="min", patience=10, factor=0.7, min_lr=1e-7
     )
 
-    early_stop_patience = 15
+    early_stop_patience = 20
     epochs_no_improve = 0
 
     best_val_acc = 0.0
