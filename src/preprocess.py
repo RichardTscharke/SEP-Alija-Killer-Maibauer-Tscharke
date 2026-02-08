@@ -35,11 +35,11 @@ RAF_FILTER = {
     "Anger":     1.0,
 }
 EXPW_FILTER = {
-    "Surprise":  1.0,
+    "Surprise":  0.5,
     "Fear":      1.0,
     "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
+    "Happiness": 0.3,
+    "Sadness":   0.4,
     "Anger":     1.0,
 }
 KDEF_FILTER = {
