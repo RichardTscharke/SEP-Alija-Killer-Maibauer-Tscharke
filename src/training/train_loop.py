@@ -133,7 +133,8 @@ def trainings_loop(config: dict, device: torch.device):
     class_weights = compute_class_weights(train_dataset, USE_INV_FREQ_W, CUSTOM_CLASS_WEIGHTS, DEVICE)
     print("Class weights:", class_weights)
 
-    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05)
+    #criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05) # Class weights are already applied via the WeightedRandomSampler, so we can use unweighted loss here.
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
 
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
