@@ -13,6 +13,7 @@ from .utils import (
     get_unique_model_path,
     compute_class_weights,
 )
+from evaluate import run_evaluation
 
 from models.RafCustom import RafCustomCNN
 from models.ResNetLight import ResNetLightCNN
@@ -27,6 +28,7 @@ def trainings_loop(config: dict, device: torch.device):
     - Loss, weights, optimizer and scheduler setup
     - Early stopping and best-model checkpointing
     - Logging of epoch-wise metrics
+    - Calls the evaluation script
 
     All hyperparameters and training options can be manually setup within the train.py interface.
     '''
@@ -44,10 +46,10 @@ def trainings_loop(config: dict, device: torch.device):
     NUM_WORKERS = config["num_workers"]
 
     DEVICE = device
-    use_amp = DEVICE.type == "cuda"
+    use_amp = device.type == "cuda"
 
     # 0. prepare evaluation outputs directory
-    prepare_output_dir_evaluation()
+    output_dir = prepare_output_dir_evaluation()
 
     # 1. model save path
     save_path, version_id = get_unique_model_path(base_name=config["model"])
@@ -276,6 +278,9 @@ def trainings_loop(config: dict, device: torch.device):
         writer = csv.DictWriter(f, fieldnames=epoch_log[0].keys())
         writer.writeheader()
         writer.writerows(epoch_log)
+
+    # Start the evalution based on the training congfigurations and the trained model
+    run_evaluation(output_dir=output_dir, model_path=save_path, config=config, device=DEVICE)
 
 
 def validate(model, loader, criterion, device, use_amp):

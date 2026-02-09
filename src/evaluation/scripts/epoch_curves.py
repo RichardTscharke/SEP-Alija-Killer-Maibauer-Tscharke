@@ -1,27 +1,27 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-FIGURE_DIR = PROJECT_ROOT / "figures"
-
-FIGURE_DIR.mkdir(exist_ok=True)
-
-
-def plot_epoch_curves(csv_path):
+def plot_epoch_curves(figure_dir, csv_path):
+    '''
+    Orchestrates the plotting for all epoch-based training curves.
+    Loads the logged epoch metrics from CSV and generates:
+    - loss curve
+    - accuracy curve
+    - learning rate schedule
+    '''
     data = load_epoch_metrics(csv_path)
 
-    plot_loss_curve(data)
-    plot_accuracy_curve(data)
-    plot_learning_rate(data)
+    plot_loss_curve(figure_dir, data)
+    plot_accuracy_curve(figure_dir, data)
+    plot_learning_rate(figure_dir, data)
 
-
+# Load the epoch-wise training metrics from CSV
 def load_epoch_metrics(path):
     return pd.read_csv(path)
 
-
-def plot_loss_curve(data):
+# Plot training and validation loss over epochs
+def plot_loss_curve(figure_dir, data):
     plt.figure()
 
     plt.plot(data["epoch"], data["train_loss"], label="Train Loss")
@@ -32,11 +32,11 @@ def plot_loss_curve(data):
     plt.legend()
     plt.title("Loss over Epochs")
 
-    plt.savefig(FIGURE_DIR / "loss_curve.png")
+    plt.savefig(figure_dir / "loss_curve.png", dpi=300)
     plt.close()
 
-
-def plot_accuracy_curve(data):
+# Plot training and validation accuracy over epochs
+def plot_accuracy_curve(figure_dir, data):
     plt.figure()
 
     plt.plot(data["epoch"], data["train_acc"], label="Train Accuracy")
@@ -47,11 +47,11 @@ def plot_accuracy_curve(data):
     plt.legend()
     plt.title("Accuracy over Epochs")
 
-    plt.savefig(FIGURE_DIR / "accuracy_curve.png")
+    plt.savefig(figure_dir / "accuracy_curve.png", dpi=300)
     plt.close()
 
-
-def plot_learning_rate(data):
+# Plot the learning rate schedule over epochs
+def plot_learning_rate(figure_dir, data):
     plt.figure()
 
     plt.plot(data["epoch"], data["learning_rate"])
@@ -60,5 +60,5 @@ def plot_learning_rate(data):
     plt.ylabel("Learning Rate")
     plt.title("Learning Rate Schedule")
 
-    plt.savefig(FIGURE_DIR / "learning_rate_curve.png", dpi=300)
+    plt.savefig(figure_dir / "learning_rate_curve.png", dpi=300)
     plt.close()

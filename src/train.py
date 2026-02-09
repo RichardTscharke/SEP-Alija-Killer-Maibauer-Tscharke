@@ -4,7 +4,6 @@ from training.train_loop import trainings_loop
 This is the training interface of our project.
 For custom training configurations adjust these:
 '''
-
 TRAIN_CONFIGURATIONS = {
 
     # Choose one of "RafCustom", "ResNetLight1" and "ResNetLight2"

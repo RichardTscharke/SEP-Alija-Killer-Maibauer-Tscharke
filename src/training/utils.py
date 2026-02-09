@@ -39,8 +39,7 @@ def get_unique_model_path(base_name):
     '''
 
     # Find the next available model save path: ResNetLight2_v0.pth, ResNetLight2_v1.pth, etc.
-    if not os.path.exists(MODEL_DIR):
-        os.makedirs(MODEL_DIR)
+    Path(MODEL_DIR).mkdir(parents=True, exist_ok=True)
 
     counter = 0
     while True:
@@ -56,13 +55,14 @@ def get_unique_model_path(base_name):
 
 def prepare_output_dir_evaluation():
     '''
-    Prepares a clean output directory for evaluation results.
+    Prepares and returns a clean output directory for evaluation results.
     If the directory already exists, it is deleted and recreated.
     -> Evaluation outputs correspond to the latest training run.
     '''
     if OUTPUT_DIR.exists():
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR
 
 
 def compute_class_weights(train_dataset, use_inv_freq_w: bool, custom_weights, device):
