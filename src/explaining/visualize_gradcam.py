@@ -4,25 +4,25 @@ import matplotlib.pyplot as plt
 
 emotions = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
 
+BG_COLOR     = "#909392"
+BAR_BG_COLOR = "#373737"
+BAR_COLOR    = "lightgray"
+
 def visualize(original_img,
               aligned_img,
               cam,
               probs,
               threshold=0.4):
 
-    BG_COLOR     = "#909392"
-    BAR_BG_COLOR = "#373737"
-    BAR_COLOR    = "lightgray"
-
-    # CAM resize to 64x64
+    # Resize CAM to match aligned face resolution
     cam = cv2.resize(cam, (aligned_img.shape[1], aligned_img.shape[0]))
 
-    # Heatmap
+    # Create the heatmap
     heatmap = np.uint8(255 * cam)
     heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
     heatmap_color = cv2.cvtColor(heatmap_color, cv2.COLOR_BGR2RGB)
 
-    # Overlay (we only want strong signals)
+    # Only overlay regions with sufficiently activation based on explain_image configurations
     mask = cam >= threshold
     overlay = cv2.cvtColor(aligned_img.copy(), cv2.COLOR_BGR2RGB)
     overlay[mask] = (
