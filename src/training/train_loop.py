@@ -13,7 +13,7 @@ from .utils import (
     get_unique_model_path,
     compute_class_weights,
 )
-from evaluate import run_evaluation
+from evaluation import run_evaluation
 
 from models.RafCustom import RafCustomCNN
 from models.ResNetLight import ResNetLightCNN
