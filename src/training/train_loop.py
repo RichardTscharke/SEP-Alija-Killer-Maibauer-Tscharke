@@ -13,7 +13,7 @@ from .utils import (
     get_unique_model_path,
     compute_class_weights,
 )
-from evaluation import run_evaluation
+from evaluation.scripts.evaluate import evaluate
 
 from models.RafCustom import RafCustomCNN
 from models.ResNetLight import ResNetLightCNN
@@ -280,7 +280,7 @@ def trainings_loop(config: dict, device: torch.device):
         writer.writerows(epoch_log)
 
     # Start the evalution based on the training congfigurations and the trained model
-    run_evaluation(output_dir=output_dir, model_path=save_path, config=config, device=DEVICE)
+    evaluate(output_dir=output_dir, model_path=save_path, config=config, device=DEVICE)
 
 
 def validate(model, loader, criterion, device, use_amp):
