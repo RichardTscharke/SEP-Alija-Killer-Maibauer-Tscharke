@@ -117,7 +117,6 @@ def trainings_loop(config: dict, device: torch.device):
         pin_memory=True,
     )
     
-
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     num_classes = len(train_dataset.classes)
@@ -137,8 +136,7 @@ def trainings_loop(config: dict, device: torch.device):
     class_weights = compute_class_weights(train_dataset, USE_INV_FREQ_W, CUSTOM_CLASS_WEIGHTS, DEVICE)
     print("Class weights:", class_weights)
 
-    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05) # Using class weights to handle imbalance without sampler.
-    #criterion = nn.CrossEntropyLoss(label_smoothing=0.05) # If you want to use class weights directly in the loss function instead of WeightedRandomSampler, comment the above line and uncomment this one.
+    criterion = nn.CrossEntropyLoss(weight=class_weights, label_smoothing=0.05)
 
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 

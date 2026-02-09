@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 
 emotions = ["Anger", "Disgust", "Fear", "Happiness", "Sadness", "Surprise"]
 
