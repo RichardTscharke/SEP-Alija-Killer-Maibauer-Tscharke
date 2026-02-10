@@ -1,6 +1,7 @@
 from .explain_utils import preprocess_frame
 from .cam.explain_frame import explain_frame
-from .visualize.visualize_video import overlay_gradcam
+from .visualize.visualize_video.overlay import overlay_gradcam, insert_emotion_label
+
 
 def process_frame(
         frame,
@@ -10,7 +11,9 @@ def process_frame(
         device,
         cam_smoother,
         frame_idx,
-        threshold
+        threshold,
+        label_smoother,
+        label_stabilizer
 ):
     sample = preprocess_frame(frame, detector, device)
     if sample is None:
@@ -31,4 +34,13 @@ def process_frame(
         threshold=threshold
     )
 
-    return overlayed
+    probs = label_smoother(sample["probs"], frame_idx)
+    idx, conf = label_stabilizer(probs)
+
+    labelized = insert_emotion_label(
+        overlayed,
+        idx,
+        conf
+    )
+
+    return labelized

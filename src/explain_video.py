@@ -4,7 +4,12 @@ from tqdm import tqdm
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 from explaining.explain_utils import resolve_model_and_layer
-from explaining.video_utils import open_video, create_video_writer, CamSmoother
+from explaining.video_utils import open_video, create_video_writer
+from explaining.visualize.visualize_video.cam_smoother import CamSmoother
+from explaining.visualize.visualize_video.label_smoother import LabelSmoother
+from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
+
+
 from explaining.process_frame import process_frame
 
 
@@ -40,6 +45,10 @@ def main(input_path):
     cam_smoother = CamSmoother(alpha=0.2, every_nth_frame=1)
     print(f"[INFO] Cam Smoother initialized for stable overlays.")
 
+    label_smoother = LabelSmoother(alpha=0.3, every_nth_frame=5)
+    label_stabilizer = LabelStabilizer(min_conf=0.6)
+    print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
+
     writer = None
 
     for frame_idx in tqdm(range(total_frames), desc="Explaining video", unit="frame"):
@@ -55,7 +64,9 @@ def main(input_path):
             DEVICE,
             cam_smoother,
             frame_idx,
-            THRESHOLD
+            THRESHOLD,
+            label_smoother,
+            label_stabilizer
             )
 
         if writer is None:

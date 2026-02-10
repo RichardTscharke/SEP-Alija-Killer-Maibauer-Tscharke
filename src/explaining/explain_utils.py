@@ -46,6 +46,9 @@ def preprocess_frame(frame, detector, device):
     '''
     sample = detect_and_preprocess(frame, detector)
 
+    if sample is None:
+        return None
+
     sample["original_img"] = frame
 
     sample["input_tensor"] = np_to_tensor(sample["image"], device)
