@@ -2,10 +2,9 @@ import torch
 from pathlib import Path
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import load_model, preprocess_image
-from explaining.explain_sample import explain_sample
-from explaining.debug.visualize_gradcam import visualize
-from models.ResNetLight2 import ResNetLightCNN2
+from explaining.explain_utils import resolve_model_and_layer, preprocess_image
+from explaining.cam.explain_frame import explain_frame
+from explaining.visualize.visualize_image import visualize
 
 '''
 This is the XAI interface (for single image) of our project.
@@ -32,11 +31,11 @@ MODEL_PATH   = "models/ResNetLight2_v0.pth"
 TARGET_LAYER = "stage3"
 
 # Determines the sufficient strength of a signal to be visible in the heatmap
-THRESHOLD    = 0.3
+THRESHOLD    = 0.4
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def main(image_path, model_path, target_layer):
+def main(image_path):
     '''
     Runs a single-image Grad-CAM explanation pipeline:
     - loads trained model
@@ -44,27 +43,17 @@ def main(image_path, model_path, target_layer):
     - computes Grad-CAM
     - visualizes CAM overlay and class probabilities
     '''
-    model = load_model( 
-        model_class=ResNetLightCNN2,
-        weight_path=model_path,
-        device=device,
-        num_classes=6
-    )
+    
+    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, DEVICE)
 
     detector = RetinaFaceDetector(device="cpu")
 
-    sample = preprocess_image(image_path, detector)
+    sample = preprocess_image(image_path, detector, DEVICE)
 
-    # Resolve layer dynamically based on the parameters at the top
-    modules = dict(model.named_modules())
-    assert TARGET_LAYER in modules, f"Unknown layer: {TARGET_LAYER}"
-    target_layer = modules[target_layer]
-
-    sample = explain_sample(
+    sample = explain_frame(
         sample=sample,
         model=model,
-        target_layer=target_layer,
-        device=device
+        target_layer=target_layer
     )
 
     # Plots a graphic of original image, aligned face, heatmap overlay and class probabilities
@@ -79,7 +68,7 @@ def main(image_path, model_path, target_layer):
 
 
 if __name__ == "__main__":
-    main(IMAGE_PATH, MODEL_PATH, TARGET_LAYER)
+    main(IMAGE_PATH)
 
 
 
