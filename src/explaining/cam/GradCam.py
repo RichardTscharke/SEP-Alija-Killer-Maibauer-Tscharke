@@ -35,7 +35,7 @@ class GradCAM:
     def generate(self, logits, class_idx):
         '''
         Takes the logits and target class index.
-        Generates and returns a Grad-CAM heatmap for a specific class.
+        Generates and returns a Grad-CAM heatmap for a specified class.
         '''
 
         # Select score of target class

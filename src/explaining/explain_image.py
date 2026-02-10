@@ -3,7 +3,7 @@ from pathlib import Path
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
 from explaining.explain_utils import load_model, preprocess_image, run_inference
-from explaining.visualize_gradcam import visualize
+from explaining.debug.visualize_gradcam import visualize
 from models.ResNetLight2 import ResNetLightCNN2
 
 '''

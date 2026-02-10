@@ -61,13 +61,11 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
     sample["eyes"] = aligned_eyes    
     sample["box"] = (0, 0, output_size, output_size)
 
-    # Compute full inverse for Grad-CAM: aligned -> original image
+    # Compute the full affine matrix (original -> aligned) and its inverse
     crop_x, crop_y = sample["meta"].get("crop_offset", (0,0))
-    T_crop = np.array([[1,0,-crop_x],[0,1,-crop_y],[0,0,1]], dtype=np.float32)  # 3x3
-    M_aug = np.vstack([M, [0,0,1]])  # 3x3
-    M_full = M_aug @ T_crop          # Original -> Aligned
+    M_full, M_inv_full = compute_full_inverse_M(crop_x, crop_y, M)
 
-    M_inv_full = cv2.invertAffineTransform(M_full[:2,:])
+    # Save both as well as aligned_size (64) to meta data for GradCAM usage
     sample["meta"]["affine_M"] = M_full[:2,:]
     sample["meta"]["affine_M_inv"] = M_inv_full
     sample["meta"]["aligned_size"] = output_size
@@ -84,3 +82,29 @@ def transform_point(p, M):
     y_new = M[1, 0] * x + M[1, 1] * y + M[1, 2]
 
     return int(round(x_new)), int(round(y_new))
+
+def compute_full_inverse_M(crop_x, crop_y, M):
+    '''
+    Computes the full affine transformation matrix from original image space to aligned-face space.
+    Computes its inverse for backprojection.
+    Parameters:
+    - crop_x, crop_y : Top-left corner of the cropped face in original image coordinates
+    - M : Affine matrix mapping cropped-face coordinates to aligned-face coordinates
+
+    Returns:
+    - M_full : Affine matrix mapping original image coordiantes directly to aligned-face coordinates
+    - M_inv_full : Inverse affine matrix mapping aligned-face coordinates back to original image coordiantes
+    '''
+    # Subtract the crop offset
+    T_crop = np.array([[1, 0,-crop_x],[0, 1,-crop_y], [0, 0, 1]], dtype=np.float32)
+
+    # Augment 2x3 affine matrix to full 3x3 matrix by adding row [0, 0, 1]
+    M_aug = np.vstack([M, [0, 0, 1]])  
+
+    # Combine both transformations into a single matrix (original -> cropped -> aligned)
+    M_full = M_aug @ T_crop 
+    
+    # Compute the inverse affine transformation
+    M_inv_full = cv2.invertAffineTransform(M_full[:2, :])  
+
+    return M_full, M_inv_full
