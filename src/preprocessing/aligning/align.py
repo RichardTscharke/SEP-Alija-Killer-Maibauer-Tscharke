@@ -36,6 +36,10 @@ def align_face(sample, output_size = 64, target_left = (18, 16), target_right = 
 
     M = cv2.getRotationMatrix2D(current_center, angle, scale)
 
+    # Store the matrix and its inverse for retransformation in regard of Grad-CAM overlay
+    sample["meta"]["affine_M"] = M
+    sample["meta"]["affine_M_inv"] = cv2.invertAffineTransform(M)
+
     M[0,2] += target_center[0] - current_center[0]
     M[1,2] += target_center[1] - current_center[1]
 

@@ -26,4 +26,8 @@ def clip_face(sample, clip_ratio = 0.4):
     # Enlarges the box around the original bounding box to reduce border artifacts 
     sample["box"] = (x1, y1, x2 - x1, y2 - y1)
 
+    # Store the enlargened box + applied ratio since sample["box"] will be overwritten later
+    sample["meta"]["clip_box"] = sample["box"]
+    sample["meta"]["clip_ratio"] = clip_ratio
+    
     return sample

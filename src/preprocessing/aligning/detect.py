@@ -32,6 +32,7 @@ def build_sample_from_face(image, face):
     """
     Builds a standardized sample dictionary expected by the preprocessing pipeline.
     Assumes bounding boxes are in (x, y, w, h) format and image is BGR.
+    The meta field is initialized in order to store all infos about applied transformations.
     """
     return {
         "image": np.array(image),
@@ -43,5 +44,6 @@ def build_sample_from_face(image, face):
                 "box": face["box"],
                 "landmarks": {}
             }
-        )
+        ),
+        "meta": {}
     }
