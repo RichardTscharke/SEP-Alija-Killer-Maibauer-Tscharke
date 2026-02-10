@@ -1,8 +1,8 @@
 import torch
 from pathlib import Path
+from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import load_model
-from explaining.explain_gradcam import explain_gradcam
+from explaining.explain_utils import load_model, preprocess_image, run_inference
 from explaining.visualize_gradcam import visualize
 from models.ResNetLight2 import ResNetLightCNN2
 
@@ -48,25 +48,24 @@ def main(image_path, model_path, target_layer):
         weight_path=model_path,
         device=device
     )
+    detector = RetinaFaceDetector(device="cpu")
+
+    sample = preprocess_image(image_path, detector, device)
 
     # Resolve layer dynamically based on the parameters at the top
     modules = dict(model.named_modules())
     assert TARGET_LAYER in modules, f"Unknown layer: {TARGET_LAYER}"
     target_layer = modules[target_layer]
 
-    # Computes the Grad-CAM heatmap by running forward and backward pass through the model using the GradCAM clas
-    result = explain_gradcam(
-        model=model,
-        image_path=image_path,
-        target_layer=target_layer,
-        device=device,
-    )
+    sample = run_inference(sample, model, target_layer)
+
     # Plots a graphic of original image, aligned face, heatmap overlay and class probabilities
     visualize(
-        original_img=result["original_img"],
-        aligned_img=result["aligned_img"],
-        cam=result["cam"],
-        probs=result["probs"],
+        original_img=sample["original_img"],
+        aligned_img=sample["image"],
+        cam_aligned=sample["cam"],
+        cam_original=sample["cam_original"],
+        probs=sample["probs"],
         threshold=THRESHOLD
     )
 

@@ -14,7 +14,9 @@ def crop_face(sample):
     y2 = min(h_img, y + h)
 
     # Stored to invert the transformation later in regards of Grad-CAM overlay
+    sample.setdfault("meta", {})
     sample["meta"]["crop_offset"] = (x1, y1)
+    sample["meta"]["crop_shape"] = (y2 - y1, x2 - x1)
 
     # Crop equals the part of the original image bounded by the box
     sample["image"] = image[y1:y2, x1:x2]

@@ -10,51 +10,71 @@ BAR_COLOR    = "lightgray"
 
 def visualize(original_img,
               aligned_img,
-              cam,
+              cam_aligned,
+              cam_original,
               probs,
               threshold=0.4):
+    
+    # Create Grad-CAM for the aligned image
+    cam_aligned = cv2.resize(cam_aligned, aligned_img.shape[1], aligned_img.shape[0])
+    cam_aligned = np.clip(cam_aligned, 0, 1)
 
-    # Resize CAM to match aligned face resolution
-    cam = cv2.resize(cam, (aligned_img.shape[1], aligned_img.shape[0]))
+    # Create the heatmap for the aligned version
+    heat_aligned = np.uint8(255 * cam_aligned)
+    heat_aligned = cv2.applyColorMap(heat_aligned, cv2.COLORMAP_JET)
+    heat_aligned = cv2.cvtColor(heat_aligned, cv2.COLOR_BGR2RGB)
 
-    # Create the heatmap
-    heatmap = np.uint8(255 * cam)
-    heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    heatmap_color = cv2.cvtColor(heatmap_color, cv2.COLOR_BGR2RGB)
+    # Create the overlay for the aligned version
+    aligned_rgb = cv2.cvtCOLOR(aligned_img, cv2.COLOR_BGR2RGB)
+    mask_a = cam_aligned >= threshold
+    overlay_aligned = aligned_rgb.copy()
+    overlay_aligned[mask_a] = (0.6 * overlay_aligned[mask_a] + 0.4 * heat_aligned[mask_a]).astype(np.uint8)
 
-    # Only overlay regions with sufficiently activation based on explain_image configurations
-    mask = cam >= threshold
-    overlay = cv2.cvtColor(aligned_img.copy(), cv2.COLOR_BGR2RGB)
-    overlay[mask] = (
-        0.6 * overlay[mask] + 0.4 * heatmap_color[mask]
-    ).astype(np.uint8)
+    # Create Grad-CAM for the original image
+    cam_original = np.cpli(cam_original, 0, 1)
 
-    # Figure & Grid
-    fig = plt.figure(figsize=(16, 8), facecolor=BG_COLOR)
+    # Create the heatmap for the original version
+    heat_original = np.uint8(255 * cam_original)
+    heat_original = cv2.applyColorMap(heat_original, cv2.COLORMAP_JET)
+    heat_original = cv2.cvtColor(heat_original, cv2.COLOR_BGR2RGB)
+
+    # Create the overlay for the original version
+    original_rgb = cv2.cvtCOLOR(original_img, cv2.COLOR_BGR2RGB)
+    mask_o = cam_original >= threshold
+    overlay_original = original_rgb.copy()
+    overlay_original[mask_o] = (0.6 * overlay_original[mask_o] + 0.4 * heat_original[mask_o]).astype(np.uint8)
+
+    # Figure & Grid layout
+    fig = plt.figure(figsize=(22, 10), facecolor=BG_COLOR)
     fig.canvas.manager.set_window_title("Explainable AI: Grad-CAM")
-    gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 1.2])
 
-    ax_orig   = fig.add_subplot(gs[0, 0])
-    ax_align  = fig.add_subplot(gs[0, 1])
-    ax_cam    = fig.add_subplot(gs[1, 0])
-    ax_overlay= fig.add_subplot(gs[1, 1])
-    ax_bar    = fig.add_subplot(gs[:, 2])
+    gs = fig.add_gridspec(2, 4, width_ratios=[1, 1, 1, 1.2], height_ratios=[1, 1])
 
-    # Image handling
-    ax_orig.imshow(cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB))
-    ax_orig.set_title("Original", color="white")
+    ax_orig      = fig.add_subplot(gs[0, 0])
+    ax_align     = fig.add_subplot(gs[0, 1])
+    ax_cam_orig  = fig.add_subplot(gs[1, 0])
+    ax_overlay   = fig.add_subplot(gs[1, 1])
+    ax_cam_only  = fig.add_subplot(gs[:, 2])
+    ax_bar       = fig.add_subplot(gs[:, 3])
 
-    ax_align.imshow(cv2.cvtColor(aligned_img, cv2.COLOR_BGR2RGB))
-    ax_align.set_title("Aligned", color="white")
+    # Image plots
+    ax_orig.imshow(original_rgb)
+    ax_orig.set_title("Original Image", color="white")
 
-    ax_cam.imshow(cam, cmap="jet")
-    ax_cam.set_title("Grad-CAM", color="white")
+    ax_orig.imshow(overlay_aligned)
+    ax_orig.set_title("Aligned + CAM", color="white")
 
-    ax_overlay.imshow(overlay)
-    ax_overlay.set_title("Overlay", color="white")
+    ax_orig.imshow(cam_original, cmap="jet")
+    ax_orig.set_title("Cam (original space)", color="white")
+
+    ax_orig.imshow(overlay_original)
+    ax_orig.set_title("Final Overlay", color="white")
+
+    ax_orig.imshow(cam_aligned, cmap="jet")
+    ax_orig.set_title("Cam (aligned)", color="white")
 
     # Visual sugarcoating
-    for ax in [ax_orig, ax_align, ax_cam, ax_overlay]:
+    for ax in [ax_orig, ax_align, ax_cam_orig, ax_overlay, ax_cam_only]:
         ax.axis("off")
         ax.set_facecolor(BG_COLOR)
         for spine in ax.spines.values():

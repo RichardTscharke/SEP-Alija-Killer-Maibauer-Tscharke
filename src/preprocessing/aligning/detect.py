@@ -13,6 +13,7 @@ def detect_and_preprocess(image, detector, detect_only = False, **kwargs):
 
     # Choose one face in the image based on the highest confidence
     faces = sorted(faces, key=lambda f: f["confidence"], reverse=True)
+    
     # Check if the bounding box and both eyes are within the image
     face = next((f for f in faces if is_valid_face(f)), None)
 
