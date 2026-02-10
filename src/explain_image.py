@@ -21,17 +21,17 @@ You can adjust the following parameters in order to achieve different results:
 '''
 
 # By default: An image of the RAF_raw dataset (assuming it is stored within the data folder)
-IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/präsi1/richard.JPG")
+IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/präsi1/richard.jpg")
 
 # By default: Our best trained model
-MODEL_PATH   = "models/ResNetLight_v2.pth"
+MODEL_PATH   = "models/ResNetLight2_v0.pth"
 
 # By default: A stage and layer we often achieved satisfying results with
 # Useful options are: "stage2.conv2", "stage3.conv1" and "stage3.conv2" (stage 1 perhaps for edges)
-TARGET_LAYER = "stage2.conv2"
+TARGET_LAYER = "stage3"
 
 # Determines the sufficient strength of a signal to be visible in the heatmap
-THRESHOLD    = 0.4
+THRESHOLD    = 0.3
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

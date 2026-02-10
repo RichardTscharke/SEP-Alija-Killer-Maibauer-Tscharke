@@ -1,6 +1,7 @@
 import cv2
 import torch
 import numpy as np
+import torch.nn.functional as F
 from .explain_gradcam import explain_gradcam
 from preprocessing.aligning.detect import detect_and_preprocess
 
@@ -35,32 +36,32 @@ def preprocess_image(image_path, detector, device):
 
     return sample
 
-def cam_to_original(cam, meta, original_shape):
+def cam_to_original(cam_aligned, meta, original_shape):
     '''
     Projects CAM from aligned-face space back to original image space.
     '''
     h_orig, w_orig = original_shape[:2]
 
-    # 1. Resize CAM to aligned resolution (64x64)
-    w_aligned, h_aligned = meta["aligned_size"]
-    cam_aligned = cv2.resize(cam, (w_aligned, h_aligned))
-
-    # 2. Invert affine transformation: aligned -> crop
-    cam_crop = cv2.warpAffine(
-        cam_aligned,
-        meta["affine_M_inv"],
-        (meta["crop_shape"][1], meta["crop_shape"][0]),
-        flags=cv2.INTER_LINEAR
+    aligned_size = meta["aligned_size"]
+    
+    cam_resized = cv2.resize(
+        cam_aligned.astype(np.float32),
+        (aligned_size, aligned_size),
+        interpolation=cv2.INTER_LINEAR
     )
 
-    # 3. Pase into original image
-    cam_orig = np.zeros((h_orig, w_orig), dtype=np.float32)
-    x1, y1 = meta["crop_offset"]
-    h, w = meta["crop_shape"]
+    # Apply the full inverse affine (including crop offset) directly to original image size
+    M_inv = meta["affine_M_inv"]
+    cam_orig_crop = cv2.warpAffine(
+        cam_resized,
+        M_inv,
+        (w_orig, h_orig),
+        flags=cv2.INTER_LINEAR,
+        borderMode=cv2.BORDER_CONSTANT,
+        borderValue=0
+    )
 
-    cam_orig[y1:y1+h, x1:x1+w] = cam_crop
-
-    return cam_orig
+    return cam_orig_crop
 
 
 def run_inference(sample, model, target_layer):
@@ -70,13 +71,19 @@ def run_inference(sample, model, target_layer):
         target_layer=target_layer
     )
 
-    probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
+    probs = torch.softmax(logits, dim=1)[0].cpu().detach().numpy()
 
     # Paste CAM back into the original image
     cam_original = cam_to_original(
-        cam=cam_aligned,
+        cam_aligned=cam_aligned,
         meta=sample["meta"],
         original_shape=sample["original_img"].shape
+    )
+
+    print(
+    "cam aligned:", cam_aligned.min(), cam_aligned.max(),
+    "cam original:", cam_original.min(), cam_original.max(),
+    "nonzero:", np.count_nonzero(cam_original)
     )
 
     # Update sample directory
