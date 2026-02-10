@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def cam_to_original(cam_layer, meta, original_shape):
+def cam_to_original(cam, meta, original_shape):
     '''
     Projects a Grad-CAM heatmap from layer-space back into original image coordinates.
     Steps:
@@ -14,7 +14,7 @@ def cam_to_original(cam_layer, meta, original_shape):
     aligned_size = meta["aligned_size"]
     
     cam_aligned_space = cv2.resize(
-        cam_layer.astype(np.float32),
+        cam.astype(np.float32),
         (aligned_size, aligned_size),
         interpolation=cv2.INTER_LINEAR
     )

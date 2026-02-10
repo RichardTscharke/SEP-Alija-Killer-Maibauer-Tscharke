@@ -2,7 +2,8 @@ import torch
 from pathlib import Path
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import load_model, preprocess_image, run_inference
+from explaining.explain_utils import load_model, preprocess_image
+from explaining.explain_sample import explain_sample
 from explaining.debug.visualize_gradcam import visualize
 from models.ResNetLight2 import ResNetLightCNN2
 
@@ -46,18 +47,25 @@ def main(image_path, model_path, target_layer):
     model = load_model( 
         model_class=ResNetLightCNN2,
         weight_path=model_path,
-        device=device
+        device=device,
+        num_classes=6
     )
+
     detector = RetinaFaceDetector(device="cpu")
 
-    sample = preprocess_image(image_path, detector, device)
+    sample = preprocess_image(image_path, detector)
 
     # Resolve layer dynamically based on the parameters at the top
     modules = dict(model.named_modules())
     assert TARGET_LAYER in modules, f"Unknown layer: {TARGET_LAYER}"
     target_layer = modules[target_layer]
 
-    sample = run_inference(sample, model, target_layer)
+    sample = explain_sample(
+        sample=sample,
+        model=model,
+        target_layer=target_layer,
+        device=device
+    )
 
     # Plots a graphic of original image, aligned face, heatmap overlay and class probabilities
     visualize(
