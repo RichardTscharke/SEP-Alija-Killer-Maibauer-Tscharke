@@ -4,13 +4,13 @@ from tqdm import tqdm
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 from explaining.explain_utils import resolve_model_and_layer
-from explaining.video_utils import open_video, create_video_writer
+from explaining.video_utils import open_video, create_video_writer, CamSmoother
 from explaining.process_frame import process_frame
 
 
-INPUT_PATH = Path("/Users/richardachtnull/IMG_0522.MOV")
+INPUT_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")
 
-OUTPUT_PATH = Path("/Users/richardachtnull/IMG_0522_explained.MOV")
+OUTPUT_PATH = Path("/Users/richardachtnull/IMG_0524_explained.MOV")
 
 MODEL_PATH = Path("models/ResNetLight2_v0.pth")
 
@@ -34,8 +34,11 @@ def main(input_path):
     print(f"[INFO] Opening video: {input_path}")
     cap, fps, total_frames = open_video(input_path)
 
-    print(f"[INFO] Frames Per Second: {fps}")
+    print(f"[INFO] Frames Per Second: {fps:.2f}")
     print(f"[INFO] Total Frames: {total_frames}")
+
+    cam_smoother = CamSmoother(alpha=0.2, every_nth_frame=1)
+    print(f"[INFO] Cam Smoother initialized for stable overlays.")
 
     writer = None
 
@@ -50,6 +53,8 @@ def main(input_path):
             model,
             target_layer,
             DEVICE,
+            cam_smoother,
+            frame_idx,
             THRESHOLD
             )
 

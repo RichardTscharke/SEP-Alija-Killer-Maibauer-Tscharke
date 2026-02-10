@@ -8,11 +8,13 @@ def process_frame(
         model,
         target_layer,
         device,
-        threshold,
+        cam_smoother,
+        frame_idx,
+        threshold
 ):
     sample = preprocess_frame(frame, detector, device)
     if sample is None:
-        return None
+        return frame
     
     sample = explain_frame(
         sample=sample,
@@ -20,9 +22,12 @@ def process_frame(
         target_layer=target_layer,
     )
 
+    cam = sample["cam_original"]
+    cam = cam_smoother(cam, frame_idx)
+
     overlayed = overlay_gradcam(
         image=sample["original_img"],
-        cam=sample["cam_original"],
+        cam=cam,
         threshold=threshold
     )
 
