@@ -72,7 +72,7 @@ def insert_emotion_label(image, predictions):
         lines.append((f"{LABELS[idx]}: {conf:.0%}", color))
 
     if not lines:
-        lines = (["No confident prediction"], (0, 0, 255))
+        lines = [("No confident prediction", (0, 0, 255))]
 
     # Measure text box
     text_sizes = [

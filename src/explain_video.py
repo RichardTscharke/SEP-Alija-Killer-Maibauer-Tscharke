@@ -13,9 +13,7 @@ from explaining.visualize.visualize_video.label_stabilizer import LabelStabilize
 from explaining.process_frame import process_frame
 
 
-INPUT_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")
-
-OUTPUT_PATH = Path("/Users/richardachtnull/IMG_0524_explained.MOV")
+INPUT_PATH = Path("/Users/richardachtnull/IMG_0522.MOV")
 
 MODEL_PATH = Path("models/ResNetLight2_v0.pth")
 
@@ -36,6 +34,9 @@ def main(input_path):
     - Process video frame-by-frame with Grad-CAM overlays and labels
     - Write annotated frames to output video
     '''
+    
+    # Define the output path
+    output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
 
     # Load model and resolve target convolutional layer for Grad-CAM
     model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, DEVICE)
@@ -49,7 +50,7 @@ def main(input_path):
     # open input video and retrieve metadata
     print(f"[INFO] Opening video: {input_path}")
     cap, fps, total_frames = open_video(input_path)
-    print(f"[INFO] Frames Per Second: {fps:.2f}")
+    print(f"[INFO] Video FPS (source): {fps:.2f}")
     print(f"[INFO] Total Frames: {total_frames}")
 
     # Temporal smoothing for CAMs to reduce heatmap flickering
@@ -90,7 +91,7 @@ def main(input_path):
         if writer is None:
             h, w = overlayed.shape[:2]
             writer = create_video_writer(
-                output_path=OUTPUT_PATH,
+                output_path=output_path,
                 fps=fps,
                 frame_size=(w, h)
             )
@@ -103,7 +104,7 @@ def main(input_path):
         writer.release()
 
     print("[INFO] Finished video explanation")
-    print("[INFO] Saved to:", OUTPUT_PATH)
+    print("[INFO] Saved to:", output_path)
 
 
 
