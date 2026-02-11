@@ -5,7 +5,7 @@ from .precision_recall_f1_per_class import plot_prec_recall_f1_p_class
 from .confusion_matrix import plot_confusion_matrix
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 FIGURE_DIR = PROJECT_ROOT / "figures"
 FIGURE_DIR.mkdir(parents=True, exist_ok=True)
