@@ -49,6 +49,9 @@ def sort_KDEF(filter_kdef):
 
     buffers = {emotion: [] for emotion in filter_kdef.rules}
 
+    if not os.path.exists(os.path.dirname(LABEL_OUT)):
+        os.makedirs(os.path.dirname(LABEL_OUT), exist_ok=True)
+        
     lf = open(LABEL_OUT, "w")
     print("[INFO] Starting KDEF Preparation.")
 

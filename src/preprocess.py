@@ -38,8 +38,8 @@ EXPW_FILTER = {
     "Surprise":  0.5,
     "Fear":      1.0,
     "Disgust":   1.0,
-    "Happiness": 0.3,
-    "Sadness":   0.4,
+    "Happiness": 0.15,
+    "Sadness":   0.25,
     "Anger":     1.0,
 }
 KDEF_FILTER = {
