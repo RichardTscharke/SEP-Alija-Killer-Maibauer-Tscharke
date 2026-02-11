@@ -1,5 +1,8 @@
+import os
+import sys
 import torch
 from pathlib import Path
+sys.path.append(os.path.join(os.getcwd(), "src"))
 from src.evaluation.scripts.evaluate import run_evaluate
 
 # Evaluation configuration
