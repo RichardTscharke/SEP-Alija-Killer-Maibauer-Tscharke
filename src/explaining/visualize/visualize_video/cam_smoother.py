@@ -12,12 +12,12 @@ class CamSmoother:
         # Apply smoothing update every n-th frame (default: every frame)
         self.nth_frame = every_nth_frame
 
-        # Stores previous smoothed CAM
+        # Store previous smoothed CAM
         self.prev_cam = None
 
     def __call__(self, cam, frame_idx):
         
-        # Initilaize smoother with first CAM
+        # Initilaize with first CAM
         if self.prev_cam is None:
             self.prev_cam = cam
             return cam

@@ -76,3 +76,20 @@ def preprocess_image(image_path, detector, device):
     return preprocess_frame(frame, detector, device)
 
 
+def run_model(model, input_tensor, require_grad=False):
+    '''
+    Pure forward pass (no forwatd pass or hooks).
+    '''
+    model.eval()
+
+    if require_grad:
+        logits = model(input_tensor)
+        probs = torch.softmax(logits, dim=1)
+
+    else:
+        with torch.no_grad():
+            logits = model(input_tensor)
+            probs  = torch.softmax(logits, dim=1)
+
+    return logits, probs
+

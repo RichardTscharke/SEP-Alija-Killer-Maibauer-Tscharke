@@ -1,4 +1,5 @@
 from explaining.cam.gradcam import GradCAM
+from explaining.explain_utils import run_model
 
 
 def run_gradcam(
@@ -16,14 +17,11 @@ def run_gradcam(
     - Raw logits (unnormalized class scores)
     '''
 
-    # Evaluate model
-    model.eval()
-
     # Register hooks on the target layer
     grad_cam = GradCAM(target_layer)
 
-    # Forward pass
-    logits = model(input_tensor)
+    # Evaluate model + Forward pass
+    logits, _ = run_model(model, input_tensor, require_grad=True)
 
     # Default: explain predicted class
     if class_idx is None:

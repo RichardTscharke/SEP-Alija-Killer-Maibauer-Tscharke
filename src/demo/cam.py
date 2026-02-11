@@ -13,11 +13,10 @@ class Webcam:
             if not ret:
                 break
 
-            output = process_frame(frame)
+            output_frame = process_frame(frame)
 
-            if output is not None:
-                for name, img in output.items():
-                    cv2.imshow(name, img)
+            if output_frame is not None:
+                cv2.imshow("webcam", output_frame)
 
             if cv2.waitKey(1) == 27:
                 break

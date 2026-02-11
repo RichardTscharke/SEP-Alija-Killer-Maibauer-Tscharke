@@ -1,31 +1,7 @@
 import cv2
-import torch
 import numpy as np
 
 EMOTIONS = ["Angry", "Disgust", "Fear", "Happy", "Sad", "Surprise"]
-
-def run_fer(model, face_img, device):
-
-        # face_img: np.ndarray, shape: (64, 64, 3), BGR (OpenCV)
-        # BGR → RGB
-        face_img = face_img[:, :, ::-1]
-
-        # [0,255] → [0,1]
-        face_img = face_img.astype(np.float32) / 255.0
-
-        # HWC → CHW
-        face_img = np.transpose(face_img, (2, 0, 1))
-
-        # Add batch dim
-        tensor = torch.from_numpy(face_img).unsqueeze(0).to(device)
-
-        with torch.no_grad():
-            logits = model(tensor)
-            probs = torch.softmax(logits, dim=1)
-            pred = torch.argmax(probs, dim=1).item()
-
-        return pred, probs.squeeze().cpu().numpy()
-
 
 def draw_emotion_probs(frame, probs, origin=(10, 30), line_height=40, font_scale=1.0):
 
