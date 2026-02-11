@@ -169,7 +169,7 @@ def trainings_loop(config: dict, device: torch.device):
         correct = 0
         total = 0
 
-        for images, labels in train_loader:
+        for batch_idx, (images, labels) in enumerate(train_loader):
             images = images.to(DEVICE)
             labels = labels.to(DEVICE)
 
@@ -184,11 +184,15 @@ def trainings_loop(config: dict, device: torch.device):
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
+                scheduler.step(epoch + batch_idx / len(train_loader))
+
             else:
                 outputs = model(images)
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
+                scheduler.step(epoch + batch_idx / len(train_loader))
+                
 
             running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
@@ -208,7 +212,6 @@ def trainings_loop(config: dict, device: torch.device):
             model, val_loader, criterion, device=DEVICE, use_amp=use_amp
         )
 
-        scheduler.step()
 
         current_lr = optimizer.param_groups[0]["lr"]
 
