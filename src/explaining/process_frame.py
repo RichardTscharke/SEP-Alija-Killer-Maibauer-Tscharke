@@ -15,32 +15,52 @@ def process_frame(
         label_smoother,
         label_stabilizer
 ):
-    sample = preprocess_frame(frame, detector, device)
-    if sample is None:
+    '''
+    Orchestrates XAI pipeline for a single video frame.
+    Steps:
+    - Face detection and alignment
+    - Grad-CAM computation and backprojection
+    - Temporal smoothing of CAM and predicitions
+    - Blending frame with heatmap and emotion label insertion
+
+    Returns the annotated frame.
+    If no face is detected, returns the original frame unchanged.
+    '''
+
+    # Preprocessing pipeline (if no face detected this returns None)
+    preprocessed = preprocess_frame(frame, detector, device)
+
+    # Skip explanation if no valid face was detected
+    if preprocessed is None:
         return frame
     
-    sample = explain_frame(
-        sample=sample,
+    # Run Grad-CAM explanation and add CAM + predictions to sample
+    explained = explain_frame(
+        sample=preprocessed,
         model=model,
         target_layer=target_layer,
     )
 
-    cam = sample["cam_original"]
+    # Retrieve CAM in original image coordinates
+    cam = explained["cam_original"]
+
+    # Apply temporal smoothing to stabilize CAM across frames
     cam = cam_smoother(cam, frame_idx)
 
+    # Overlay CAM heatmap onto original frame
     overlayed = overlay_gradcam(
-        image=sample["original_img"],
+        image=explained["original_img"],
         cam=cam,
         threshold=threshold
     )
 
-    probs = label_smoother(sample["probs"], frame_idx)
-    idx, conf = label_stabilizer(probs)
+    # Smooth class probabilities temporally
+    probs = label_smoother(explained["probs"], frame_idx)
 
-    labelized = insert_emotion_label(
-        overlayed,
-        idx,
-        conf
-    )
+    # Stabilize top 2 predicted labels to avoid flickering
+    top2_pred = label_stabilizer(probs)
+
+    # Insert emotion label and confidence into the frame
+    labelized = insert_emotion_label(overlayed, top2_pred)
 
     return labelized

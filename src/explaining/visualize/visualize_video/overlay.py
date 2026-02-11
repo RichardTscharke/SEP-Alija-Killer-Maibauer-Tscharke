@@ -22,85 +22,108 @@ def overlay_gradcam(
     Returns the overlayed image in BGR and uint8.
     '''
 
-    # Copy image for safety reasons
+    # Copy image to avoid in-place modification
     img = image.copy()
 
-    # Ensure CAM is float32
+    # Ensure CAM uses float32 for OpenCV operations
     cam = cam.astype(np.float32)
 
-    # Apply threshold
+    # Apply threshold to suppress weak activations
     cam = np.clip(cam, 0, 1)
     cam[cam < threshold] = 0.0
 
-    # Normalize
+    # Re-normalize CAM after thresholding
     if cam.max() > 0:
         cam /= cam.max()
 
-    # Convert CAM to 8-bit
+    # Convert normalized CAM to 8-bit for color mapping
     cam_uint8 = np.uint8(255*cam)
 
-    # Apply colormap
+    # Map CAM values to a color heatmap
     heatmap = cv2.applyColorMap(cam_uint8, colormap)
 
-    #Overlay heatmap onto image
+    # Blend heatmap with original image
     overlay = cv2.addWeighted(img, 1.0, heatmap, alpha, 0)
 
     return overlay
 
-def insert_emotion_label(
-        image,
-        idx,
-        confidence,
-):  
-    if idx is None:
-        text = "No confident prediction"
-        color = (0, 0, 255)
-    else:
-        text = f"{LABELS[idx]}: {confidence:.0%}"
-        color = (0, 255, 0)
-
+def insert_emotion_label(image, predictions):  
+    '''
+    Draws the predicted emotion label and confidence onto the image.
+    Either two/one/no top candidate(s) exist.
+    Modifies the image in-place and returns it.
+    '''
+    
+    # Image dimensions used for resolution-independet scaling
     h, w = image.shape[:2]
 
+    # Font parameters scaled relative to image height
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = h / 900
     thickness = max(1, int(h / 450))
-    #padding = int(h / 80)
 
-    (text_w, text_h), _ = cv2.getTextSize(text, font, font_scale, thickness)
+    # Select label text and color based on prediction availability
+    lines = []
+    for i, pred in enumerate(predictions):
+        if pred is None:
+            continue
+        idx, conf = pred
+        color = (0, 255, 0) if i == 0 else (0, 165, 255)
+        lines.append((f"{LABELS[idx]}: {conf:.0%}", color))
 
-    margin_x = int(0.04 * w)       
-    margin_y = int(0.08 * h)        
-    x = margin_x
-    y = margin_y + text_h
+    if not lines:
+        lines = (["No confident prediction"], (0, 0, 255))
 
-    padding = int(0.4 * text_h)
+    # Measure text box
+    text_sizes = [
+        cv2.getTextSize(txt, font, font_scale, thickness)[0]
+        for txt, _ in lines
+    ]
+    txt_w = max(w for w, _ in text_sizes)
+    txt_h = sum(h for _, h in text_sizes)
 
+    line_spacing = int(0.4 * text_sizes[0][1])
+    padding = int(0.6 * text_sizes[0][1])
+
+    box_w = txt_w + 2 * padding
+    box_h = txt_h + padding * 2 + line_spacing * (len(lines) - 1)
+
+    # Top-left corner of label box
+    x = int(0.04 * w)
+    y = int(0.08 * h)
+
+    # Draw background rectangle
     border = 5
     cv2.rectangle(
         image,
-        (x - padding - border, y - text_h - padding - border),
-        (x + text_w + padding + border, y + padding + border),
+        (x, y),
+        (x + box_w, y + box_h),
         (230, 230, 230),
         -1,
     )
 
+    # Draw label rectangle
     cv2.rectangle(
         image,
-        (x - padding, y - text_h - padding),
-        (x + text_w + padding, y + padding),
+        (x + 5, y + 5),
+        (x + box_w - 5, y + box_h - 5),
         (79, 79, 47),
         -1,
     )
 
-    cv2.putText(
-        image,
-        text,
-        (x, y),
-        font,
-        font_scale,
-        color,
-        thickness,
-        cv2.LINE_AA,
-    )
+    # Draw label text
+    y_txt = y + padding + text_sizes[0][1]
+    for (txt, color), (_, line_h) in zip(lines, text_sizes):
+        cv2.putText(
+            image,
+            txt,
+            (x + padding, y_txt),
+            font,
+            font_scale,
+            color,
+            thickness,
+            cv2.LINE_AA,
+        )
+        y_txt += line_h + line_spacing
 
     return image

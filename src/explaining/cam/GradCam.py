@@ -2,7 +2,7 @@ import torch
 
 class GradCAM:
     '''
-    Implements Grad-CAM for a given convolutional layer.
+    Implements Grad-CAM for a given convolutional layer of a model.
     Pipeline:
     - Instantiate with target layer
     - Run a forward pass through the model
@@ -11,7 +11,7 @@ class GradCAM:
     def __init__(self, target_layer):
         '''
         Registers forward and backward hooks on the target layer.
-        Parameter: target layer specified in explain_image.py
+        Parameter: convolutional layer whose activations should be explained.
         '''
         self.target_layer = target_layer
 
@@ -29,12 +29,13 @@ class GradCAM:
 
     # Save gradients of the target layer output
     def backward_hook(self, module, grad_input, grad_output):
-        # First element of the tuple corresponds to layer output
+        # First element of the tuple corresponds to the gradient with regards to thre layer output
         self.gradients = grad_output[0].detach()
 
     def generate(self, logits, class_idx):
         '''
         Takes the logits and target class index.
+        Assumes logits come from the same forward pass that triggered the hooks.
         Generates and returns a Grad-CAM heatmap for a specified class.
         '''
 
