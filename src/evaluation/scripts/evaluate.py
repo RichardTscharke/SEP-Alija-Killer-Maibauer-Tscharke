@@ -21,6 +21,9 @@ def run_evaluate(output_dir, model_path, config, device):
     All generated figures are saved to the specified figure directory.
     '''
 
+    print(f"\n[INFO] Starting evaluation for model: {model_path}")
+    model_path = Path(model_path)
+
     # Assure that the latest model exists
     assert model_path.exists() and model_path.is_file()
 
