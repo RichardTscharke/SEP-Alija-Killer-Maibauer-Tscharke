@@ -1,14 +1,13 @@
-import torch
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import get_device, resolve_model_and_layer
+from explaining.explain_utils import get_device, resolve_model_and_layer, run_model
 from explaining.visualize.visualize_video.cam_smoother import CamSmoother
 from explaining.visualize.visualize_video.label_smoother import LabelSmoother
 from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 from demo.cam import Webcam
-from demo.face_tracker import FaceTracker
-from demo.face_process_pipeline import FaceStreamProcessor
+#from demo.face_tracker import FaceTracker
+from demo.fer_controller import FERStreamController
 
 MODEL_PATH = "models/ResNetLight2_v0.pth" # Make sure this is the latest model path
 
@@ -16,9 +15,23 @@ TARGET_LAYER = "stage3"
 
 DETECT_EVERY_N = 1
 
-THRESHOLD = 0.4
+THRESHOLD = 0.3
 
 def main():
+    '''
+    Entry point for the live FER demo.
+    Pipeline:
+    - Load device, model and target layer
+    - Initialize retina face detector and smoothing utilities
+    - Process video frame-by-frame with landmarks and/or Grad-CAM overlays as well as labels
+    - Write annotated frames to output video
+
+    Keys:
+    'q'    : Quit demo
+    'h'    : Heatmap overlay by Grad-CAM
+    'k'    : Keypoints overlay by RetinaFaceDetector
+    '1'-'9': Detect every n-th frame 
+    '''
 
     # Initialize device (GPU/CPU)
     device = get_device()
@@ -46,14 +59,16 @@ def main():
 
     #tracker = FaceTracker() # For now we dont use a tracker for tests
 
-    processor = FaceStreamProcessor(model,
+    processor = FERStreamController(device,
+                                    model,
                                     target_layer,
                                     detector,
                                     DETECT_EVERY_N,
                                     THRESHOLD,
                                     cam_smoother,
                                     label_smoother,
-                                    label_stabilizer)
+                                    label_stabilizer,
+                                    run_model)
 
     Webcam.run(processor.process_frame,
                processor.set_detect_every_n,

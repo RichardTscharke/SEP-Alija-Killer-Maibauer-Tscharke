@@ -1,10 +1,9 @@
 import threading
 import time
 
-
 class FERWorker:
     """
-    Asynchonous inference worker for live FER demo.
+    Asynchronous inference worker for live FER demo.
     Pipeline:
     - Receive latest frame from main thread
     - Run detection every n frames
@@ -26,6 +25,7 @@ class FERWorker:
         self.detector = detector
         self.model = model
         self.device = device
+        self.preprocess_f = preprocess_f
 
         # How often detection + inference is executed
         self.detect_every_n = max(1, int(detect_every_n))
@@ -37,7 +37,7 @@ class FERWorker:
         self.latest_frame = None
 
         # Last computed inference
-        self.last_results = {
+        self.last_result = {
             "face" : None,
             "probs": None,
             "cam": None,
@@ -74,7 +74,7 @@ class FERWorker:
 
     def worker_loop(self):
         '''
-        Pipeine per iteration:
+        Pipeline per iteration:
         - Get newest frame
         - Detect face
         - Preprocess face
@@ -102,28 +102,21 @@ class FERWorker:
             if self.frame_counter % self.detect_every_n != 0:
                 continue
 
-            # Face Detection
-            faces = self.detector.detect_face(frame)
-            if not faces:
-                continue
-
-            # Face Selection
-            faces = sorted(faces, key=lambda f: f["confidence"], reverse=True)
-            face = face[0]
-
-            # Our preprocessing pipeline: Clip -> Crop -> Align
-            sample = self.preprocess_f(frame, face)
+            # Face Detection (if no face => delete overlays)
+            sample = self.preprocess_f(frame)
 
             if sample is None:
+                with self.lock:
+                    self.last_result = {"sample": None, "probs": None, "cam": None}
                 continue
 
             # Inference (XAI or no XAI)
-            result = self.infer_f(sample, self.model)
+            result = self.infer_f(sample)
 
             # Store results (thread safe)
             with self.lock:
                 self.last_result = {
-                    "face": face,
+                    "sample": sample,
                     "probs": result["probs"],
                     "cam": result["cam"]
                 }

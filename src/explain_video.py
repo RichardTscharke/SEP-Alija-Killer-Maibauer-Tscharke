@@ -34,7 +34,8 @@ def main(input_path):
     '''
 
     # Initialize device (GPU/CPU)
-    device = get_device()
+    #device = get_device()
+    device = torch.device("cpu")
     
     # Define the output path
     output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
@@ -55,7 +56,7 @@ def main(input_path):
 
     # Temporal smoothing for CAMs to reduce heatmap flickering
     cam_smoother = CamSmoother(alpha=0.2, every_nth_frame=1)
-    print(f"[INFO] Cam Smoother initialized for stable overlays.")
+    print(f"[INFO] Cam Smoother initialized for fluid heatmaps.")
 
     # Temporal smoothing and stabilization for emotion label overlay
     label_smoother = LabelSmoother(alpha=0.3, every_nth_frame=5)

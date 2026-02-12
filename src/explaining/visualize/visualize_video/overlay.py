@@ -59,7 +59,7 @@ def insert_emotion_label(image, predictions):
 
     # Font parameters scaled relative to image height
     font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = h / 900
+    font_scale = h / 600
     thickness = max(1, int(h / 450))
 
     # Select label text and color based on prediction availability
@@ -82,8 +82,8 @@ def insert_emotion_label(image, predictions):
     txt_w = max(w for w, _ in text_sizes)
     txt_h = sum(h for _, h in text_sizes)
 
-    line_spacing = int(0.4 * text_sizes[0][1])
-    padding = int(0.6 * text_sizes[0][1])
+    line_spacing = int(0.8 * text_sizes[0][1])
+    padding = int(0.8 * text_sizes[0][1])
 
     box_w = txt_w + 2 * padding
     box_h = txt_h + padding * 2 + line_spacing * (len(lines) - 1)
@@ -105,8 +105,8 @@ def insert_emotion_label(image, predictions):
     # Draw label rectangle
     cv2.rectangle(
         image,
-        (x + 5, y + 5),
-        (x + box_w - 5, y + box_h - 5),
+        (x + border, y + border),
+        (x + box_w - border, y + box_h - border),
         (79, 79, 47),
         -1,
     )
@@ -127,3 +127,19 @@ def insert_emotion_label(image, predictions):
         y_txt += line_h + line_spacing
 
     return image
+
+def draw_box_landmarks(frame, sample):
+    '''
+    Only used for Demo purposes.
+    Draws the bounding box and landmark points produced by RetinaFaceDetector.
+    '''
+
+    # Draw bounding box
+    x, y, w, h = sample["box"]
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    # Draw landmarks
+    for _, (lx, ly) in sample["landmarks"].items():
+        cv2.circle(frame, (lx, ly), 2, (0, 0, 255), -1)
+
+    return frame

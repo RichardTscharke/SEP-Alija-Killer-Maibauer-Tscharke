@@ -18,7 +18,7 @@ class Webcam:
             if output_frame is not None:
                 cv2.imshow("webcam", output_frame)
 
-            key = cv2.waitKey(1) & 0xFF
+            key = cv2.waitKey(10) & 0xFF
 
             if key in [ord(str(i)) for i in range(1, 10)]:
                 n = int(chr(key))

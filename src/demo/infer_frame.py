@@ -10,13 +10,13 @@ def infer_frame(
     '''
     Performs a single inference step on a preprocessed sample.
     The XAI pipeline is called if asked for by the user.
-    If enable_xai=False probs but no cam.
+    If enable_xai=False, only probabilities are returned (no cam).
     '''
 
     # Grad-CAM explanation enabled
     if enable_xai:
         
-        # Cam Computation + Back Projection
+        # Run Grad-CAm (forward, backward and projection)
         explained = explain_frame(
             sample=sample,
             model=model,
