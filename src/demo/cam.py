@@ -27,10 +27,10 @@ class Webcam:
             if key == ord("h") and toggle_xai is not None:
                 toggle_xai()
 
-            if key == ord('l'):
+            if key == ord('k') and toggle_landmarks is not None:
                 toggle_landmarks()
 
-            if key == 27:
+            if key == 27 or key == ord('q'):
                 break
 
         cap.release()

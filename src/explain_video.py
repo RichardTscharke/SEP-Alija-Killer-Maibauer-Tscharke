@@ -3,7 +3,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
-from explaining.explain_utils import resolve_model_and_layer
+from explaining.explain_utils import get_device, resolve_model_and_layer
 from explaining.video_utils import open_video, create_video_writer
 from explaining.visualize.visualize_video.cam_smoother import CamSmoother
 from explaining.visualize.visualize_video.label_smoother import LabelSmoother
@@ -33,13 +33,8 @@ def main(input_path):
     - Write annotated frames to output video
     '''
 
-    # Initialie device (GPU/CPU)
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
+    # Initialize device (GPU/CPU)
+    device = get_device()
     
     # Define the output path
     output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
@@ -51,7 +46,6 @@ def main(input_path):
 
     # Initialize face detector
     detector = RetinaFaceDetector(device=device)
-    print("[INFO] RetinaFace Detector initialized.")
 
     # open input video and retrieve metadata
     print(f"[INFO] Opening video: {input_path}")

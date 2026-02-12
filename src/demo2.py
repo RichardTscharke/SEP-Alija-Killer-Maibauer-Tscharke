@@ -1,45 +1,65 @@
 import torch
-from demo.cam import Webcam
-from demo.draw_box_landmarks import set_colors
-from demo.face_tracker import FaceTracker
-from demo.face_process_pipeline import FaceStreamProcessor
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import resolve_model_and_layer
+from explaining.explain_utils import get_device, resolve_model_and_layer
+from explaining.visualize.visualize_video.cam_smoother import CamSmoother
+from explaining.visualize.visualize_video.label_smoother import LabelSmoother
+from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
-from models.ResNetLight2 import ResNetLightCNN2
-
-BOX_COLOR       = (0, 0, 255) # BGR
-KEYPOINTS_COLOR = (0, 255, 0) # BGR
+from demo.cam import Webcam
+from demo.face_tracker import FaceTracker
+from demo.face_process_pipeline import FaceStreamProcessor
 
 MODEL_PATH = "models/ResNetLight2_v0.pth" # Make sure this is the latest model path
 
 TARGET_LAYER = "stage3"
 
+DETECT_EVERY_N = 1
+
+THRESHOLD = 0.4
 
 def main():
 
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-    elif torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
+    # Initialize device (GPU/CPU)
+    device = get_device()
 
-    set_colors(BOX_COLOR, KEYPOINTS_COLOR)
-
+    # Load model and resolve target convolutional layer for Grad-CAM
     model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
+    print(f"[INFO] Model loaded: {MODEL_PATH}")
+    print(f"[INFO] Target Layer: {TARGET_LAYER}")
 
-    detector = RetinaFaceDetector(device=device) # Detector is used to update the box+landmarks to groundtruth every n-th frame
+    # Initialize face detector
+    detector = RetinaFaceDetector(device=device)
 
-    #tracker = FaceTracker() # Tracker is used to predict the box movement between every n-th frame
+    # Temporal smoothing for CAMs to reduce heatmap flickering
+    cam_smoother = CamSmoother(alpha=0.2, every_nth_frame=1)
+    print(f"[INFO] Cam Smoother initialized for stable overlays.")
 
-    processor = FaceStreamProcessor(model, detector, detect_every_n=1, target_layer=target_layer) # Detect face every n frames. FaceStreamProcessor holds the logic for how each frame is processed.
+    # Temporal smoothing and stabilization for emotion label overlay
+    label_smoother = LabelSmoother(alpha=0.3, every_nth_frame=5)
 
-    Webcam.run(process_frame=processor.process_frame,
-               set_detect_every_n=processor.set_detect_every_n,
-               toggle_xai=processor.toggle_xai,
-               toggle_landmarks=processor.toggle_landmarks) 
+    # min_conf refers to the minimum confidence a prediction must achieve to be written out
+    # In our case we show the top 2 classes who achieved this required confidence
+    label_stabilizer = LabelStabilizer(min_conf=0.3)
+    print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
+
+
+    #tracker = FaceTracker() # For now we dont use a tracker for tests
+
+    processor = FaceStreamProcessor(model,
+                                    target_layer,
+                                    detector,
+                                    DETECT_EVERY_N,
+                                    THRESHOLD,
+                                    cam_smoother,
+                                    label_smoother,
+                                    label_stabilizer)
+
+    Webcam.run(processor.process_frame,
+               processor.set_detect_every_n,
+               processor.toggle_xai,
+               processor.toggle_landmarks) 
+    
 
 if __name__ == "__main__":
     main()
