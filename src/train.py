@@ -10,7 +10,7 @@ TRAIN_CONFIGURATIONS = {
     "model": "ResNetLight2",
 
     # Choose one of "val_acc" and "val_loss"
-    "train_on": "val_loss",
+    "train_on": "val_acc",
 
     # By default: Class inverse frequency weights. If you flag to False please adjust custom_weights
     "use_inv_freq_w": True,
@@ -19,7 +19,7 @@ TRAIN_CONFIGURATIONS = {
 
     # Training metrics
     "learning_rate": 0.001,
-    "epochs": 100,
+    "epochs": 110,
     "early_stop_patience": 50,
 
     # Performance metrics
