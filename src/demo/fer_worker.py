@@ -4,91 +4,127 @@ import time
 
 class FERWorker:
     """
-    Runs face detection + FER in a background thread.
-    Stores latest results for non-blocking access.
+    Asynchonous inference worker for live FER demo.
+    Pipeline:
+    - Receive latest frame from main thread
+    - Run detection every n frames
+    - Preprocess detected face
+    - Call injected inference function
+    - Store latest inference results
     """
 
-    def __init__(self, detector, model, device, detect_every_n,
-                 preprocess_f,
-                 to_tensor_f,
-                 run_model_f):
+    def __init__(
+            self,
+            detector,
+            model,
+            device,
+            detect_every_n,
+            preprocess_f,
+            infer_f
+    ):
 
         self.detector = detector
-        self.model    = model
-        self.device   = device
+        self.model = model
+        self.device = device
 
-        self.detect_every_n = detect_every_n
-        self.frame_counter  = 0
+        # How often detection + inference is executed
+        self.detect_every_n = max(1, int(detect_every_n))
+        self.frame_counter = 0
 
-        self.preprocess_f = preprocess_f
-        self.to_tensor_f  = to_tensor_f
-        self.run_model_f  = run_model_f
+        # Injected inference function (XAI or no XAI)
+        self.infer_f = infer_f
 
         self.latest_frame = None
-        self.last_face    = None
-        self.last_probs   = None
 
+        # Last computed inference
+        self.last_results = {
+            "face" : None,
+            "probs": None,
+            "cam": None,
+        }
+
+        # Thread utils
         self.lock = threading.Lock()
         self.running = True
+        self.thread = threading.Thread(target=self.worker_loop, daemon=True)
 
-        self.thread = threading.Thread(
-            target=self.worker_loop,
-            daemon=True
-        )
         self.thread.start()
 
-
+    
+    # Receive newest frame from UI thread
     def update_frame(self, frame):
         with self.lock:
             self.latest_frame = frame
 
-
+    # Return latest inference results
     def get_results(self):
         with self.lock:
-            return self.last_face, self.last_probs
+            return self.last_result.copy()
 
+    # Update detection frequency
+    def set_detect_every_n(self, n):
+        self.detect_every_n = max(1, int(n))
+        self.frame_counter = 0
+
+    # Stop worker thread
     def stop(self):
         self.running = False
+        self.thread.join()
 
 
     def worker_loop(self):
+        '''
+        Pipeine per iteration:
+        - Get newest frame
+        - Detect face
+        - Preprocess face
+        - Run inference
+        - Store results
+        '''
 
         while self.running:
 
             frame = None
 
+            # get latest frame (if it exists)
             with self.lock:
                 if self.latest_frame is not None:
-                    frame = self.latest_frame.copy()
+                    frame = self.latest_frame
                     self.latest_frame = None
 
+            # If no frame available, wait a bit to reduce CPU load
             if frame is None:
                 time.sleep(0.005)
                 continue
 
+            # Detect every n
             self.frame_counter += 1
-
             if self.frame_counter % self.detect_every_n != 0:
-                time.sleep(0.001)
                 continue
 
+            # Face Detection
             faces = self.detector.detect_face(frame)
-
             if not faces:
-                time.sleep(0.002)
                 continue
 
+            # Face Selection
             faces = sorted(faces, key=lambda f: f["confidence"], reverse=True)
-            face = faces[0]
+            face = face[0]
 
+            # Our preprocessing pipeline: Clip -> Crop -> Align
             sample = self.preprocess_f(frame, face)
 
             if sample is None:
                 continue
 
-            tensor = self.to_tensor_f(sample, self.device)
-            _, probs = self.run_model_f(self.model, tensor)
+            # Inference (XAI or no XAI)
+            result = self.infer_f(sample, self.model)
 
+            # Store results (thread safe)
             with self.lock:
-                self.last_face = face
-                self.last_probs = probs.squeeze().cpu().numpy()
+                self.last_result = {
+                    "face": face,
+                    "probs": result["probs"],
+                    "cam": result["cam"]
+                }
+

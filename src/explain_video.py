@@ -3,7 +3,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
-from explaining.explain_utils import resolve_model_and_layer
+from explaining.explain_utils import get_device, resolve_model_and_layer
 from explaining.video_utils import open_video, create_video_writer
 from explaining.visualize.visualize_video.cam_smoother import CamSmoother
 from explaining.visualize.visualize_video.label_smoother import LabelSmoother
@@ -21,8 +21,6 @@ TARGET_LAYER = "stage3"
 
 THRESHOLD = 0.4
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def main(input_path):
     '''
@@ -34,18 +32,20 @@ def main(input_path):
     - Process video frame-by-frame with Grad-CAM overlays and labels
     - Write annotated frames to output video
     '''
+
+    # Initialize device (GPU/CPU)
+    device = get_device()
     
     # Define the output path
     output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
 
     # Load model and resolve target convolutional layer for Grad-CAM
-    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, DEVICE)
+    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
     print(f"[INFO] Model loaded: {MODEL_PATH}")
     print(f"[INFO] Target Layer: {TARGET_LAYER}")
 
     # Initialize face detector
-    detector = RetinaFaceDetector(device=DEVICE)
-    print("[INFO] RetinaFace Detector initialized.")
+    detector = RetinaFaceDetector(device=device)
 
     # open input video and retrieve metadata
     print(f"[INFO] Opening video: {input_path}")
@@ -79,7 +79,7 @@ def main(input_path):
             detector,
             model,
             target_layer,
-            DEVICE,
+            device,
             cam_smoother,
             frame_idx,
             THRESHOLD,

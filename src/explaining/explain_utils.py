@@ -3,6 +3,14 @@ import torch
 from models.ResNetLight2 import ResNetLightCNN2
 from preprocessing.aligning.detect import detect_and_preprocess
 
+def get_device():
+    
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        return torch.device("mps")
+    else:
+        return torch.device("cpu")
 
 def load_model(model_class, model_path, device, num_classes):
 
