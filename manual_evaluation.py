@@ -10,11 +10,11 @@ from src.evaluation.scripts.evaluate import run_evaluate
 CONFIG = {
     "model": "ResNetLight2",
     "batch_size": 64,
-    "num_workers": 2,
+    "num_workers": 4,
 }
 
 # File paths
-MODEL_PATH = Path("models/ResNetLight2_v3.pth")
+MODEL_PATH = Path("models/ResNetLight2_v2.pth")
 OUTPUT_DIR = Path("src/evaluation/outputs")
 
 
