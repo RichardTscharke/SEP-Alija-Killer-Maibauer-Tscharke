@@ -21,8 +21,6 @@ TARGET_LAYER = "stage3"
 
 THRESHOLD = 0.4
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def main(input_path):
     '''
@@ -34,17 +32,25 @@ def main(input_path):
     - Process video frame-by-frame with Grad-CAM overlays and labels
     - Write annotated frames to output video
     '''
+
+    # Initialie device (GPU/CPU)
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
     
     # Define the output path
     output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
 
     # Load model and resolve target convolutional layer for Grad-CAM
-    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, DEVICE)
+    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
     print(f"[INFO] Model loaded: {MODEL_PATH}")
     print(f"[INFO] Target Layer: {TARGET_LAYER}")
 
     # Initialize face detector
-    detector = RetinaFaceDetector(device=DEVICE)
+    detector = RetinaFaceDetector(device=device)
     print("[INFO] RetinaFace Detector initialized.")
 
     # open input video and retrieve metadata
@@ -79,7 +85,7 @@ def main(input_path):
             detector,
             model,
             target_layer,
-            DEVICE,
+            device,
             cam_smoother,
             frame_idx,
             THRESHOLD,

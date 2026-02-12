@@ -15,3 +15,5 @@ def draw_box_landmarks(frame, original):
 
     for _, (lx, ly) in original["landmarks"].items():
         cv2.circle(frame, (lx, ly), 2, LANDMARK_COLOR, -1)
+
+    return frame
