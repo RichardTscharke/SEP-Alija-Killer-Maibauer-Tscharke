@@ -4,7 +4,9 @@ from models.ResNetLight2 import ResNetLightCNN2
 from preprocessing.aligning.detect import detect_and_preprocess
 
 def get_device():
-    
+    '''
+    Selects best available compuatation device (CUDA > MPS > CPU)
+    '''
     if torch.cuda.is_available():
         return torch.device("cuda")
     elif torch.backends.mps.is_available():
@@ -13,15 +15,25 @@ def get_device():
         return torch.device("cpu")
 
 def load_model(model_class, model_path, device, num_classes):
-
+    '''
+    Instantiates model, loads weights and moves it to target device.
+    '''
+    # Create model instance
     model = model_class(num_classes=num_classes)
+
+    # Load trained weights
     model.load_state_dict(torch.load(model_path, map_location=device))
+
+    # Move model parameters to device (CPU / GPU)
     model.to(device)
     return model
 
 
 def resolve_model_and_layer(model_path, target_layer, device):
-
+    '''
+    Loads model and returns reference to specified target layer for Grad_CAM
+    '''
+    # Load pretrained model
     model = load_model(
         model_class=ResNetLightCNN2,
         model_path=model_path,
@@ -29,11 +41,16 @@ def resolve_model_and_layer(model_path, target_layer, device):
         num_classes=6
     )
 
+    # Set model to evaluation mode (disable dropout, batchnorm updates)
     model.eval()
 
+    # Create dictionary of all named submodules
     modules = dict(model.named_modules())
+
+    # Ensure requested layer exists
     assert target_layer in modules, f"Unknown layer: {target_layer}"
 
+    # Return model and selected conv. layer
     return model, modules[target_layer]
 
 
@@ -97,7 +114,7 @@ def run_model(model, input_tensor, require_grad=False):
         with torch.no_grad():
             logits = model(input_tensor)
 
+    # Return logits and probabilities
     probs = torch.softmax(logits, dim=1)
-
     return logits, probs
 

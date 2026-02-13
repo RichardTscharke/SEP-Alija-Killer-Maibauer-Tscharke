@@ -1,4 +1,4 @@
-from training.utils import get_device
+from training.train_utils import get_device
 from training.train_loop import trainings_loop
 '''
 This is the training interface of our project.

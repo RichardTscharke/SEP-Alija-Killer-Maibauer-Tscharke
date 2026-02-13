@@ -6,7 +6,7 @@ from torch.amp import autocast, GradScaler
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
-from .utils import (
+from .train_utils import (
     TRAIN_DIR,
     VAL_DIR,
     prepare_output_dir_evaluation,

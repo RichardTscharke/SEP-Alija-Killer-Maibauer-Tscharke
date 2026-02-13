@@ -78,12 +78,15 @@ class FERStreamController:
         # Build and return sample directory from face
         return preprocess_frame(frame, self.worker.detector, self.device)
 
+    # Enable or disable Grad-CAM heatmap calculation + overlay
     def toggle_xai(self):
         self.enable_xai = not self.enable_xai
 
+    # Enable or disable bounding box and landmark visualization
     def toggle_landmarks(self):
         self.show_landmarks = not self.show_landmarks
 
+    # Adjust detection frequency 
     def set_detect_every_n(self, n):
         self.worker.set_detect_every_n(n)
 
