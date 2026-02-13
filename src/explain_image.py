@@ -60,7 +60,7 @@ def main(image_path):
     visualize(
         original_img=sample["original_img"],
         aligned_img=sample["image"],
-        cam_aligned=sample["cam"],
+        cam_aligned=sample["cam_aligned"],
         cam_original=sample["cam_original"],
         probs=sample["probs"],
         threshold=THRESHOLD

@@ -26,7 +26,7 @@ def explain_frame(sample, model, target_layer):
 
     # Map CAM from aligned-face coordinate system
     # back into full original frame using stored affine transform
-    cam_original = cam_to_original(
+    cam_original, cam_aligned = cam_to_original(
         cam=cam,
         meta=sample["meta"],
         original_shape=sample["original_img"].shape
@@ -34,9 +34,10 @@ def explain_frame(sample, model, target_layer):
 
     # Store explanation results and predictions in sample dict
     sample.update({
+        "cam_aligned" : cam_aligned,
         "cam_original": cam_original,
-        "probs": probs,
-        "pred_idx": int(probs.argmax())
+        "probs"       : probs,
+        "pred_idx"    : int(probs.argmax())
     })
 
     return sample

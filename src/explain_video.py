@@ -13,7 +13,7 @@ from explaining.visualize.visualize_video.label_stabilizer import LabelStabilize
 from explaining.process_frame import process_frame
 
 
-INPUT_PATH = Path("/Users/richardachtnull/IMG_0522.MOV")
+INPUT_PATH = Path("/Users/richardachtnull/IMG_0559.MOV")
 
 MODEL_PATH = Path("models/ResNetLight2_v8.pth")
 
@@ -51,6 +51,7 @@ def main(input_path):
 
     # Initialize face detector
     detector = RetinaFaceDetector(device=device)
+    print(f"XAI will be performed on device: {device}")
 
     # open input video and retrieve metadata
     print(f"[INFO] Opening video: {input_path}")
