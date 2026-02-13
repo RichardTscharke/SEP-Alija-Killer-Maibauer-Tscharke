@@ -26,8 +26,10 @@ class FERRenderer:
         # Confidence threshold for activation signals
         self.threshold = threshold
 
-        # Temporal smoothing utilities
+        # Smooth heatmap inbetween frames to reduce flickering
         self.cam_smoother = cam_smoother
+
+        # Smooth probability distribution over time to reduce flickering
         self.label_smoother = label_smoother
         self.label_stabilizer = label_stabilizer
 
@@ -46,12 +48,14 @@ class FERRenderer:
         '''
 
         # If no inference result avilable, return original frame
-        if result is None:
+        if result.get("sample") is None and result.get("probs") is None:
             return frame
 
         # Extract inference outputs
         sample = result.get("sample")
         probs = result.get("probs")
+
+        # CAM expected to be already projected to original frame coordinates
         cam = result.get("cam")
 
         # Grad-CAM Heatmap (if available)
@@ -75,7 +79,7 @@ class FERRenderer:
             # Render label
             frame = insert_emotion_label(frame, top2)
         
-        # Status overlay 
+        # Draw small runtime configuration info 
         frame = self.draw_status_overlay(
             frame,
             detect_every_n,
@@ -100,8 +104,8 @@ class FERRenderer:
         # Status text string
         text = (
             f"detect_every: {detect_every_n} | "
-            f"Keypoints ('k') : {'ON' if show_landmarks else 'OFF'} | "
-            f"Heatmap ('h'): {'ON' if enable_xai else 'OFF'}"
+            f"Keypoints (k) : {'ON' if show_landmarks else 'OFF'} | "
+            f"Heatmap (h): {'ON' if enable_xai else 'OFF'}"
         )
 
         # Get frame width for alignment

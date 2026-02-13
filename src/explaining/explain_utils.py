@@ -6,11 +6,11 @@ from preprocessing.aligning.detect import detect_and_preprocess
 def get_device():
     
     if torch.cuda.is_available():
-        return torch.device("cpu")
+        return torch.device("cuda")
     elif torch.backends.mps.is_available():
         return torch.device("mps")
     else:
-        return torch.device("cuda")
+        return torch.device("cpu")
 
 def load_model(model_class, model_path, device, num_classes):
 
@@ -28,6 +28,8 @@ def resolve_model_and_layer(model_path, target_layer, device):
         device=device,
         num_classes=6
     )
+
+    model.eval()
 
     modules = dict(model.named_modules())
     assert target_layer in modules, f"Unknown layer: {target_layer}"
@@ -62,7 +64,7 @@ def preprocess_frame(frame, detector, device):
     - Meta informaton for backprojection
     '''
 
-    # Clip -> Crop -> Align (our preprocessing pipeline)
+    # Detect -> Clip -> Crop -> Align (our preprocessing pipeline)
     sample = detect_and_preprocess(frame, detector)
 
     if sample is None:
@@ -86,18 +88,16 @@ def preprocess_image(image_path, detector, device):
 
 def run_model(model, input_tensor, require_grad=False):
     '''
-    Pure forward pass (no forwatd pass or hooks).
+    Pure forward pass (no backward pass or hooks).
     '''
-    model.eval()
-
     if require_grad:
         logits = model(input_tensor)
-        probs = torch.softmax(logits, dim=1)
-
+    
     else:
         with torch.no_grad():
             logits = model(input_tensor)
-            probs  = torch.softmax(logits, dim=1)
+
+    probs = torch.softmax(logits, dim=1)
 
     return logits, probs
 

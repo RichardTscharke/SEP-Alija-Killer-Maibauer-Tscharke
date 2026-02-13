@@ -25,7 +25,7 @@ class GradCAM:
 
     # Save feature maps produced by the target layer during the forward pass
     def forward_hook(self, module, input, output):
-        self.feature_maps = output
+        self.feature_maps = output.detach()
 
     # Save gradients of the target layer output
     def backward_hook(self, module, grad_input, grad_output):
@@ -42,9 +42,8 @@ class GradCAM:
         # Select score of target class
         score = logits[0, class_idx]
 
-        # Backpropagarion
-        self.target_layer.zero_grad()
-        score.backward(retain_graph = True)
+        # Zero all model gradients before backward
+        score.backward()
 
         # Make sure the hooks have been triggered
         if self.feature_maps is None or self.gradients is None:

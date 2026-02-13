@@ -38,9 +38,9 @@ class FERWorker:
 
         # Last computed inference
         self.last_result = {
-            "face" : None,
-            "probs": None,
-            "cam": None,
+            "sample" : None,
+            "probs"  : None,
+            "cam"    : None,
         }
 
         # Thread utils
@@ -86,7 +86,7 @@ class FERWorker:
 
             frame = None
 
-            # get latest frame (if it exists)
+            # Drop older frames and always process only the newest (minimize latency)
             with self.lock:
                 if self.latest_frame is not None:
                     frame = self.latest_frame
@@ -94,10 +94,10 @@ class FERWorker:
 
             # If no frame available, wait a bit to reduce CPU load
             if frame is None:
-                time.sleep(0.005)
+                time.sleep(0.001)
                 continue
 
-            # Detect every n
+            # Run detection + inference only every n-th processed frame
             self.frame_counter += 1
             if self.frame_counter % self.detect_every_n != 0:
                 continue
@@ -110,10 +110,14 @@ class FERWorker:
                     self.last_result = {"sample": None, "probs": None, "cam": None}
                 continue
 
-            # Inference (XAI or no XAI)
-            result = self.infer_f(sample)
+            # Inference (XAI or no XAI) -> try-except due to thread risks
+            try:
+                result = self.infer_f(sample)
 
-            # Store results (thread safe)
+            except Exception as e:
+                print(f"[FERWorker] {e}")
+
+            # Store full sample to allow renderer access to metadata
             with self.lock:
                 self.last_result = {
                     "sample": sample,

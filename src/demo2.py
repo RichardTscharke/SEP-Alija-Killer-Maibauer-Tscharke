@@ -6,16 +6,19 @@ from explaining.visualize.visualize_video.label_smoother import LabelSmoother
 from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 from demo.cam import Webcam
-#from demo.face_tracker import FaceTracker
 from demo.fer_controller import FERStreamController
 
-MODEL_PATH = "models/ResNetLight2_v0.pth" # Make sure this is the latest model path
+MODEL_PATH = "models/ResNetLight2_v8.pth" # Make sure this is the latest model path
 
 TARGET_LAYER = "stage3"
 
 DETECT_EVERY_N = 1
 
-THRESHOLD = 0.3
+# Refers to the minimum confidence a prediction must achieve to be displayed in the label
+MIN_CONF = 0.3
+
+# Refers to the minimum signal strength regions must achieve in order to be displayed in the heatmap
+THRESHOLD = 0.4
 
 def main():
     '''
@@ -53,12 +56,11 @@ def main():
 
     # min_conf refers to the minimum confidence a prediction must achieve to be written out
     # In our case we show the top 2 classes who achieved this required confidence
-    label_stabilizer = LabelStabilizer(min_conf=0.3)
+    label_stabilizer = LabelStabilizer(min_conf=MIN_CONF)
     print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
 
-
-    #tracker = FaceTracker() # For now we dont use a tracker for tests
-
+    # FERStreamController orchestrates:
+    # detection -> alignment -> inference -> Grad-CAM -> smoothing -> rendering
     processor = FERStreamController(device,
                                     model,
                                     target_layer,
@@ -70,6 +72,8 @@ def main():
                                     label_stabilizer,
                                     run_model)
 
+    # Webcam orchestrates:
+    # frame processing, dynamic detection frequency adjustment, toggling Grad-CAM, toggling bounding box + landmarks
     Webcam.run(processor.process_frame,
                processor.set_detect_every_n,
                processor.toggle_xai,

@@ -21,9 +21,11 @@ def explain_frame(sample, model, target_layer):
     )
 
     # Convert logits to class probabilities 
-    probs = torch.softmax(logits, dim=1)[0].detach().cpu().numpy()
+    probs = torch.softmax(logits, dim=1)[0]
+    probs = probs.detach().cpu().numpy()
 
-    # Project CAM from aligned-face coordinates back to original frame
+    # Map CAM from aligned-face coordinate system
+    # back into full original frame using stored affine transform
     cam_original = cam_to_original(
         cam=cam,
         meta=sample["meta"],
@@ -32,9 +34,7 @@ def explain_frame(sample, model, target_layer):
 
     # Store explanation results and predictions in sample dict
     sample.update({
-        "cam": cam,
         "cam_original": cam_original,
-        "logits": logits,
         "probs": probs,
         "pred_idx": int(probs.argmax())
     })

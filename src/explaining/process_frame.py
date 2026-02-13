@@ -64,9 +64,4 @@ def process_frame(
     # Insert emotion label and confidence into the frame
     labelized = insert_emotion_label(overlayed, top2_pred)
 
-    # Clear cache 
-    del explained, cam, probs
-    torch.mps.empty_cache()
-    torch.cuda.empty_cache()
-
     return labelized

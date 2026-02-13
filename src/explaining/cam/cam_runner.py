@@ -27,10 +27,12 @@ def run_gradcam(
     if class_idx is None:
         class_idx = logits.argmax(dim=1).item()
 
+    model.zero_grad()
+
     # Backward pass + CAM computation
     cam = grad_cam.generate(logits, class_idx)
 
     # Remove used forward and backward hooks
     grad_cam.remove()
 
-    return cam, logits
+    return cam, logits.detach().cpu()

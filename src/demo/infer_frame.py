@@ -16,7 +16,8 @@ def infer_frame(
     # Grad-CAM explanation enabled
     if enable_xai:
         
-        # Run Grad-CAm (forward, backward and projection)
+        # Run Grad-CAM (forward, backward and projection)
+        # explain_frame returns CAM projected into original coordinate system
         explained = explain_frame(
             sample=sample,
             model=model,
@@ -29,7 +30,7 @@ def infer_frame(
             "cam": explained["cam_original"]
         }
     
-    # Standard forward inference only
+    # Only forward pass, no gradient computation required
     else:
         
         # Extract already prepared model input tensor
@@ -39,7 +40,7 @@ def infer_frame(
         _, probs = run_model_f(model, input_tensor)
 
         # Tensor -> numpy array
-        probs_np = probs.squeeze(0).detach().cpu().numpy()
+        probs_np = probs.squeeze(0).cpu().numpy()
 
         # Extract probabilities and NO cam for the worker thread
         return {

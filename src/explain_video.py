@@ -15,10 +15,14 @@ from explaining.process_frame import process_frame
 
 INPUT_PATH = Path("/Users/richardachtnull/IMG_0522.MOV")
 
-MODEL_PATH = Path("models/ResNetLight2_v0.pth")
+MODEL_PATH = Path("models/ResNetLight2_v8.pth")
 
 TARGET_LAYER = "stage3"
 
+# Refers to the minimum confidence a prediction must achieve to be displayed in the label
+MIN_CONF = 0.3
+
+# Refers to the minimum signal strength regions must achieve in order to be displayed in the heatmap
 THRESHOLD = 0.4
 
 
@@ -34,8 +38,8 @@ def main(input_path):
     '''
 
     # Initialize device (GPU/CPU)
-    #device = get_device()
-    device = torch.device("cpu")
+    device = get_device()
+    #device = torch.device("cpu")
     
     # Define the output path
     output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
@@ -63,7 +67,7 @@ def main(input_path):
 
     # min_conf refers to the minimum confidence a prediction must achieve to be written out
     # In our case we show the top 2 classes who achieved this required confidence
-    label_stabilizer = LabelStabilizer(min_conf=0.3)
+    label_stabilizer = LabelStabilizer(min_conf=MIN_CONF)
     print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
 
     writer = None

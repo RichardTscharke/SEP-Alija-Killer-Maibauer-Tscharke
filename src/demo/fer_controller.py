@@ -56,8 +56,8 @@ class FERStreamController:
             )
         )
 
-    # Build inference dependencies once (model, layer,...)
-    # Worker will only call infer (dynamic sample)
+    # Adapter injects static inference dependencies (model, layer)
+    # and dynamic XAI state (enable_xai) into infer_frame
     def build_infer_adapter(self, model, target_layer, run_model_f):
 
         def infer(sample):
@@ -75,10 +75,8 @@ class FERStreamController:
     # Our preprocessing pipeline: Clip -> Crop -> Align -> Tensor
     def preprocess_f(self, frame, face=None):
 
-        # Build sample from face
-        sample = preprocess_frame(frame, self.worker.detector, self.device)
-
-        return sample
+        # Build and return sample directory from face
+        return preprocess_frame(frame, self.worker.detector, self.device)
 
     def toggle_xai(self):
         self.enable_xai = not self.enable_xai
@@ -95,10 +93,10 @@ class FERStreamController:
         
         self.frame_idx += 1
 
-        # Send newest frame to async worker
+        # Push latest frame to async worker (non-blocking)
         self.worker.update_frame(frame)
 
-        # Get latest inferece result
+        # Retrieve most recent inference result (may be from older frame)
         result = self.worker.get_results()
 
         # Update renderer
