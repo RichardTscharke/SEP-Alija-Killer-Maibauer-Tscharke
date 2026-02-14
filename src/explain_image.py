@@ -24,7 +24,7 @@ You can adjust the following parameters in order to achieve different results:
 IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/präsi1/richard.jpg")
 
 # By default: Our best trained model
-MODEL_PATH   = "models/ResNetLight2_v8.pth"
+MODEL_PATH   = "model_paths/ResNetLight2_v8.pth"
 
 # By default: A stage and layer we often achieved satisfying results with
 # Useful options are: "stage2.conv2", "stage3.conv1" and "stage3.conv2" (stage 1 perhaps for edges)

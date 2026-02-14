@@ -8,7 +8,7 @@ from explaining.visualize.visualize_video.label_stabilizer import LabelStabilize
 from demo.cam import Webcam
 from demo.fer_controller import FERStreamController
 
-MODEL_PATH = "models/ResNetLight2_v8.pth" # Make sure this is the latest model path
+MODEL_PATH = "model_paths/ResNetLight2_v8.pth" # Make sure this is the latest model path
 
 TARGET_LAYER = "stage3"
 

@@ -14,7 +14,7 @@ CONFIG = {
 }
 
 # File paths
-MODEL_PATH = Path("models/ResNetLight2_v2.pth")
+MODEL_PATH = Path("model_paths/ResNetLight2_v2.pth")
 OUTPUT_DIR = Path("src/evaluation/outputs")
 
 

@@ -7,7 +7,7 @@ from torchvision import transforms
 from models.ResNetLight import ResNetLightCNN
 
 # Configurations
-MODEL_PATH = "models/ResNetLight_v0.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "model_paths/ResNetLight_v0.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings

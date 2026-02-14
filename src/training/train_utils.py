@@ -26,7 +26,7 @@ def get_device():
 # Paths to data directories
 TRAIN_DIR = "data/train"
 VAL_DIR   = "data/validate"
-MODEL_DIR = "models"
+MODEL_DIR = "model_paths"
 
 # OUTPU_DIR for evaluation
 OUTPUT_DIR = Path("src/evaluation/outputs")
