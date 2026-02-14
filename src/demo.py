@@ -38,11 +38,11 @@ def main():
 
     # Initialize device (GPU/CPU)
     device = get_device()
+    print(f"[INFO] Grad-CAM inference will be calculated on device: {device}")
 
     # Load model and resolve target convolutional layer for Grad-CAM
     model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
-    print(f"[INFO] Model loaded: {MODEL_PATH}")
-    print(f"[INFO] Target Layer: {TARGET_LAYER}")
+    print(f"[INFO] Model: {MODEL_PATH} | Target Layer: {TARGET_LAYER}")
 
     # Initialize face detector
     detector = RetinaFaceDetector(device=device)

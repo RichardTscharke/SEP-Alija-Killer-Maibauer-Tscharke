@@ -116,6 +116,8 @@ class FERWorker:
 
             except Exception as e:
                 print(f"[FERWorker] {e}")
+                print(f"[FERWorker] {type(e)}: {e}")
+                raise
 
             # Store full sample to allow renderer access to metadata
             with self.lock:

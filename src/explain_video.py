@@ -1,8 +1,9 @@
-import torch
-from pathlib import Path
+import argparse
 from tqdm import tqdm
+from pathlib import Path
 
 from preprocessing.detectors.retinaface import RetinaFaceDetector
+from explaining.process_frame import process_frame
 from explaining.explain_utils import get_device, resolve_model_and_layer
 from explaining.video_utils import open_video, create_video_writer
 from explaining.visualize.visualize_video.cam_smoother import CamSmoother
@@ -10,10 +11,8 @@ from explaining.visualize.visualize_video.label_smoother import LabelSmoother
 from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 
-from explaining.process_frame import process_frame
 
-
-INPUT_PATH = Path("/Users/richardachtnull/IMG_0559.MOV")
+VIDEO_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")
 
 MODEL_PATH = Path("models/ResNetLight2_v8.pth")
 
@@ -26,7 +25,7 @@ MIN_CONF = 0.3
 THRESHOLD = 0.4
 
 
-def main(input_path):
+def main(video_path):
     '''
     Runs Grad-CAM based emotion explanation on a video file.
     Takes the input path of the video and prints the path to the stored output video.
@@ -37,31 +36,30 @@ def main(input_path):
     - Write annotated frames to output video
     '''
 
+    # Wrap the argument if it is a string
+    video_path = Path(video_path)
+
     # Initialize device (GPU/CPU)
     device = get_device()
-    #device = torch.device("cpu")
+    print(f"[INFO] Grad-CAM inference will be calculated on device: {device}")
     
     # Define the output path
-    output_path = input_path.with_name(f"{input_path.stem}_explained{input_path.suffix}")
+    output_path = video_path.with_name(f"{video_path.stem}_explained{video_path.suffix}")
 
     # Load model and resolve target convolutional layer for Grad-CAM
     model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
-    print(f"[INFO] Model loaded: {MODEL_PATH}")
-    print(f"[INFO] Target Layer: {TARGET_LAYER}")
+    print(f"[INFO] Model: {MODEL_PATH} | Target Layer: {TARGET_LAYER}")
 
     # Initialize face detector
     detector = RetinaFaceDetector(device=device)
-    print(f"XAI will be performed on device: {device}")
 
     # open input video and retrieve metadata
-    print(f"[INFO] Opening video: {input_path}")
-    cap, fps, total_frames = open_video(input_path)
-    print(f"[INFO] Video FPS (source): {fps:.2f}")
-    print(f"[INFO] Total Frames: {total_frames}")
+    print(f"[INFO] Opening video: {video_path}")
+    cap, fps, total_frames = open_video(video_path)
+    print(f"[INFO] Video FPS (source): {fps:.2f} | Total Frames: {total_frames}")
 
     # Temporal smoothing for CAMs to reduce heatmap flickering
     cam_smoother = CamSmoother(alpha=0.2, every_nth_frame=1)
-    print(f"[INFO] Cam Smoother initialized for fluid heatmaps.")
 
     # Temporal smoothing and stabilization for emotion label overlay
     label_smoother = LabelSmoother(alpha=0.3, every_nth_frame=5)
@@ -69,7 +67,6 @@ def main(input_path):
     # min_conf refers to the minimum confidence a prediction must achieve to be written out
     # In our case we show the top 2 classes who achieved this required confidence
     label_stabilizer = LabelStabilizer(min_conf=MIN_CONF)
-    print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
 
     writer = None
 
@@ -115,4 +112,20 @@ def main(input_path):
 
 
 if __name__ == "__main__":
-    main(INPUT_PATH)
+    
+    # Instantiate a Argument-Parser object
+    # Description is displayed for -h or --help in the terminal
+    parser = argparse.ArgumentParser(description="Grad-CAM XAI for video")
+    parser.add_argument(
+        "video_path",
+        type=str,
+        nargs="?",
+        default=str(VIDEO_PATH),
+        help="Path to input video file"
+    )
+
+    # Read the argument from the terminal
+    args = parser.parse_args()
+
+    # Pass the video path to the main function
+    main(args.video_path)

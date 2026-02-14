@@ -51,36 +51,32 @@ def visualize(original_img,
     overlay_original[mask_o] = (0.6 * overlay_original[mask_o] + 0.4 * heat_original[mask_o]).astype(np.uint8)
 
     # Figure & Grid layout
-    fig = plt.figure(figsize=(22, 10), facecolor=BG_COLOR)
+    fig = plt.figure(figsize=(15, 8), facecolor=BG_COLOR)
     fig.canvas.manager.set_window_title("Explainable AI: Grad-CAM")
 
-    gs = fig.add_gridspec(2, 4, width_ratios=[1, 1, 1, 1.2], height_ratios=[1, 1])
+    gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 1.8], height_ratios=[1, 1])
 
     ax_orig      = fig.add_subplot(gs[0, 0])
     ax_align     = fig.add_subplot(gs[0, 1])
     ax_cam_orig  = fig.add_subplot(gs[1, 0])
     ax_overlay   = fig.add_subplot(gs[1, 1])
-    ax_cam_only  = fig.add_subplot(gs[:, 2])
-    ax_bar       = fig.add_subplot(gs[:, 3])
+    ax_bar  = fig.add_subplot(gs[:, 2])
 
     # Image plots
     ax_orig.imshow(original_rgb)
     ax_orig.set_title("Original Image", color="white")
 
     ax_align.imshow(overlay_aligned)
-    ax_align.set_title("Aligned + CAM", color="white")
+    ax_align.set_title("Grad-CAM for aligned image", color="white")
 
     ax_cam_orig.imshow(normalize_for_viz(cam_original), cmap="jet", vmin=0, vmax=1)
-    ax_cam_orig.set_title("Cam (original space)", color="white")
+    ax_cam_orig.set_title("CAM mapped to original space", color="white")
 
     ax_overlay.imshow(overlay_original)
     ax_overlay.set_title("Final Overlay", color="white")
 
-    ax_cam_only.imshow(cam_aligned, cmap="jet")
-    ax_cam_only.set_title("Cam (aligned)", color="white")
-
     # Visual sugarcoating
-    for ax in [ax_orig, ax_align, ax_cam_orig, ax_overlay, ax_cam_only]:
+    for ax in [ax_orig, ax_align, ax_cam_orig, ax_overlay]:
         ax.axis("off")
         ax.set_facecolor(BG_COLOR)
         for spine in ax.spines.values():

@@ -37,4 +37,4 @@ def cam_to_original(cam, meta, original_shape):
     )
 
     # CAM in original image resolution and coordinate system
-    return cam_orig_crop, cam
+    return cam_orig_crop, cam_aligned_space

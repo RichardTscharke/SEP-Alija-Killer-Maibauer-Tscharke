@@ -30,8 +30,8 @@ class FERStreamController:
         self.device = device
         
         # UI utils
-        self.enable_xai = False
-        self.show_landmarks = False
+        self.enable_xai = True
+        self.show_landmarks = True
         self.frame_idx = 0
 
         # FERRenderer handles the overlays per frame

@@ -1,8 +1,8 @@
-import torch
+import argparse
 from pathlib import Path
 from preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import resolve_model_and_layer, preprocess_image
+from explaining.explain_utils import get_device, resolve_model_and_layer, preprocess_image
 from explaining.cam.explain_frame import explain_frame
 from explaining.visualize.visualize_image import visualize
 
@@ -24,7 +24,7 @@ You can adjust the following parameters in order to achieve different results:
 IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/präsi1/richard.jpg")
 
 # By default: Our best trained model
-MODEL_PATH   = "models/ResNetLight2_v0.pth"
+MODEL_PATH   = "models/ResNetLight2_v8.pth"
 
 # By default: A stage and layer we often achieved satisfying results with
 # Useful options are: "stage2.conv2", "stage3.conv1" and "stage3.conv2" (stage 1 perhaps for edges)
@@ -33,7 +33,6 @@ TARGET_LAYER = "stage3"
 # Determines the sufficient strength of a signal to be visible in the heatmap
 THRESHOLD    = 0.4
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main(image_path):
     '''
@@ -43,12 +42,24 @@ def main(image_path):
     - computes Grad-CAM
     - visualizes CAM overlay and class probabilities
     '''
+
+    # Wrap the argument if it is a string
+    image_path = Path(image_path)
+
+
+    # Initialize device (GPU/CPU)
+    device = get_device()
+    print(f"[INFO] Grad-CAM inference will be calculated on device: {device}")
     
-    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, DEVICE)
+    model, target_layer = resolve_model_and_layer(MODEL_PATH, TARGET_LAYER, device)
+    print(f"[INFO] Model: {MODEL_PATH} | Target Layer: {TARGET_LAYER}")
 
-    detector = RetinaFaceDetector(device="cpu")
+    detector = RetinaFaceDetector(device=device)
 
-    sample = preprocess_image(image_path, detector, DEVICE)
+    # open input image and retrieve metadata
+    print(f"[INFO] Opening image: {IMAGE_PATH}")
+
+    sample = preprocess_image(image_path, detector, device)
 
     sample = explain_frame(
         sample=sample,
@@ -68,7 +79,23 @@ def main(image_path):
 
 
 if __name__ == "__main__":
-    main(IMAGE_PATH)
+    
+    # Instantiate a Argument-Parser object
+    # Description is displayed for -h or --help in the terminal
+    parser = argparse.ArgumentParser(description="Grad-CAM XAI for video")
+    parser.add_argument(
+        "image_path",
+        type=str,
+        nargs="?",
+        default=str(IMAGE_PATH),
+        help="Path to input video file"
+    )
+
+    # Read the argument from the terminal
+    args = parser.parse_args()
+
+    # Pass the video path to the main function
+    main(args.image_path)
 
 
 

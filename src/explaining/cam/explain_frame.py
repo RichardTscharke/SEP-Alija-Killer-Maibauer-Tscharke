@@ -34,8 +34,8 @@ def explain_frame(sample, model, target_layer):
 
     # Store explanation results and predictions in sample dict
     sample.update({
-        "cam_aligned" : cam_aligned,
         "cam_original": cam_original,
+        "cam_aligned": cam_aligned,
         "probs"       : probs,
         "pred_idx"    : int(probs.argmax())
     })
