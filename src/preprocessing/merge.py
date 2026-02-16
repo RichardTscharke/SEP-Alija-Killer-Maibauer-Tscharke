@@ -116,6 +116,6 @@ def merge(MERGE_SPLIT, use_aligned = True):
 
              # Per-emotion statistics help verify class balance after merging
             print(
-                f"[INFO] {dataset_name} | {emotion}: "
+                f"{dataset_name} | {emotion}: "
                 f"train = {n_train}, test = {n_test}, validate = {n_val}"
             )

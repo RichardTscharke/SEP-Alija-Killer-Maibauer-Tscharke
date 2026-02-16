@@ -48,7 +48,7 @@ def filter(ratios: dict):
         output_lines.extend(selected)
 
         # Prints the original and final amount of images per emotion class
-        print(f"[INFO] ({emotion}): {len(entries)} -> {len(selected)}")
+        print(f"({emotion}): {len(entries)} -> {len(selected)}")
 
     # Write the final entries
     with LABEL_OUT.open("w") as f:

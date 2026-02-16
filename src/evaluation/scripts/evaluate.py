@@ -38,3 +38,4 @@ def run_evaluate(output_dir, model_path, config, device):
     # normalized=False: absolute values, normalized=True: percentages
     plot_confusion_matrix(output_dir, FIGURE_DIR, normalized=True)
     print(f"[INFO] Confusion Matrix drawn.")
+    print(f"[INFO] Figures saved in: {FIGURE_DIR}")

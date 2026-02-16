@@ -96,7 +96,7 @@ def determine_and_filter(ratios: dict):
             selected = entries[:n_keep]
 
         emotion = INTERNAL_TO_EMOTION[label]
-        print(f"[INFO] ({emotion}): {len(entries)} -> {len(selected)}")
+        print(f"({emotion}): {len(entries)} -> {len(selected)}")
 
         # New ExpW label format: image_name x1 y1 x2 y2 label
         for image_name, x1, y1, x2, y2 in selected:
