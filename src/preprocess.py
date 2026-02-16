@@ -6,7 +6,7 @@ from preprocessing.merge import merge
 '''
 This is the preprocessing interface of our project.
 
-Within the filters numbers represent ratios per emotion class per dataset.
+Within the filters, the numbers represent ratios per emotion class per dataset.
 For the KDEF dataset there are also head positions to choose from:
 -> S = Straight, HL/HR = Half Left/Right, FL/FR = Full Left/Right (we recommend to exclude fullsided in general)
 The train/test/validate split is applied onto the filtered datasets and afterwards the splits are merged.

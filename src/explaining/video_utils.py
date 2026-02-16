@@ -4,7 +4,7 @@ def open_video(input_path):
     '''
     opens video file and returns capture object, FPS and total frame count.
     '''
-    # Create OpenCV video captue object
+    # Create OpenCV video capture object
     cap = cv2.VideoCapture(str(input_path))
 
     # Ensure video was opened successfully

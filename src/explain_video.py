@@ -11,7 +11,6 @@ from explaining.visualize.visualize_video.label_smoother import LabelSmoother
 from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 
-
 VIDEO_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")
 
 MODEL_PATH = Path("model_paths/ResNetLight2_v8.pth")

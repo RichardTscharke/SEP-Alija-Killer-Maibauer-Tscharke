@@ -116,8 +116,3 @@ def visualize(original_img,
 
     plt.tight_layout()
     plt.show()
-
-    print(
-    "aligned:", cam_aligned.min(), cam_aligned.max(),
-    "original:", cam_original.min(), cam_original.max()
-)
