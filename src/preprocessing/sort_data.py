@@ -45,7 +45,7 @@ def sort_data(data):
     if not os.path.exists(LABEL_IN):
         raise FileNotFoundError(f"Label file not found: {LABEL_IN}")
 
-    print(f"[INFO] Starting to sort images based on labels from {LABEL_IN}")
+    print(f"[INFO] Sorting images based on labels from {LABEL_IN}...")
     
     # Read label file
     with open(LABEL_IN, "r") as f:
