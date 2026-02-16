@@ -43,9 +43,9 @@ EXPW_FILTER = {
     "Anger":     0.0,
 }
 KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 0.0),
-    "Disgust"  : (["S", "HL", "HR"], 0.0),
-    "Fear"     : (["S", "HL", "HR"], 0.0),
+    "Anger"    : (["S", "HL", "HR"], 0.5),
+    "Disgust"  : (["S", "HL", "HR"], 1.0),
+    "Fear"     : (["S", "HL", "HR"], 1.0),
     "Happiness": (["S", "HL", "HR"], 0.0),
     "Sadness"  : (["S", "HL", "HR"], 0.0),
     "Surprise" : (["S", "HL", "HR"], 0.0),
@@ -62,9 +62,9 @@ MERGE_SPLIT = {
         "validate": 0.0,
     },
     "KDEF": {
-        "train"   : 0.0,
-        "test"    : 0.0,
-        "validate": 0.0,
+        "train"   : 0.7,
+        "test"    : 0.15,
+        "validate": 0.15,
     },
 }
 

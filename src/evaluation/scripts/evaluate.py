@@ -2,8 +2,8 @@ from pathlib import Path
 from .inference import calculate_inference
 from .epoch_curves import plot_epoch_curves
 from .precision_recall_f1_per_class import plot_prec_recall_f1_p_class
-from .confusion_matrix import plot_confusion_matrix
-
+from .confusion_matrix import plot_confusion_matrix2
+#from .confusion_matrix import plot_confusion_matrix
 
 def run_evaluate(output_dir, model_path, config, device):
     """
@@ -36,6 +36,6 @@ def run_evaluate(output_dir, model_path, config, device):
     print(f"[INFO] Precision, Recall and F1 per class diagramm created.")
 
     # normalized=False: absolute values, normalized=True: percentages
-    plot_confusion_matrix(output_dir, FIGURE_DIR, normalized=True)
+    plot_confusion_matrix2(output_dir, FIGURE_DIR, normalized=True)
     print(f"[INFO] Confusion Matrix drawn.")
     print(f"[INFO] Figures saved in: {FIGURE_DIR}")
