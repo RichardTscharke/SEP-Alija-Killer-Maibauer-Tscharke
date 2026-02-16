@@ -45,7 +45,7 @@ def sort_data(data):
     if not os.path.exists(LABEL_IN):
         raise FileNotFoundError(f"Label file not found: {LABEL_IN}")
 
-    print(f"starting to sort images based on labels from {LABEL_IN}")
+    print(f"[INFO] Starting to sort images based on labels from {LABEL_IN}")
     
     # Read label file
     with open(LABEL_IN, "r") as f:
@@ -129,7 +129,6 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
     for target_dir in target_dirs:
         # Remove existing output directory if it exists
         if os.path.exists(target_dir):
-            print(f"Removing existing directory: {target_dir} for a fresh start.")
             shutil.rmtree(target_dir)
 
         # Create necessary directories
@@ -137,7 +136,7 @@ def setup_directories(ALIGNED_OUT, ORIGINAL_OUT):
             dir_path = os.path.join(target_dir, emotion)
             os.makedirs(dir_path, exist_ok=True)
 
-        print(f"Created directory: {target_dir} containing the 6 emotion classes.")
+    print(f"[INFO] Directories set up sucessfully.")
 
 
 def crop_face(img, x1, y1, x2, y2, scale = 4.0):

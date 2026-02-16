@@ -83,6 +83,8 @@ def determine_and_filter(ratios: dict):
 
     final_entries = []
 
+    print(f"[INFO] Downsampling images for ExpW: old amount -> new amount")
+
     # Apply ratios per class
     for label, entries in per_class.items():
         ratio = label_ratios[label]

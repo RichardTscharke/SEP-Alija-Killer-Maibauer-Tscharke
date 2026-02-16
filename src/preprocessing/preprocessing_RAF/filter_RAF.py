@@ -29,6 +29,8 @@ def filter(ratios: dict):
     # Define new label file
     output_lines = []
 
+    print(f"[INFO] Downsampling images for RAF-DB: old amount -> new amount")
+
     # Loop over the original label file with ratio logic
     for label, emotion in RAF_LABELS.items():
         
