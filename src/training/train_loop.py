@@ -15,7 +15,7 @@ from .train_utils import (
 from evaluation.scripts.evaluate import run_evaluate
 
 from models.RafCustom import RafCustomCNN
-from models.ResNetLight import ResNetLightCNN
+from models.ResNetLight1 import ResNetLightCNN1
 from models.ResNetLight2 import ResNetLightCNN2
 
 
@@ -128,7 +128,7 @@ def trainings_loop(config: dict, device: torch.device):
     if MODEL == "ResNetLight2":
         model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
     elif MODEL == "ResNetLight1":
-        model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
+        model = ResNetLightCNN1(num_classes=num_classes).to(DEVICE)
     elif MODEL == "RafCustom":
         model = RafCustomCNN(num_classes=num_classes).to(DEVICE)
     else:

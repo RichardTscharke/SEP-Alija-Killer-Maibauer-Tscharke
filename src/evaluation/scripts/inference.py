@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 from models.ResNetLight2 import ResNetLightCNN2
-from models.ResNetLight import ResNetLightCNN
+from models.ResNetLight1 import ResNetLightCNN
 from models.RafCustom import RafCustomCNN
 
 

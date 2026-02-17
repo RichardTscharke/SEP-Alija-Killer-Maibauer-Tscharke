@@ -1,7 +1,7 @@
 import torch.nn as nn
 from .model_utils import ResidualBlock, initialize_weights
 
-class ResNetLightCNN(nn.Module):
+class ResNetLightCNN1(nn.Module):
     '''
     Lightweight ResNet-style CNN with SE attention.
     Input:  (Batch, 3, 64, 64)

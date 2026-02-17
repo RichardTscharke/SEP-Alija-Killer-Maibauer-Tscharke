@@ -4,10 +4,13 @@ import sys
 import pandas as pd
 from PIL import Image
 from torchvision import transforms
-from models.ResNetLight import ResNetLightCNN
+
+#from models.RafCustom import RafCustomCNN as CNN
+#from models.ResNetLight1 import ResNetLightCNN1 as CNN
+from models.ResNetLight2 import ResNetLightCNN2 as CNN
 
 # Configurations
-MODEL_PATH = "model_paths/ResNetLight_v0.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "model_paths/ResNetLight2_v10.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings
@@ -35,7 +38,7 @@ def generate_csv(input_folder):
     print("=" * 30 + "\n")
 
     # 2. Load model
-    model = ResNetLightCNN(num_classes=len(CLASSES))
+    model = CNN(num_classes=len(CLASSES))
     try:
         checkpoint = torch.load(MODEL_PATH, map_location=DEVICE, weights_only=True)
         model.load_state_dict(checkpoint)
