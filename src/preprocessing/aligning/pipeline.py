@@ -2,7 +2,7 @@ from copy import deepcopy
 from .clip import clip_face
 from .crop import crop_face
 from .align import align_face
-from ..debug.visualize2 import visualize
+from ..debug.visualize import visualize
 
 
 def preprocess_image(sample, vis = False):

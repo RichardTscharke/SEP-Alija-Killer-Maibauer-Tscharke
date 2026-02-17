@@ -5,11 +5,6 @@ import torch.optim as optim
 from torch.amp import autocast, GradScaler
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, WeightedRandomSampler
-###
-import os
-import random
-import numpy as np
-###
 from .train_utils import (
     TRAIN_DIR,
     VAL_DIR,
@@ -22,20 +17,7 @@ from evaluation.scripts.evaluate import run_evaluate
 from models.RafCustom import RafCustomCNN
 from models.ResNetLight import ResNetLightCNN
 from models.ResNetLight2 import ResNetLightCNN2
-###
-def set_seed(seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
 
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-
-    os.environ["PYTHONHASHSEED"] = str(seed)
-
-set_seed(42)
-###
 
 def trainings_loop(config: dict, device: torch.device):
     """
@@ -125,7 +107,7 @@ def trainings_loop(config: dict, device: torch.device):
     )
     # -----------------------------------------------
     """
-    '''
+    
     # NOTE: shuffle must be False when using a sampler!
     train_loader = DataLoader(
         train_dataset,
@@ -135,27 +117,7 @@ def trainings_loop(config: dict, device: torch.device):
         num_workers=NUM_WORKERS,
         pin_memory=True,
     )
-    '''
-    ###
-    g = torch.Generator()
-    g.manual_seed(42)
-
-    def seed_worker(worker_id):
-        worker_seed = 42 + worker_id
-        np.random.seed(worker_seed)
-        random.seed(worker_seed)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True,
-        num_workers=NUM_WORKERS,
-        pin_memory=True,
-        generator=g,
-        worker_init_fn=seed_worker,
-    )
-
-    ####
+    
 
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
@@ -179,8 +141,7 @@ def trainings_loop(config: dict, device: torch.device):
     print("Class weights:", class_weights)
 
     criterion = nn.CrossEntropyLoss(
-        #weight=class_weights, label_smoothing=0.05
-        weight=class_weights, label_smoothing=0.0
+        weight=class_weights, label_smoothing=0.05
     )  # Using class weights to handle imbalance without sampler.
     # criterion = nn.CrossEntropyLoss(label_smoothing=0.05) # If you want to use class weights directly in the loss function instead of WeightedRandomSampler, comment the above line and uncomment this one.
 
@@ -189,15 +150,9 @@ def trainings_loop(config: dict, device: torch.device):
     scaler = GradScaler(enabled=use_amp)
 
     # 5.Scheduler
-    '''
     scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer, T_0=10, T_mult=2, eta_min=1e-7
     )
-    '''
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-    optimizer,
-    T_max=EPOCHS
-)
 
     epochs_no_improve = 0
 
@@ -230,14 +185,14 @@ def trainings_loop(config: dict, device: torch.device):
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
-                #scheduler.step(epoch + batch_idx / len(train_loader))
+                scheduler.step(epoch + batch_idx / len(train_loader))
 
             else:
                 outputs = model(images)
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
-                #scheduler.step(epoch + batch_idx / len(train_loader))
+                scheduler.step(epoch + batch_idx / len(train_loader))
 
             running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
@@ -256,10 +211,6 @@ def trainings_loop(config: dict, device: torch.device):
         val_acc, val_loss = validate(
             model, val_loader, criterion, device=DEVICE, use_amp=use_amp
         )
-
-        ###
-        scheduler.step()
-        ###
 
         current_lr = optimizer.param_groups[0]["lr"]
 

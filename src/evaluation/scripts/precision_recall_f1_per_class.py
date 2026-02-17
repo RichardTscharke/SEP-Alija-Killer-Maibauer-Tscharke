@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score
 
 
 def plot_prec_recall_f1_p_class(output_dir, figure_dir):
@@ -28,41 +28,31 @@ def plot_prec_recall_f1_p_class(output_dir, figure_dir):
     class_names = np.load(output_dir / "class_names.npy", allow_pickle=True)
 
     # Compute per-class precision and recall
-    #precision = precision_score(y_true, y_pred, labels=range(len(class_names)), average=None)
+    precision = precision_score(y_true, y_pred, labels=range(len(class_names)), average=None)
     recall = recall_score(y_true, y_pred, labels=range(len(class_names)), average=None)
 
     # Manual F1 computation for transperency
-    #f1 = 2 * (precision * recall) / (precision + recall + 1e-8)
-    f1 = f1_score(y_true, y_pred, labels=range(len(class_names)), average=None)
+    f1 = 2 * (precision * recall) / (precision + recall + 1e-8)
 
     # Prepare chart diagram
     x = np.arange(len(class_names))
-    #fig, ax = plt.subplots()
-    fig, ax = plt.subplots(figsize=(3.3, 2.2))
-
-    '''
+    fig, ax = plt.subplots()
+  
     width = 0.25
     bars1 = ax.bar(x - width, precision, width, label='Precision')
     bars2 = ax.bar(x, recall, width, label='Recall')
     bars3 = ax.bar(x + width, f1, width, label='F1 Score')
-    '''
-
-    width = 0.35
-    bars1 = ax.bar(x - width/2, recall, width, label='Recall')
-    bars2 = ax.bar(x + width/2, f1, width, label='F1 Score')
-
-
+    
     # Plot chart diagram
     ax.set_ylabel('Score')
-    #ax.set_title('Precision, Recall & F1 per class')
+    ax.set_title('Precision, Recall & F1 per class')
     ax.set_xticks(x)
     ax.set_xticklabels(class_names)
     ax.set_ylim(0, 1)
     ax.legend()
     
     # Annotate bars with numeric values
-    #for bars in [bars1, bars2, bars3]:
-    for bars in [bars1, bars2]:
+    for bars in [bars1, bars2, bars3]:
         for bar in bars:
             ax.annotate(f'{bar.get_height():.2f}',
                         xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
