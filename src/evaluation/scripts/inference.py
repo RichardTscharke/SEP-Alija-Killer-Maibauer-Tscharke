@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 from models.ResNetLight2 import ResNetLightCNN2
-from models.ResNetLight1 import ResNetLightCNN
+from models.ResNetLight1 import ResNetLightCNN1
 from models.RafCustom import RafCustomCNN
 
 
@@ -42,7 +42,7 @@ def calculate_inference(output_dir, model_path, config, device):
     if config["model"] == "ResNetLight2":
         model = ResNetLightCNN2(num_classes=num_classes).to(DEVICE)
     elif config["model"] == "ResNetLight1":
-        model = ResNetLightCNN(num_classes=num_classes).to(DEVICE)
+        model = ResNetLightCNN1(num_classes=num_classes).to(DEVICE)
     else:
         model = RafCustomCNN(num_classes=num_classes).to(DEVICE)
 
