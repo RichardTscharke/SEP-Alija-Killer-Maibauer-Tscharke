@@ -10,7 +10,7 @@ TRAIN_CONFIGURATIONS = {
     "model": "ResNetLight1",
 
     # Choose one of "val_acc" and "val_loss"
-    "train_on": "val_loss",
+    "train_on": "val_acc",
 
     # By default: Class inverse frequency weights. If you flag to False please adjust custom_weights
     "use_inv_freq_w": True,
