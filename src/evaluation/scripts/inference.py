@@ -2,14 +2,15 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+from pathlib import Path
+
 
 from models.ResNetLight2 import ResNetLightCNN2
 from models.ResNetLight import ResNetLightCNN
 from models.RafCustom import RafCustomCNN
 
 
-TEST_DIR = "data/test"
-
+TEST_DIR = Path("data/test")
 def calculate_inference(output_dir, model_path, config, device):
     '''
     Runs inference on the test dataset using a trained model.

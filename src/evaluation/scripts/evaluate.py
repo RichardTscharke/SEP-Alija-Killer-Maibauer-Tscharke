@@ -2,8 +2,10 @@ from pathlib import Path
 from .inference import calculate_inference
 from .epoch_curves import plot_epoch_curves
 from .precision_recall_f1_per_class import plot_prec_recall_f1_p_class
-#from .confusion_matrix2 import plot_confusion_matrix
+
+# from .confusion_matrix_old import plot_confusion_matrix
 from .confusion_matrix import plot_confusion_matrix
+
 
 def run_evaluate(output_dir, model_path, config, device):
     """

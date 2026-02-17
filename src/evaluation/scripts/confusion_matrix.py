@@ -1,40 +1,83 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+import matplotlib as mpl
 from sklearn.metrics import confusion_matrix
+from pathlib import Path
 
 
-def plot_confusion_matrix(output_dir, figure_dir, normalized):
-    '''
-    Plots a confusion matrix based on inference results.
-    -> Visualizes how often eacch true class is predicted as each other class
+def plot_confusion_matrix(output_dir, figure_dir, normalized=True):
 
-    Two modes:
-    - normalized=False : show absolute counts
-    - normalized=True  : show percentages
-    '''
+    output_dir = Path(output_dir)
+    figure_dir = Path(figure_dir)
 
-    # Load inference results
-    y_true = np.load(output_dir / "y_true.npy")
-    y_pred = np.load(output_dir / "y_pred.npy")
-    class_names = np.load(output_dir / "class_names.npy", allow_pickle = True)
+    with mpl.rc_context(
+        {
+            "font.family": "serif",
+            "font.serif": ["Times"],
+            "mathtext.fontset": "stix",
+            "font.size": 9,
+            "axes.labelsize": 9,
+            "xtick.labelsize": 8,
+            "ytick.labelsize": 8,
+            "axes.linewidth": 1.0,
+        }
+    ):
 
-    # Compute confusion matrix (rows = ground truth, columns = predictions)
-    cm = confusion_matrix (y_true, y_pred)
+        y_true = np.load(output_dir / "y_true.npy")
+        y_pred = np.load(output_dir / "y_pred.npy")
+        class_names = np.load(output_dir / "class_names.npy", allow_pickle=True)
 
-    # Normalize rows so each row sums to 1
-    if normalized:
-        cm = cm.astype(float) / cm.sum(axis = 1, keepdims = True)
+        cm = confusion_matrix(y_true, y_pred)
 
-    # Plotting matrix with heatmap overlay
-    plt.figure(figsize = (8, 6))
-    sns.heatmap(cm, annot = True, fmt = ".2f" if normalized else "d", cmap = "Blues", xticklabels = class_names, yticklabels = class_names,)
+        if normalized:
+            cm = cm.astype(float) / cm.sum(axis=1, keepdims=True)
 
-    plt.xlabel("Predicted")
-    plt.ylabel("True")
-    plt.title("Confusion Matrix" + (" (normalized)" if normalized else ""))
-    plt.tight_layout()
+        fig, ax = plt.subplots(figsize=(3.4, 3.1))
+        ax.set_aspect("equal")
+        if normalized:
+            im = ax.imshow(cm, interpolation="nearest", cmap="Blues", vmin=0, vmax=1)
+        else:
+            im = ax.imshow(cm, interpolation="nearest", cmap="Blues")
 
-    # Save confusion matrix
-    save_name = "confusion_matrix_norm.png" if normalized else "confusion_matrix.png"
-    plt.savefig(figure_dir / save_name, dpi=300)
+        # colorbar
+        cbar = fig.colorbar(im, fraction=0.046, pad=0.04)
+        if normalized:
+            cbar.ax.set_ylabel("Proportion", rotation=-90, va="bottom")
+        else:
+            cbar.ax.set_ylabel("Count", rotation=-90, va="bottom")
+
+        ax.set(
+            xticks=np.arange(len(class_names)),
+            yticks=np.arange(len(class_names)),
+            xticklabels=class_names,
+            yticklabels=class_names,
+            xlabel="Predicted",
+            ylabel="True",
+        )
+
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
+
+        # Annotate cells
+        fmt = ".2f" if normalized else "d"
+        thresh = cm.max() / 2.0
+
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                ax.text(
+                    j,
+                    i,
+                    format(cm[i, j], fmt),
+                    ha="center",
+                    va="center",
+                    color="white" if cm[i, j] > thresh else "black",
+                    fontsize=7,
+                )
+
+        fig.tight_layout()
+
+        save_name = (
+            "confusion_matrix_norm.pdf" if normalized else "confusion_matrix.pdf"
+        )
+        plt.savefig(figure_dir / save_name, format="pdf", bbox_inches="tight")
+
+        plt.close(fig)
