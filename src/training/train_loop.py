@@ -150,9 +150,31 @@ def trainings_loop(config: dict, device: torch.device):
     scaler = GradScaler(enabled=use_amp)
 
     # 5.Scheduler
+    """
     scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer, T_0=10, T_mult=2, eta_min=1e-7
     )
+    """
+
+    if TRAIN_ON == "val_loss":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            patience=10,
+            factor=0.7,
+            min_lr=1e-7,
+        )
+    elif TRAIN_ON == "val_acc":
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="max",
+            patience=10,
+            factor=0.7,
+            min_lr=1e-7,
+        )
+    else:
+        print("[INFO] Error: Either train on val_acc or val_loss.")
+
 
     epochs_no_improve = 0
 
@@ -185,14 +207,14 @@ def trainings_loop(config: dict, device: torch.device):
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
-                scheduler.step(epoch + batch_idx / len(train_loader))
+                #scheduler.step(epoch + batch_idx / len(train_loader))
 
             else:
                 outputs = model(images)
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
-                scheduler.step(epoch + batch_idx / len(train_loader))
+                #scheduler.step(epoch + batch_idx / len(train_loader))
 
             running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
@@ -211,6 +233,10 @@ def trainings_loop(config: dict, device: torch.device):
         val_acc, val_loss = validate(
             model, val_loader, criterion, device=DEVICE, use_amp=use_amp
         )
+        if TRAIN_ON == "val_loss":
+             scheduler.step(val_loss)
+        elif TRAIN_ON == "val_acc":
+            scheduler.step(val_acc)
 
         current_lr = optimizer.param_groups[0]["lr"]
 
