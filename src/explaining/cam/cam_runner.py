@@ -1,4 +1,4 @@
-from explaining.cam.GradCam import GradCAM
+from explaining.cam.gradcam import GradCAM
 from explaining.explain_utils import run_model
 
 
