@@ -7,7 +7,7 @@ For custom training configurations adjust these:
 TRAIN_CONFIGURATIONS = {
 
     # Choose one of "RafCustom", "ResNetLight1" and "ResNetLight2"
-    "model": "ResNetLight1",
+    "model": "RafCustom",
 
     # Choose one of "val_acc" and "val_loss"
     "train_on": "val_acc",
