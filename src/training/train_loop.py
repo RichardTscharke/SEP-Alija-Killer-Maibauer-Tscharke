@@ -61,7 +61,9 @@ def trainings_loop(config: dict, device: torch.device):
         [
             transforms.Resize((64, 64)),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=4),
+            transforms.RandomAffine(
+                degrees=15, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=4
+            ),
             transforms.ColorJitter(
                 brightness=0.3, contrast=0.3, saturation=0.2, hue=0.01
             ),
@@ -83,7 +85,6 @@ def trainings_loop(config: dict, device: torch.device):
     train_dataset = datasets.ImageFolder(root=TRAIN_DIR, transform=train_transforms)
     val_dataset = datasets.ImageFolder(root=VAL_DIR, transform=val_transforms)
 
-    """
     # --- WEIGHTED RANDOM SAMPLER IMPLEMENTATION ---
     print("Calculating weights for WeightedRandomSampler...")
 
@@ -106,18 +107,16 @@ def trainings_loop(config: dict, device: torch.device):
         weights=sample_weights, num_samples=len(sample_weights), replacement=True
     )
     # -----------------------------------------------
-    """
-    
+
     # NOTE: shuffle must be False when using a sampler!
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
-        # sampler=sampler,
-        shuffle=True,
+        sampler=sampler,
+        shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=True,
     )
-    
 
     val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
@@ -140,10 +139,12 @@ def trainings_loop(config: dict, device: torch.device):
     )
     print("Class weights:", class_weights)
 
+    # criterion = nn.CrossEntropyLoss(
+    #    weight=class_weights, label_smoothing=0.05)
+    # Using class weights to handle imbalance without sampler.
     criterion = nn.CrossEntropyLoss(
-        weight=class_weights, label_smoothing=0.05
-    )  # Using class weights to handle imbalance without sampler.
-    # criterion = nn.CrossEntropyLoss(label_smoothing=0.05) # If you want to use class weights directly in the loss function instead of WeightedRandomSampler, comment the above line and uncomment this one.
+        label_smoothing=0.05
+    )  # If you want to use class weights directly in the loss function instead of WeightedRandomSampler, comment the above line and uncomment this one.
 
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
 
