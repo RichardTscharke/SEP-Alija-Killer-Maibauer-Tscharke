@@ -26,7 +26,7 @@ class ResNetLightCNN2(nn.Module):
 
         # Residual Stages
         # Stage 1 has no SE block to avoid early channel reweighting
-        self.stage1 = ResidualBlock(32, 64, stride=1, use_se = False)
+        self.stage1 = ResidualBlock(32, 64, stride=1, use_se = True)
         self.stage2 = ResidualBlock(64, 128, stride=2, use_se = True)
         self.stage3 = ResidualBlock(128, 256, stride=2, use_se = True)
 
