@@ -26,7 +26,7 @@ IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/SEP_repos/SEP-Alija-Killer-M
 
 
 # By default: Our best trained model
-MODEL_PATH   = "model_paths/ResNetLight2_v8.pth"
+MODEL_PATH   = "model_paths/ResNetLight2_loss.pth"
 
 
 # By default: A stage and layer we often achieved satisfying results with

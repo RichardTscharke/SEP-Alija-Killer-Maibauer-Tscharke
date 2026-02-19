@@ -13,7 +13,7 @@ from src.explaining.visualize.visualize_video.label_stabilizer import LabelStabi
 
 VIDEO_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")
 
-MODEL_PATH = Path("model_paths/ResNetLight2_v8.pth")
+MODEL_PATH = Path("model_paths/ResNetLight2_loss.pth")
 
 TARGET_LAYER = "stage3"
 
