@@ -76,7 +76,7 @@ If you want to train your own model with custom dataset distributions and traini
 4. Download and unzip the original KDEF & AKDEF material
 5. Within `KDEF_and_AKDEF` folder extract the `KDEF` folder
 
-Finally, place all three folders (RAF, ExpW, KDEF) into the `data` folder within the project root.
+Finally, place all three folders (`RAF`, `ExpW`, `KDEF`) into the `data` folder within the project root.
 Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, and `validate` directory within the `data` directory with your own images.
 
 
