@@ -1,3 +1,4 @@
+import torch
 import argparse
 from pathlib import Path
 from src.preprocessing.detectors.retinaface import RetinaFaceDetector
@@ -79,6 +80,16 @@ def main(image_path):
         probs=sample["probs"],
         threshold=THRESHOLD
     )
+
+
+    del model
+    del detector
+
+    import torch
+    torch.cuda.empty_cache()
+
+    import gc
+    gc.collect()
 
 
 if __name__ == "__main__":

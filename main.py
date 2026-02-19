@@ -1,6 +1,7 @@
 import os
 import cv2
 import shutil
+import multiprocessing as mp
 from tqdm import tqdm
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from src.generate_csv import generate_csv
 from src.explaining.explain_utils import get_device
 from src.explain_image import main as visualize_image
 from src.explain_video import main as visualize_video
-from src.demo import main as demo
+from src.run_demo import main as demo
 
 
 def ask_user(question):
@@ -156,16 +157,22 @@ def main():
             print(f"Error during CSV generation: {e}")
 
     # 2 Explainable AI Image
-    if ask_user("Do you want to see explainable AI visualizations for your images?"):
+    if ask_user("Do you want to see explainable AI visualizations for one images?"):
         InputImage = get_input_image()
         print("\n--- Starting Explainable AI Visualizations ---")
         try:
-            visualize_image(InputImage)
+            #visualize_image(InputImage)
+            p = mp.Process(
+                target=visualize_image,
+                args=(InputImage,)
+            )
+            p.start()
+            p.join()
         except Exception as e:
             print(f"Error during explainable AI visualization: {e}")
 
     # 3 Explainable AI Video
-    if ask_user("Do you want to see explainable AI visualizations for your videos?"):
+    if ask_user("Do you want to see explainable AI visualizations for a video?"):
         InputVideo = get_input_video()
         print("\n--- Starting Explainable AI Video Visualizations ---")
         try:
@@ -177,7 +184,12 @@ def main():
     if ask_user("Do you want to run a demo on your webcam input?"):
         print("\n--- Starting Demo ---")
         try:
-            demo()
+            p = mp.Process(
+                target=demo,
+            )
+            p.start()
+            p.join()
+            #demo()
         except Exception as e:
             print(f"Error during demo: {e}")
 
@@ -199,3 +211,10 @@ def main():
             print("Training aborted.")
 
     print("\nThank you for using the Emotion Recognition System! Goodbye!")
+
+
+if __name__ == "__main__":
+
+    mp.set_start_method("spawn", force=True)
+
+    main()

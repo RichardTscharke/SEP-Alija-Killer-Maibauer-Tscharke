@@ -1,4 +1,5 @@
 import cv2
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -116,3 +117,5 @@ def visualize(original_img,
 
     plt.tight_layout()
     plt.show()
+    plt.close(fig)
+    time.sleep(0.2) 

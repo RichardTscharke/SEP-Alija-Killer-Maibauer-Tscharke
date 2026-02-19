@@ -10,7 +10,7 @@ from torchvision import transforms
 from src.models.ResNetLight2 import ResNetLightCNN2 as CNN
 
 # Configurations
-MODEL_PATH = "model_paths/ResNetLight2_v10.pth"  # Make sure this is the latest trained model path
+MODEL_PATH = "model_paths/ResNetLight2_v8.pth"  # Make sure this is the latest trained model path
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Output settings
