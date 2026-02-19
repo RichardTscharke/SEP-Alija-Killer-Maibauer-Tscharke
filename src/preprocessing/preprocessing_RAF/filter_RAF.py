@@ -4,8 +4,8 @@ import random
 # Fixed seed for representative tests
 random.seed(42)
 
-LABEL_IN  = Path("data/RAF_raw/EmoLabel/list_patition_label.txt")
-LABEL_OUT = Path("data/RAF_raw/EmoLabel/RAF_labels_filtered.txt")
+LABEL_IN  = Path("data/RAF/EmoLabel/list_patition_label.txt")
+LABEL_OUT = Path("data/RAF/EmoLabel/RAF_labels_filtered.txt")
 
 RAF_LABELS = {
     1: "Surprise",

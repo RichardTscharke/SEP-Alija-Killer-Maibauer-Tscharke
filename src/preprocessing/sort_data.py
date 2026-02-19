@@ -20,11 +20,11 @@ def sort_data(data):
     """
 
     if data == "RAF":
-        IMAGE_IN = "data/RAF_raw/Image/original"
-        LABEL_IN = "data/RAF_raw/EmoLabel/RAF_labels_filtered.txt"
+        IMAGE_IN = "data/RAF/Image/original"
+        LABEL_IN = "data/RAF/EmoLabel/RAF_labels_filtered.txt"
 
-        ALIGNED_OUT  = "data/RAF_raw/RAF_aligned_processed"
-        ORIGINAL_OUT = "data/RAF_raw/RAF_original_processed"
+        ALIGNED_OUT  = "data/RAF/RAF_aligned_processed"
+        ORIGINAL_OUT = "data/RAF/RAF_original_processed"
 
     elif data == "ExpW":
         IMAGE_IN = "data/ExpW/image"

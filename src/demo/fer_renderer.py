@@ -103,7 +103,7 @@ class FERRenderer:
 
         # Status text string
         text = (
-            f"detect_every: {detect_every_n} | "
+            f"detect_every (1-9): {detect_every_n} | "
             f"Keypoints (k) : {'ON' if show_landmarks else 'OFF'} | "
             f"Heatmap (h): {'ON' if enable_xai else 'OFF'}"
         )

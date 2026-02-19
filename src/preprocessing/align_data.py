@@ -15,8 +15,8 @@ def align_data(data):
     """
 
     if data == "RAF":
-        INPUT_DIR  = Path("data/RAF_raw/RAF_original_processed")
-        OUTPUT_DIR = Path("data/RAF_raw/RAF_aligned_processed")
+        INPUT_DIR  = Path("data/RAF/RAF_original_processed")
+        OUTPUT_DIR = Path("data/RAF/RAF_aligned_processed")
 
     elif data == "KDEF":
         INPUT_DIR  = Path("data/KDEF/Image/KDEF_original_processed")
