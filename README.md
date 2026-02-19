@@ -45,27 +45,34 @@ If you want to train your own model with custom dataset distributions and traini
 1. Visit the [official RAF-DB website](http://www.whdeng.cn/RAF/model1.html#dataset)
 2. Go to the "How to get the Password" section and follow the instructions
 3. In the email you receive, open one of the Basic emotion links
-4. Download and unzip the "Image" and "EmoLabel" folders
-5. Place them both into a new folder and name it "RAF"
+4. Download and unzip the `Image` and `EmoLabel` folders ((including all contents))
+5. Place them both into a new folder and **rename** it `RAF`
 
 ### ExpW (Expression in the Wild)
 
 1. Visit the [official ExpW website](https://mmlab.ie.cuhk.edu.hk/projects/socialrelation/index.html)
 2. Go to the "Downloads" section and open the ExpW link
-3. Download the "data" folder
-4. Unzip its contents by ...
-5. Rename the data folder to "ExpW"
+3. Download the `data` folder (make sure it contains an `image` folder with the 8 archive parts and a `label` folder containing `label.lst`)
+4. Open a terminal inside the `image` folder and run:
+   
+```bash
+7z x origin.7z.001
+```
+
+*(Make sure `p7zip` is installed.)*
+
+5. **Rename** the `data` folder to `ExpW`
 
 ### KDEF (Karolinska Directed Emotional Faces)
 
 1. Visit the official [KDEF website](https://kdef.se/)
 2. Go to "Download" -> "Download the original KDEF and AKDEF" and fill out the form
 3. Press the Download button
-4. Download the original KDEF & AKDEF material
-5. Rename...
+4. Download and unzip the original KDEF & AKDEF material
+5. Within `KDEF_and_AKDEF` folder extract the `KDEF` folder
 
-Finally, place all three folders (RAF, ExpW, KDEF) into the "data" folder within the project root.
-Alternatively, you can manually fill the 6 emotion folders per "train", "test", and "validate" directory within the data directory with your own images.
+Finally, place all three folders (RAF, ExpW, KDEF) into the `data` folder within the project root.
+Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, and `validate` directory within the `data` directory with your own images.
 
 ## Custom Configuration
 
