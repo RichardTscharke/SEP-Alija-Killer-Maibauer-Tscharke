@@ -74,7 +74,7 @@ If you want to train your own model with custom dataset distributions and traini
 2. Go to "Download" -> "Download the original KDEF and AKDEF" and fill out the form.
 3. Press the Download button.
 4. Download and unzip the original KDEF & AKDEF material.
-5. Within `KDEF_and_AKDEF` folder extract the `KDEF` folder.
+5. Within the `KDEF_and_AKDEF` folder extract the `KDEF` folder.
 
 Finally, place all three folders (`RAF`, `ExpW`, `KDEF`) into the `data` folder within the project root.
 Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, and `validate` directory within the `data` directory with your own images.
@@ -83,10 +83,10 @@ Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, 
 ## Custom Configuration
 
 After successfully downloading and placing the three datasets, you can configure your own data splits and training metrics for custom setups:
-1. Adjust and call the `preprocess.py` script.
-2. Adjust and call the `train.py` script.
+1. Adjust and call the `src/preprocess.py` script.
+2. Adjust and call the `src/train.py` script.
 3. Evaluate your own setup by reviewing performance-related graphics automatically created during evaluation within the `figures` folder.
-4. Change the model path within `explain_image.py`, `explain_video.py`, and `demo.py` to your new path which can be found in the `model_paths` folder.
+4. Change the model path within `src/explain_image.py`, `src/explain_video.py`, and `src/demo.py` to your new path which can be found in the `model_paths` folder.
 5. Call any of these scripts for Grad-CAM-based explanations for images, videos or webcam input.
 
 Please note that all important information is documented within the respective files.
