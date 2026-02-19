@@ -1,8 +1,8 @@
 import cv2
 from tqdm import tqdm
 from pathlib import Path
-from .detectors import RetinaFaceDetector
-from .aligning.detect import detect_and_preprocess
+from src.preprocessing.detectors import RetinaFaceDetector
+from src.preprocessing.aligning.detect import detect_and_preprocess
 
 # All our datasets have one of these extensions 
 VALID_EXTS = {".jpg", ".jpeg", ".png"}
@@ -41,7 +41,7 @@ def align_data(data):
     # Usually the directories are already created by sort_data()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     
-    with LOG_FILE.open("a") as log:
+    with LOG_FILE.open("w") as log:
 
         # Iterates over the 6 emotion classes
         for emotion_dir in sorted(INPUT_DIR.iterdir()):

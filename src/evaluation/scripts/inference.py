@@ -5,9 +5,9 @@ from torchvision import datasets, transforms
 from pathlib import Path
 
 
-from models.ResNetLight2 import ResNetLightCNN2
-from models.ResNetLight1 import ResNetLightCNN1
-from models.RafCustom import RafCustomCNN
+from src.models.ResNetLight2 import ResNetLightCNN2
+from src.models.ResNetLight1 import ResNetLightCNN1
+from src.models.RafCustom import RafCustomCNN
 
 
 TEST_DIR = Path("data/test")

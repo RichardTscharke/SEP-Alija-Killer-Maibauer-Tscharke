@@ -1,6 +1,6 @@
-from .filter_RAF import filter
-from preprocessing.sort_data import sort_data
-from preprocessing.align_data import align_data
+from src.preprocessing.preprocessing_RAF.filter_RAF import filter
+from src.preprocessing.sort_data import sort_data
+from src.preprocessing.align_data import align_data
 
 
 def preprocess_RAF(RAF_FILTER):

@@ -1,5 +1,5 @@
 import torch.nn as nn
-from .model_utils import ResidualBlock, initialize_weights
+from src.models.model_utils import ResidualBlock, initialize_weights
 
 class ResNetLightCNN1(nn.Module):
     '''

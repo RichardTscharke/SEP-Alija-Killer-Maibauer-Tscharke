@@ -1,7 +1,7 @@
-from preprocessing.preprocessing_RAF.preprocess_RAF import preprocess_RAF
-from preprocessing.preprocessing_ExpW.preprocess_ExpW import preprocess_ExpW
-from preprocessing.preprocessing_KDEF.preprocess_KDEF import preprocess_KDEF
-from preprocessing.merge import merge
+from src.preprocessing.preprocessing_RAF.preprocess_RAF import preprocess_RAF
+from src.preprocessing.preprocessing_ExpW.preprocess_ExpW import preprocess_ExpW
+from src.preprocessing.preprocessing_KDEF.preprocess_KDEF import preprocess_KDEF
+from src.preprocessing.merge import merge
 
 '''
 This is the preprocessing interface of our project.

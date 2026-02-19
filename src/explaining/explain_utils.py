@@ -1,8 +1,8 @@
 import cv2
 import torch
-from models.ResNetLight2 import ResNetLightCNN2
-from models.RafCustom import RafCustomCNN
-from preprocessing.aligning.detect import detect_and_preprocess
+from src.models.ResNetLight2 import ResNetLightCNN2
+from src.models.RafCustom import RafCustomCNN
+from src.preprocessing.aligning.detect import detect_and_preprocess
 
 def get_device():
     '''
@@ -30,7 +30,7 @@ def load_model(model_class, model_path, device, num_classes):
     return model
 
 
-def resolve_model_and_layer(model_path, target_layer, device, flag):
+def resolve_model_and_layer(model_path, target_layer, device):
     '''
     Loads model and returns reference to specified target layer for Grad_CAM
     '''

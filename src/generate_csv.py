@@ -7,7 +7,7 @@ from torchvision import transforms
 
 #from models.RafCustom import RafCustomCNN as CNN
 #from models.ResNetLight1 import ResNetLightCNN1 as CNN
-from models.ResNetLight2 import ResNetLightCNN2 as CNN
+from src.models.ResNetLight2 import ResNetLightCNN2 as CNN
 
 # Configurations
 MODEL_PATH = "model_paths/ResNetLight2_v10.pth"  # Make sure this is the latest trained model path

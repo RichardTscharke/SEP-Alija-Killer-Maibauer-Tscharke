@@ -1,9 +1,9 @@
 import copy
 from pathlib import Path
-from preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import get_device, resolve_model_and_layer, preprocess_image
-from explaining.cam.explain_frame import explain_frame
+from src.explaining.explain_utils import get_device, resolve_model_and_layer, preprocess_image
+from src.explaining.cam.explain_frame import explain_frame
 
 IMAGE_PATH = Path("/Users/richardachtnull/Desktop/IMG_0477.jpg")
 

@@ -1,6 +1,6 @@
-from .determine_and_filter_labels import determine_and_filter
-from preprocessing.sort_data import sort_data
-from preprocessing.align_data import align_data
+from src.preprocessing.preprocessing_ExpW.determine_and_filter_labels import determine_and_filter
+from src.preprocessing.sort_data import sort_data
+from src.preprocessing.align_data import align_data
 
 def preprocess_ExpW(EXPW_FILTER):
     """

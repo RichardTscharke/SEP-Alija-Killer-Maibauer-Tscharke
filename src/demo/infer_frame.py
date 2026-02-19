@@ -1,4 +1,4 @@
-from explaining.cam.explain_frame import explain_frame
+from src.explaining.cam.explain_frame import explain_frame
 
 def infer_frame(
         sample,

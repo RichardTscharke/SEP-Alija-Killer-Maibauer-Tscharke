@@ -1,10 +1,17 @@
-import sys
 import os
+import cv2
+import shutil
+from tqdm import tqdm
+from pathlib import Path
+
 
 # Modules that are needed
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.preprocessing.aligning.detect import detect_and_preprocess
 from src.models.ResNetLight2 import ResNetLightCNN2
 from src.train import main as train
 from src.generate_csv import generate_csv
+from src.explaining.explain_utils import get_device
 from src.explain_image import main as visualize_image
 from src.explain_video import main as visualize_video
 from src.demo import main as demo
@@ -62,6 +69,69 @@ def get_input_video():
             print("The provided path is not a valid video file. Please try again.\n")
 
 
+def align(InputFolder: Path):
+    
+    TargetFolder = InputFolder.parent / f"{InputFolder.name}_aligned"
+
+    # Delete target folder for a fresh start
+    if TargetFolder.exists():
+        shutil.rmtree(TargetFolder)
+
+    # Create new target folder
+    TargetFolder.mkdir(parents=True, exist_ok=True)
+
+    print(f"Target folder for aligned images initialized at: {TargetFolder}")
+
+    # Valid image extensions
+    valid_exts = {".jpg", ".jpeg", ".png"}
+
+    # Logs the failed alignments for debugging purposes
+    log_file = InputFolder.parent / "aligning.log"
+
+   # Count the successfully aligned images and fails
+    success = 0
+    failed = 0
+
+    # Chooses cuda > mps > cpu based on availability
+    detector = RetinaFaceDetector(device=get_device())
+
+    # Logging
+    with log_file.open("w") as log:
+            
+        # Progress visualization
+        for img_path in tqdm(InputFolder.rglob("*"), leave=False):
+
+            if img_path.suffix.lower() not in valid_exts:
+                log.write(f"{img_path}: invalid_extension\n")
+                continue
+            
+            # Load image
+            img = cv2.imread(str(img_path))
+
+            if img is None:
+                failed += 1
+                log.write(f"{img_path}: read_failed\n")
+                continue
+                
+            # detect_and_preprocess returns a dict with key "image" and value aligned image or None on failure
+            preprocessed = detect_and_preprocess(img, detector)
+
+            if preprocessed is None:
+                failed += 1
+                log.write(f"{img_path}: preprocess_failed\n")
+                continue
+                    
+            # Name convention for aligned images
+            out_path = TargetFolder / f"{img_path.stem}_aligned{img_path.suffix}"
+            cv2.imwrite(str(out_path), preprocessed["image"])
+            success += 1
+
+    print(f"Alignment succeeded. Successful: {success} | Failed: {failed}")
+    print(f"Find the failure log at: {log_file}")
+
+    return TargetFolder
+
+
 def main():
     print("=========================================")
     print("    EMOTION RECOGNITION  -  Main Menu    ")
@@ -69,14 +139,19 @@ def main():
 
     # 1 Generate CSV files
     if ask_user("Do you want to generate the CSV files from your dataset?"):
-        InputFolder = get_input_folder()
+        InputFolder = Path(get_input_folder())
+        TargetFolder = InputFolder
 
-        # Face Alignment needs to be put here
-        #   InputFoler = ?
+        try:
+            TargetFolder = align(InputFolder)
+
+        except Exception as e:
+            print(f"Error during aligning: {e}")
+            print(f"Falling back to original dataset at {InputFolder}")
 
         print("\n--- Generating CSV Files ---")
         try:
-            generate_csv(InputFolder)
+            generate_csv(TargetFolder)
         except Exception as e:
             print(f"Error during CSV generation: {e}")
 

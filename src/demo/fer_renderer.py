@@ -1,6 +1,6 @@
 import cv2
 
-from explaining.visualize.visualize_video.overlay import (
+from src.explaining.visualize.visualize_video.overlay import (
     overlay_gradcam,
     insert_emotion_label,
     draw_box_landmarks

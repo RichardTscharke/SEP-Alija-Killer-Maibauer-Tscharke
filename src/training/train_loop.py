@@ -5,18 +5,18 @@ import torch.optim as optim
 from torch.amp import autocast, GradScaler
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, WeightedRandomSampler
-from .train_utils import (
+from src.training.train_utils import (
     TRAIN_DIR,
     VAL_DIR,
     prepare_output_dir_evaluation,
     get_unique_model_path,
     compute_class_weights,
 )
-from evaluation.scripts.evaluate import run_evaluate
+from src.evaluation.scripts.evaluate import run_evaluate
 
-from models.RafCustom import RafCustomCNN
-from models.ResNetLight1 import ResNetLightCNN1
-from models.ResNetLight2 import ResNetLightCNN2
+from src.models.RafCustom import RafCustomCNN
+from src.models.ResNetLight1 import ResNetLightCNN1
+from src.models.ResNetLight2 import ResNetLightCNN2
 
 
 def trainings_loop(config: dict, device: torch.device):

@@ -1,4 +1,4 @@
-from preprocessing.merge import merge
+from src.preprocessing.merge import merge
 
 MERGE_SPLIT = {
     "RAF": {

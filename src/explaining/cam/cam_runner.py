@@ -1,5 +1,5 @@
-from explaining.cam.gradcam import GradCAM
-from explaining.explain_utils import run_model
+from src.explaining.cam.gradcam import GradCAM
+from src.explaining.explain_utils import run_model
 
 
 def run_gradcam(

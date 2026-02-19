@@ -1,6 +1,6 @@
 import torch
-from .cam_runner import run_gradcam
-from .cam_projection import cam_to_original
+from src.explaining.cam.cam_runner import run_gradcam
+from src.explaining.cam.cam_projection import cam_to_original
 
 
 def explain_frame(sample, model, target_layer):

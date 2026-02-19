@@ -1,6 +1,6 @@
 import numpy as np
-from .validate import is_valid_face
-from .pipeline import preprocess_image
+from src.preprocessing.aligning.validate import is_valid_face
+from src.preprocessing.aligning.pipeline import preprocess_image
 
 def detect_and_preprocess(image, detector, detect_only = False, **kwargs):
     """

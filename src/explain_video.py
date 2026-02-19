@@ -2,13 +2,13 @@ import argparse
 from tqdm import tqdm
 from pathlib import Path
 
-from preprocessing.detectors.retinaface import RetinaFaceDetector
-from explaining.process_frame import process_frame
-from explaining.explain_utils import get_device, resolve_model_and_layer
-from explaining.video_utils import open_video, create_video_writer
-from explaining.visualize.visualize_video.cam_smoother import CamSmoother
-from explaining.visualize.visualize_video.label_smoother import LabelSmoother
-from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.explaining.process_frame import process_frame
+from src.explaining.explain_utils import get_device, resolve_model_and_layer
+from src.explaining.video_utils import open_video, create_video_writer
+from src.explaining.visualize.visualize_video.cam_smoother import CamSmoother
+from src.explaining.visualize.visualize_video.label_smoother import LabelSmoother
+from src.explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 
 VIDEO_PATH = Path("/Users/richardachtnull/IMG_0524.MOV")

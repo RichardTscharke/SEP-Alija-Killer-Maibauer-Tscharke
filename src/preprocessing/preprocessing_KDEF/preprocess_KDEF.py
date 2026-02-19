@@ -1,6 +1,6 @@
-from .filter_KDEF import KDEFfilter
-from .sort_KDEF import sort_KDEF
-from preprocessing.align_data import align_data
+from src.preprocessing.preprocessing_KDEF.filter_KDEF import KDEFfilter
+from src.preprocessing.preprocessing_KDEF.sort_KDEF import sort_KDEF
+from src.preprocessing.align_data import align_data
 
 # KDEF consists of 35 folders, each containing one person posing the emotions in different positions 
 NUM_KDEF_DIRECTORIES = 35

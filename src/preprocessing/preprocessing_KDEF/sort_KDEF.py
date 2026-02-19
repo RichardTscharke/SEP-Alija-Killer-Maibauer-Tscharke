@@ -1,7 +1,7 @@
 import os
 import shutil
 import random
-from preprocessing.sort_data import setup_directories
+from src.preprocessing.sort_data import setup_directories
 
 
 IMAGE_IN = "data/KDEF"

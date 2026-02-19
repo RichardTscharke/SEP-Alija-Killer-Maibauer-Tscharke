@@ -1,5 +1,5 @@
-from training.train_utils import get_device
-from training.train_loop import trainings_loop
+from src.training.train_utils import get_device
+from src.training.train_loop import trainings_loop
 '''
 This is the training interface of our project.
 For custom training configurations adjust these:

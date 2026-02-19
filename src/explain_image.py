@@ -1,10 +1,10 @@
 import argparse
 from pathlib import Path
-from preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
 
-from explaining.explain_utils import get_device, resolve_model_and_layer, preprocess_image
-from explaining.cam.explain_frame import explain_frame
-from explaining.visualize.visualize_image import visualize
+from src.explaining.explain_utils import get_device, resolve_model_and_layer, preprocess_image
+from src.explaining.cam.explain_frame import explain_frame
+from src.explaining.visualize.visualize_image import visualize
 
 '''
 This is the XAI interface (for single image) of our project.
@@ -21,7 +21,7 @@ You can adjust the following parameters in order to achieve different results:
 '''
 
 # By default: An image of the RAF_raw dataset (assuming it is stored within the data folder)
-IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/präsi1/richard.jpg")
+IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/SEP_repos/SEP-Alija-Killer-Maibauer-Tscharke/data/xai_sample.jpg")
 
 
 # By default: Our best trained model
@@ -34,7 +34,7 @@ TARGET_LAYER = "stage3"
 
 
 # Determines the sufficient strength of a signal to be visible in the heatmap
-THRESHOLD    = 0.38
+THRESHOLD    = 0.4
 
 
 def main(image_path):
@@ -60,7 +60,7 @@ def main(image_path):
     detector = RetinaFaceDetector(device=device)
 
     # open input image and retrieve metadata
-    print(f"[INFO] Opening image: {IMAGE_PATH}")
+    print(f"[INFO] Opening image: {image_path}")
 
     sample = preprocess_image(image_path, detector, device)
 

@@ -1,8 +1,8 @@
 
 import cv2
 from pathlib import Path
-from preprocessing.detectors.retinaface import RetinaFaceDetector
-from preprocessing.aligning.detect import detect_and_preprocess
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.preprocessing.aligning.detect import detect_and_preprocess
 
 image_path = Path("/Users/richardachtnull/Desktop/IMG_0197.jpg")
 

@@ -1,8 +1,8 @@
 from copy import deepcopy
-from .clip import clip_face
-from .crop import crop_face
-from .align import align_face
-from ..debug.visualize import visualize
+from src.preprocessing.aligning.clip import clip_face
+from src.preprocessing.aligning.crop import crop_face
+from src.preprocessing.aligning.align import align_face
+from src.preprocessing.debug.visualize import visualize
 
 
 def preprocess_image(sample, vis = False):

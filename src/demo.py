@@ -1,12 +1,10 @@
-from preprocessing.detectors.retinaface import RetinaFaceDetector
-
-from explaining.explain_utils import get_device, resolve_model_and_layer, run_model
-from explaining.visualize.visualize_video.cam_smoother import CamSmoother
-from explaining.visualize.visualize_video.label_smoother import LabelSmoother
-from explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
-
-from demo.cam import Webcam
-from demo.fer_controller import FERStreamController
+from src.preprocessing.detectors.retinaface import RetinaFaceDetector
+from src.explaining.explain_utils import get_device, resolve_model_and_layer, run_model
+from src.explaining.visualize.visualize_video.cam_smoother import CamSmoother
+from src.explaining.visualize.visualize_video.label_smoother import LabelSmoother
+from src.explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
+from src.demo.cam import Webcam
+from src.demo.fer_controller import FERStreamController
 
 MODEL_PATH = "model_paths/ResNetLight2_v8.pth" # Make sure this is the latest model path
 

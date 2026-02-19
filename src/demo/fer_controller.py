@@ -1,7 +1,7 @@
-from explaining.explain_utils import preprocess_frame
-from .fer_worker import FERWorker
-from .fer_renderer import FERRenderer
-from .infer_frame import infer_frame
+from src.explaining.explain_utils import preprocess_frame
+from src.demo.fer_worker import FERWorker
+from src.demo.fer_renderer import FERRenderer
+from src.demo.infer_frame import infer_frame
 
 
 class FERStreamController:
