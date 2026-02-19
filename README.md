@@ -33,7 +33,8 @@ pip install -r requirements.txt
 
 ## Quick Start (Pretrained Model)
 
-If you do **not** want to train the model from scratch but instead use our pretrained model for inference and evaluation, run `main.py`. The script will guide you through:
+If you do **not** want to train the model from scratch but instead use our pretrained model for inference and evaluation, run `main.py`.
+The script will guide you through:
 
 - CSV file generation for custom datasets
 - Grad-CAM–based explainable AI for image and/or video input
