@@ -33,7 +33,12 @@ pip install -r requirements.txt
 
 ## Quick Start (Pretrained Model)
 
-If you do **not** want to train the model from scratch but instead use our pretrained model for inference and evaluation, run `main.py`.
+If you do **not** want to train the model from scratch but instead use our pretrained model for inference and evaluation, run `main.py` by calling:
+
+```bash
+python main.py
+```
+
 The script will guide you through:
 
 - CSV file generation for custom datasets
