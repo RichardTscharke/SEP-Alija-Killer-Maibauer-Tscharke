@@ -1,6 +1,7 @@
 # SEP: Computer Vision & Deep Learning
 Deep learning–based Facial Emotion Recognition featuring Grad-CAM explainability and real-time interactive inference.
 
+
 ## Overview
 This project is the result of the "Software Development Practical" held at the Ludwig Maximilian University of Munich (LMU) during the Winter Semester 2025/26.
 
@@ -8,11 +9,13 @@ Under the topic *Computer Vision & Deep Learning*, LMU students were tasked with
 
 The practical course was supervised by Johannes Schusterbauer and Ming Gui, PhD students at LMU.
 
+
 ## Team Members
 - Alen Alija
 - Kilian Killer
 - Leon Maibauer
 - Richard Tscharke
+
 
 ## Installation
 
@@ -35,6 +38,7 @@ If you do **not** want to train the model from scratch but instead use our pretr
 - CSV file generation for custom datasets
 - Grad-CAM–based explainable AI for image and/or video input
 - An interactive live demo using your webcam
+
 
 ## Training from Scratch
 
@@ -73,6 +77,7 @@ If you want to train your own model with custom dataset distributions and traini
 
 Finally, place all three folders (RAF, ExpW, KDEF) into the `data` folder within the project root.
 Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, and `validate` directory within the `data` directory with your own images.
+
 
 ## Custom Configuration
 
