@@ -85,7 +85,7 @@ Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, 
 After successfully downloading and placing the three datasets, you can configure your own data splits and training metrics for custom setups:
 1. Adjust and call the `preprocess.py` script
 2. Adjust and call the `train.py` script
-3. Evaluate your own setup by reviewing performance-related graphics automatically created during evaluation within the "figures" folder
+3. Evaluate your own setup by reviewing performance-related graphics automatically created during evaluation within the `figures` folder
 4. Change the model path within `explain_image.py`, `explain_video.py`, and `demo.py` to your new path which can be found in the model_paths folder.
 5. Call any of these scripts for Grad-CAM-based explanations for images, videos or webcam input
 
