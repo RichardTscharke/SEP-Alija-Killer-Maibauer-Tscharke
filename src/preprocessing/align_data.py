@@ -1,5 +1,4 @@
 import cv2
-import shutil
 from tqdm import tqdm
 from pathlib import Path
 from .detectors import RetinaFaceDetector
