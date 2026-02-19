@@ -82,16 +82,6 @@ def main(image_path):
     )
 
 
-    del model
-    del detector
-
-    import torch
-    torch.cuda.empty_cache()
-
-    import gc
-    gc.collect()
-
-
 if __name__ == "__main__":
     
     # Instantiate a Argument-Parser object
