@@ -19,8 +19,8 @@ TRAIN_CONFIGURATIONS = {
 
     # Training metrics
     "learning_rate": 0.001,
-    "epochs": 80,
-    "early_stop_patience": 15,
+    "epochs": 100,
+    "early_stop_patience": 20,
 
     # Performance metrics
     "batch_size": 64,
