@@ -12,8 +12,8 @@ def plot_confusion_matrix(output_dir, figure_dir, normalized=True):
 
     with mpl.rc_context(
         {
-            "font.family": "serif",
-            "font.serif": ["Times"],
+            "font.family": "STIXGeneral",
+            #"font.serif": ["Times"],
             "mathtext.fontset": "stix",
             "font.size": 9,
             "axes.labelsize": 9,

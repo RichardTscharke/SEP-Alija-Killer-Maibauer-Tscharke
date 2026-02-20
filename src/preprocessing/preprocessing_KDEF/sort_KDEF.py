@@ -104,5 +104,5 @@ def sort_KDEF(filter_kdef):
             counter += 1
 
     lf.close()
-    print(f"[INFO] Sorted {counter} original images.")
+    print(f"[INFO] Sorted {counter - 1} original images.")
     print(f"[INFO] Original images saved in: {ORIGINAL_OUT}")

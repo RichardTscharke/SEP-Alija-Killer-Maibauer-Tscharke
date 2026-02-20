@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 # Define a consistent plotting style for all epoch curves to Match the Latex requirements
 PLOT_STYLE = {
-    "font.family": "serif",
-    "font.serif": ["Times"],
+    "font.family": "STIXGeneral",
+    #"font.serif": ["Times"],
     "mathtext.fontset": "stix",
     "font.size": 9,
     "axes.labelsize": 9,
