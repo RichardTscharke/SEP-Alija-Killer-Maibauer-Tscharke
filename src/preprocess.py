@@ -17,8 +17,8 @@ Surprise: 1619 | Fear: 355 | Disgust: 877 | Happiness: 5957 | Sadness: 2460 | An
 Final Entries: 12135
 
 ExpW:
-Surprise: 6104 | Fear: 962 | Disgust: 3250 | Happiness: 19350 | Sadness: 9090 | Anger: 3278
-Final entries: 42034
+Surprise: 6262 | Fear: 971 | Disgust: 3415 | Happiness: 20455 | Sadness: 9422 | Anger: 3351
+Final entries: 43876
 
 KDEF:
 105 images per emotion (35 persons posing S/HL/HR per emotion)
@@ -27,25 +27,25 @@ Final entries: 630
 For custom data configurations adjust these:
 '''
 RAF_FILTER = {
-    "Surprise":  1.0,
-    "Fear":      1.0,
-    "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
-    "Anger":     1.0,
+    "Surprise":  0.0,
+    "Fear":      0.0,
+    "Disgust":   0.0,
+    "Happiness": 0.0,
+    "Sadness":   0.0,
+    "Anger":     0.0,
 }
 EXPW_FILTER = {
-    "Surprise":  1.0,
-    "Fear":      1.0,
-    "Disgust":   1.0,
-    "Happiness": 1.0,
-    "Sadness":   1.0,
-    "Anger":     1.0,
+    "Surprise":  0.0,
+    "Fear":      0.0,
+    "Disgust":   0.0,
+    "Happiness": 0.0,
+    "Sadness":   0.0,
+    "Anger":     0.0,
 }
 KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 0.0),
-    "Disgust"  : (["S", "HL", "HR"], 0.0),
-    "Fear"     : (["S", "HL", "HR"], 0.0),
+    "Anger"    : (["S", "HL", "HR"], 0.5),
+    "Disgust"  : (["S", "HL", "HR"], 1.0),
+    "Fear"     : (["S", "HL", "HR"], 1.0),
     "Happiness": (["S", "HL", "HR"], 0.0),
     "Sadness"  : (["S", "HL", "HR"], 0.0),
     "Surprise" : (["S", "HL", "HR"], 0.0),
@@ -62,7 +62,7 @@ MERGE_SPLIT = {
         "validate": 0.2,
     },
     "KDEF": {
-        "train"   : 0.0,
+        "train"   : 1.0,
         "test"    : 0.0,
         "validate": 0.0,
     },
