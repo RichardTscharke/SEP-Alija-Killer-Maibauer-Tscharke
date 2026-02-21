@@ -5,7 +5,7 @@ Deep learning–based Facial Emotion Recognition featuring Grad-CAM explainabili
 ## Overview
 This project is the result of the "Software Development Practical" held at the Ludwig Maximilian University of Munich (LMU) during the Winter Semester 2025/26.
 
-Under the topic *Computer Vision & Deep Learning*, LMU students were tasked with developing, training, and evaluating a Convolutional Neural Network (CNN) from scratch for the well-known Facial Emotion Recognition (FER) problem.
+Within the topic *Computer Vision & Deep Learning*, students were tasked with training and evaluating a Convolutional Neural Network for Facial Emotion Recognition. We developed a fully end-to-end system in which all preprocessing, training, evaluation, and XAI-related pipelines were implemented form scratch.
 
 The practical course was supervised by Johannes Schusterbauer and Ming Gui, PhD students at LMU.
 
