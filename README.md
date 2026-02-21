@@ -29,7 +29,7 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-Note on GPU Support: This project uses onnxruntime-gpu. To enable hardware acceleration, ensure you have the appropriate NVIDIA Drivers and CUDA Toolkit installed. If no GPU is available, the code will automatically fallback to CPU mode.
+Note on GPU Support: This project uses onnxruntime-gpu. To enable hardware acceleration, ensure you have the appropriate NVIDIA Drivers and CUDA Toolkit installed. If no GPU is available, the program will automatically fallback to CPU mode.
 
 
 ## Quick Start (Pretrained Model)
