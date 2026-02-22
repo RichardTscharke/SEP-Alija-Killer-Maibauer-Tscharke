@@ -56,6 +56,9 @@ def main():
     # In our case we show the top 2 classes who achieved this required confidence
     label_stabilizer = LabelStabilizer(min_conf=MIN_CONF)
     print(f"[INFO] Label Smoother & Stabilizer initialized for stable emotion labels.")
+    print("\n")
+    print(f"[INFO] Press 'q' or 'Esc' to quit the demo.")
+    print("\n")
 
     # FERStreamController orchestrates:
     # detection -> alignment -> inference -> Grad-CAM -> smoothing -> rendering
