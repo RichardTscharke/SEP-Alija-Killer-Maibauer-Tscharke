@@ -34,7 +34,6 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 4. Install ONNX Runtime (required for InsightFace):
-Choose the version that matches your system:
 
 **Linux with CUDA** GPU support:
 ```bash
@@ -44,6 +43,7 @@ pip install onnxruntime-gpu
 ```bash
 pip install onnxruntime
 ```
+
 
 ## Quick Start (Pretrained Model)
 
