@@ -33,7 +33,16 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-Note on GPU Support: This project uses onnxruntime-gpu. To enable hardware acceleration, ensure you have the appropriate NVIDIA Drivers and CUDA Toolkit installed. If no GPU is available, the program will automatically fallback to CPU mode.
+4. Install ONNX Runtime (required for InsightFace):
+
+**Linux with CUDA** GPU support:
+```bash
+pip install onnxruntime-gpu
+```
+**macOS/CPU** systems:
+```bash
+pip install onnxruntime
+```
 
 
 ## Quick Start (Pretrained Model)
@@ -103,6 +112,7 @@ If you want to train your own model with custom dataset distributions and traini
 Finally, place all three folders (`RAF`, `ExpW`, `KDEF`) into the `data` folder within the project root.
 
 Alternatively, you can manually fill the 6 emotion folders per `train`, `test`, and `validate` directory within the `data` directory with your own images. 
+
 Note: The folder structure is included using .gitkeep files for demonstration purposes. During normal preprocessing, these directories are created automatically.
 
 
