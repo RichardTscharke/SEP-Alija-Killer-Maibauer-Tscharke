@@ -85,14 +85,15 @@ def generate_csv(input_folder):
                         probs_list = probs.cpu().numpy()[0]
 
                         # Build CSV row
-                        # Structure: filename, anger_score, disgust_score, ...
-                        row = {"filename": file}
+                        # Structure: filepath, anger_score, disgust_score, ...
+                        row = {"filepath": img_path}
                         for i, emotion in enumerate(CLASSES):
-                            row[emotion] = probs_list[i]
+                            row[emotion.lower()] = probs_list[i]
 
                         # Add final classification
-                        predicted_idx = torch.argmax(probs, 1).item()
-                        row["prediction"] = CLASSES[predicted_idx]
+                        #predicted_idx = torch.argmax(probs, 1).item()
+                        #row["prediction"] = CLASSES[predicted_idx]
+                        # Commented to match submission Requirements
 
                         results.append(row)
                         image_count += 1
@@ -107,11 +108,11 @@ def generate_csv(input_folder):
     if results:
         df = pd.DataFrame(results)
 
-        # Reorder columns: filename first
-        cols = ["filename"] + CLASSES + ["prediction"]
+        # Reorder columns: filepath first
+        cols = ["filepath", "happiness", "surprise", "sadness", "anger", "disgust", "fear"]
         df = df[cols]
 
-        df.to_csv(output_csv_path, index=False)
+        df.to_csv(output_csv_path, index=False, sep=';', decimal=',', float_format='%.2f')
         print(f"✅ Success! Saved {len(results)} predictions to {output_csv_path}")
     else:
         print("⚠️ No images found in input folder.")
@@ -119,7 +120,7 @@ def generate_csv(input_folder):
 
 if __name__ == "__main__":
     # Default path on server
-    default_folder = "data/RAF_aligned_processed/test"
+    default_folder = "data/test"
 
     # Allow command line argument for folder path
     if len(sys.argv) > 1:
