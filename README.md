@@ -23,7 +23,7 @@ The practical course was supervised by Johannes Schusterbauer and Ming Gui, PhD 
 ```bash
 git clone https://github.com/RichardTscharke/SEP-Alija-Killer-Maibauer-Tscharke.git
 ```
-3. Create and activate a virtual environment:
+2. Create and activate a virtual environment:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
