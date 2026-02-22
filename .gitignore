@@ -11,7 +11,6 @@ env/
 # Daten 
 *.h5
 *.pth
-data/
 *.png
 *.jpg
 *.jpeg

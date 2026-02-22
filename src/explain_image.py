@@ -21,7 +21,7 @@ You can adjust the following parameters in order to achieve different results:
 '''
 
 # By default: An image of the RAF_raw dataset (assuming it is stored within the data folder)
-IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/sigillum.png")
+IMAGE_PATH   = Path("data/xai_img.jpg")
 
 
 # By default: Our best trained model
