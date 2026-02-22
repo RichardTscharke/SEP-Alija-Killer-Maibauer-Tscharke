@@ -43,28 +43,28 @@ EXPW_FILTER = {
     "Anger":     0.0,
 }
 KDEF_FILTER = {
-    "Anger"    : (["S", "HL", "HR"], 0.5),
-    "Disgust"  : (["S", "HL", "HR"], 1.0),
-    "Fear"     : (["S", "HL", "HR"], 1.0),
-    "Happiness": (["S", "HL", "HR"], 0.0),
-    "Sadness"  : (["S", "HL", "HR"], 0.0),
-    "Surprise" : (["S", "HL", "HR"], 0.0),
+    "Anger"    : (["S", "HL", "HR"], 0.04),
+    "Disgust"  : (["S", "HL", "HR"], 0.04),
+    "Fear"     : (["S", "HL", "HR"], 0.04),
+    "Happiness": (["S", "HL", "HR"], 0.04),
+    "Sadness"  : (["S", "HL", "HR"], 0.04),
+    "Surprise" : (["S", "HL", "HR"], 0.04),
 }
 MERGE_SPLIT = {
     "RAF": {
         "train"   : 0.0,
-        "test"    : 1.0,
+        "test"    : 0.0,
         "validate": 0.0,
     },
     "ExpW": {
-        "train"   : 0.8,
-        "test"    : 0.0,
-        "validate": 0.2,
-    },
-    "KDEF": {
-        "train"   : 1.0,
+        "train"   : 0.0,
         "test"    : 0.0,
         "validate": 0.0,
+    },
+    "KDEF": {
+        "train"   : 0.3,
+        "test"    : 0.3,
+        "validate": 0.3,
     },
 }
 

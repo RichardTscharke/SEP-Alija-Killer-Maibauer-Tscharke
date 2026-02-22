@@ -93,7 +93,7 @@ def merge(MERGE_SPLIT, use_aligned = True):
 
             n_train = int(ratios["train"] * n)
             n_test  = int(ratios["test"] * n)
-            n_val   = int(ratios["validate"] * n)
+            n_val   = n - n_train - n_test
 
             # Due to integer rounding, the remaining samples are implicitly assigned to validation
             split_map = {

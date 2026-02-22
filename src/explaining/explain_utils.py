@@ -101,7 +101,13 @@ def preprocess_image(image_path, detector, device):
     Wrapper function for an image as input instead of a frame.
     '''
     frame = cv2.imread(str(image_path))
-    return preprocess_frame(frame, detector, device)
+    
+    sample = preprocess_frame(frame, detector, device)
+
+    if sample is None:
+        raise RuntimeError("[ERROR] No face detected")
+
+    return sample
 
 
 def run_model(model, input_tensor, require_grad=False):

@@ -1,4 +1,3 @@
-import torch
 import argparse
 from pathlib import Path
 from src.preprocessing.detectors.retinaface import RetinaFaceDetector
@@ -22,7 +21,7 @@ You can adjust the following parameters in order to achieve different results:
 '''
 
 # By default: An image of the RAF_raw dataset (assuming it is stored within the data folder)
-IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/SEP_repos/SEP-Alija-Killer-Maibauer-Tscharke/data/xai_sample.jpg")
+IMAGE_PATH   = Path("/Users/richardachtnull/Desktop/sigillum.png")
 
 
 # By default: Our best trained model
@@ -63,7 +62,12 @@ def main(image_path):
     # open input image and retrieve metadata
     print(f"[INFO] Opening image: {image_path}")
 
-    sample = preprocess_image(image_path, detector, device)
+    try:
+        sample = preprocess_image(image_path, detector, device)
+
+    except RuntimeError as e:
+        print(e)
+        return
 
     sample = explain_frame(
         sample=sample,
