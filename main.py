@@ -140,6 +140,7 @@ def main():
 
     # 1 Generate CSV files
     if ask_user("Do you want to generate the CSV files from your dataset?"):
+        print("\n--- Note: Images that have already been aligned might be dropped from the final CSV, as the face detector often fails during a 'double alignment'---")
         InputFolder = Path(get_input_folder())
         TargetFolder = InputFolder
 
