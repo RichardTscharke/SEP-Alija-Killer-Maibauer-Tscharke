@@ -22,6 +22,7 @@ The practical course was supervised by Johannes Schusterbauer and Ming Gui, PhD 
 1. Clone the repository.
 ```bash
 git clone https://github.com/RichardTscharke/SEP-Alija-Killer-Maibauer-Tscharke.git
+cd SEP-Alija-Killer-Maibauer-Tscharke
 ```
 2. Create and activate a virtual environment:
 ```bash
