@@ -71,7 +71,7 @@ or
 python -m src.explain_video
 ```
 
-with a path argument. You can also run the commands without any arguments to view the Grad-CAMs generated for our included default image or video.
+with a path argument. You can also run the commands without any arguments to view the Grad-CAMs generated for our included default image or video (`for_xai/`).
 
 
 ## Training from Scratch
