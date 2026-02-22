@@ -11,7 +11,7 @@ from src.explaining.visualize.visualize_video.label_smoother import LabelSmoothe
 from src.explaining.visualize.visualize_video.label_stabilizer import LabelStabilizer
 
 
-VIDEO_PATH = Path("for_xai/xai_vid.MOV")
+VIDEO_PATH = Path("xai_samples/xai_vid.MOV")
 
 MODEL_PATH = Path("model_paths/ResNetLight2_loss.pth")
 
