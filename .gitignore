@@ -12,7 +12,8 @@ env/
 *.h5
 *.pth
 *.png
-*.jpg
+#data/
+#*.jpg
 *.jpeg
 *.csv
 src/evaluation/outputs/

@@ -20,8 +20,8 @@ If you trained your own model please load the model path into the 'models' folde
 You can adjust the following parameters in order to achieve different results:
 '''
 
-# By default: An image of the RAF_raw dataset (assuming it is stored within the data folder)
-IMAGE_PATH   = Path("data/xai_img.jpg")
+# By default: An image of the RAF_raw dataset (assuming it is stored within the for_xai folder)
+IMAGE_PATH   = Path("for_xai/xai_img.jpg")
 
 
 # By default: Our best trained model
