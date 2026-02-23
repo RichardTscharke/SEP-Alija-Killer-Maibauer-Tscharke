@@ -13,14 +13,14 @@ TRAIN_CONFIGURATIONS = {
     "train_on": "val_acc",
 
     # By default: Class inverse frequency weights. If you flag to False please adjust custom_weights
-    "use_inv_freq_w": False,
+    "use_inv_freq_w": True,
     #[w_ang, w_dis, w_fear, w_happy, w_sad, w_surprise]
     "custom_weights": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
 
     # Training metrics
     "learning_rate": 0.001,
-    "epochs": 100,
-    "early_stop_patience": 20,
+    "epochs": 110,
+    "early_stop_patience": 40,
 
     # Performance metrics
     "batch_size": 64,
