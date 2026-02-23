@@ -62,7 +62,7 @@ MERGE_SPLIT = {
         "validate": 0.15,
     },
     "KDEF": {
-        "train"   : 0.15,
+        "train"   : 0.7,
         "test"    : 0.15,
         "validate": 0.15,
     },
