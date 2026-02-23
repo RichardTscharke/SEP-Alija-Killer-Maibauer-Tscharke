@@ -76,7 +76,9 @@ with a path argument. You can also run the commands without any arguments to vie
 
 ## Training from Scratch
 
-If you want to train your own model with custom dataset distributions and training configurations, start by downloading the following datasets:
+The evaluation figures in `figures/` were generated using the current configurations in `src/preprocess.py` and `src/train.py`.
+
+If you want to train and evaluate your own model with custom dataset distributions and training configurations, start by downloading the following datasets:
 
 ### RAF-DB (Real-world Affective Faces Database)
 
