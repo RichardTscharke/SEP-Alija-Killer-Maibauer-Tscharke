@@ -125,7 +125,7 @@ After successfully downloading and placing the three datasets, you can configure
 2. Adjust and call the `src/train.py` script.
 3. Evaluate your own setup by reviewing performance-related graphics automatically created during evaluation within the `figures` folder.
 4. Change the model path within `src/explain_image.py`, `src/explain_video.py`, and `src/run_demo.py` to your new path which can be found in the `model_paths` folder.
-5. Run `main.py` or Call any of these scripts for Grad-CAM-based explanations for images, videos or webcam input.
+5. Run `main.py` or call any of these scripts for Grad-CAM-based explanations for images, videos or webcam input.
 
 Please note that all important information is documented within the respective files.
 
